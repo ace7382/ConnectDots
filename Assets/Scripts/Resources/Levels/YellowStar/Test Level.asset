@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a89a4ad53e408f748947467a89173cc8, type: 3}
+  m_Name: Test Level
+  m_EditorClassIdentifier: 
+  levelNum: 01a
+  rows: 5
+  cols: 5
+  lines:
+  - end1position: {x: 0, y: 0}
+    end1rotation: 3
+    end2position: {x: 0, y: 2}
+    end2rotation: 2
+    color: {r: 0, g: 0.12270379, b: 1, a: 1}
+  - end1position: {x: 1, y: 1}
+    end1rotation: 2
+    end2position: {x: 2, y: 3}
+    end2rotation: 1
+    color: {r: 1, g: 0, b: 0, a: 1}
+  - end1position: {x: 0, y: 3}
+    end1rotation: 3
+    end2position: {x: 4, y: 0}
+    end2rotation: 3
+    color: {r: 0.97404873, g: 1, b: 0, a: 1}
+  - end1position: {x: 2, y: 1}
+    end1rotation: 3
+    end2position: {x: 1, y: 3}
+    end2rotation: 2
+    color: {r: 0.066497564, g: 1, b: 0, a: 1}
+  specialTiles: []

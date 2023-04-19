@@ -1,0 +1,352 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UIElements;
+
+public enum TileState
+{
+    END,
+    EMPTY,
+    LINE,
+    CORNER,
+    HEAD,
+    BLANK
+}
+
+public enum EndTileRotation
+{ 
+    LEFT,
+    RIGHT,
+    TOP,
+    BOTTOM
+}
+
+[System.Serializable] //TODO: remove serialization. It's jsut for debugging
+public class Tile
+{
+    #region Pathfinding
+
+    public int gCost;
+    public int fCost;
+    public int hCost;
+    public Tile cameFromTile;
+
+    public void CalcFCost()
+    {
+        fCost = hCost + gCost;
+    }
+
+    #endregion
+
+    private VisualElement                       container;
+    private VisualElement                       image;
+    private VisualElement                       leftBorderVE;
+    private VisualElement                       rightBorderVE;
+    private VisualElement                       topBorderVE;
+    private VisualElement                       bottomBorderVE;
+    private bool                                top, right, bottom, left;
+    private Line                                line;
+    [SerializeField] private Vector2Int         position;
+    [SerializeField] private TileState          state;
+    [SerializeField] private EndTileRotation    endPieceRotation;
+
+    public Vector2          Position            { get { return position; } }
+    public int              X                   { get { return position.x; } }
+    public int              Y                   { get { return position.y; } }
+    public VisualElement    Container           { get { return container; } }
+    public VisualElement    Image               { get { return image; } }
+    
+    public Line             Line            
+    { 
+        get { return line; }
+        set
+        {
+            if (value == line)
+                return;
+
+            line = value;
+
+            SetColor(line == null ? Color.white : line.color);
+        }
+    }
+
+    public TileState State 
+    {
+        get { return state; } 
+
+        private set
+        {
+            if (state == value)
+                return;
+
+            if (value == TileState.BLANK)
+            {
+                StyleColor s                    = new StyleColor(Color.clear); 
+                image.style.backgroundColor     = s;
+                container.style.backgroundColor = s;
+            }
+            else
+                image.style.backgroundImage = new StyleBackground(BoardCreator.instance.GetTileStateTexture(value));
+
+            state = value;
+        }
+    }
+
+    public bool CanLeaveEndTile(Tile tileToLeaveTo)
+    {
+        if (State != TileState.END)
+            return true;
+
+        switch (endPieceRotation)
+        {
+            case EndTileRotation.LEFT:
+                return tileToLeaveTo.X == X - 1 && tileToLeaveTo.Y == Y;
+            case EndTileRotation.RIGHT:
+                return tileToLeaveTo.X == X + 1 && tileToLeaveTo.Y == Y;
+            case EndTileRotation.TOP:
+                return tileToLeaveTo.X == X && tileToLeaveTo.Y == Y - 1;
+            case EndTileRotation.BOTTOM:
+                return tileToLeaveTo.X == X && tileToLeaveTo.Y == Y + 1;
+        }
+
+        return false;
+    }
+
+    public bool CanEnterEndTile(Tile tileToEnter)
+    {
+        if (State != TileState.END)
+            return true;
+
+        switch (endPieceRotation)
+        {
+            case EndTileRotation.LEFT:
+                return tileToEnter.X == X - 1 && tileToEnter.Y == Y;
+            case EndTileRotation.RIGHT:
+                return tileToEnter.X == X + 1 && tileToEnter.Y == Y;
+            case EndTileRotation.TOP:
+                return tileToEnter.X == X && tileToEnter.Y == Y - 1;
+            case EndTileRotation.BOTTOM:
+                return tileToEnter.X == X && tileToEnter.Y == Y + 1;
+        }
+
+        return false;
+    }
+
+    public bool CanEnterTile(Tile tileToEnter)
+    {
+        if (tileToEnter.State == TileState.BLANK)
+            return false;
+        else if (State == TileState.END) //If this tile is an end piece, check that it can be exited
+        {
+            switch (endPieceRotation)
+            {
+                case EndTileRotation.LEFT:
+                    return tileToEnter.X == X - 1 && tileToEnter.Y == Y;
+                case EndTileRotation.RIGHT:
+                    return tileToEnter.X == X + 1 && tileToEnter.Y == Y;
+                case EndTileRotation.TOP:
+                    return tileToEnter.X == X && tileToEnter.Y == Y - 1;
+                case EndTileRotation.BOTTOM:
+                    return tileToEnter.X == X && tileToEnter.Y == Y + 1;
+            }
+        }
+        else if (tileToEnter.State == TileState.END) //If entering an end piece, check that the entrance in the correct direction
+        {
+            switch (tileToEnter.endPieceRotation)
+            {
+                case EndTileRotation.LEFT:
+                    return tileToEnter.X == X + 1 && tileToEnter.Y == Y;
+                case EndTileRotation.RIGHT:
+                    return tileToEnter.X == X - 1 && tileToEnter.Y == Y;
+                case EndTileRotation.TOP:
+                    return tileToEnter.X == X && tileToEnter.Y == Y + 1;
+                case EndTileRotation.BOTTOM:
+                    return tileToEnter.X == X && tileToEnter.Y == Y - 1;
+            }
+        }
+        else if (tileToEnter.State == TileState.EMPTY)
+        {
+            if (tileToEnter.X == X + 1 && tileToEnter.Y == Y) //Moving into tile to the right
+                return !(right || tileToEnter.left);
+            else if (tileToEnter.X == X - 1 && tileToEnter.Y == Y) //left
+                return !(left || tileToEnter.right);
+            else if (tileToEnter.X == X && tileToEnter.Y - 1 == Y) //bottom
+                return !(bottom || tileToEnter.top);
+            else if (tileToEnter.X == X && tileToEnter.Y + 1 == Y)
+                return !(top || tileToEnter.bottom);
+        }
+
+        return false;
+    }
+
+    public Tile(Vector2Int pos, VisualElement visualElement, bool blank = false,
+                bool top = false, bool right = false, bool bottom = false, bool left = false)
+    {
+        container                   = visualElement;
+
+        image                       = visualElement.Q<VisualElement>("Image");
+        leftBorderVE                = visualElement.Q<VisualElement>("Left");
+        rightBorderVE               = visualElement.Q<VisualElement>("Right");
+        topBorderVE                 = visualElement.Q<VisualElement>("Top");
+        bottomBorderVE              = visualElement.Q<VisualElement>("Bottom");
+
+        image.pickingMode           = PickingMode.Ignore;
+        leftBorderVE.pickingMode    = PickingMode.Ignore;
+        rightBorderVE.pickingMode   = PickingMode.Ignore;
+        topBorderVE.pickingMode     = PickingMode.Ignore;
+        bottomBorderVE.pickingMode  = PickingMode.Ignore;
+
+        if(!blank)
+        { 
+            this.top                = top;
+            this.right              = right;
+            this.bottom             = bottom;
+            this.left               = left;
+
+            topBorderVE.style.backgroundColor = top ? BoardCreator.instance.HardBorderColor : BoardCreator.instance.SoftBorderColor;
+            topBorderVE.style.SetHeight(new StyleLength(top ? BoardCreator.instance.HardBorderSize : BoardCreator.instance.SoftBorderSize));
+            rightBorderVE.style.backgroundColor = right ? BoardCreator.instance.HardBorderColor : BoardCreator.instance.SoftBorderColor;
+            rightBorderVE.style.SetWidth(new StyleLength(right ? BoardCreator.instance.HardBorderSize : BoardCreator.instance.SoftBorderSize));
+            bottomBorderVE.style.backgroundColor = bottom ? BoardCreator.instance.HardBorderColor : BoardCreator.instance.SoftBorderColor;
+            bottomBorderVE.style.SetHeight(new StyleLength(bottom ? BoardCreator.instance.HardBorderSize : BoardCreator.instance.SoftBorderSize));
+            leftBorderVE.style.backgroundColor = left ? BoardCreator.instance.HardBorderColor : BoardCreator.instance.SoftBorderColor;
+            leftBorderVE.style.SetWidth(new StyleLength(left ? BoardCreator.instance.HardBorderSize : BoardCreator.instance.SoftBorderSize));
+
+            if (top)                container.Add(topBorderVE);
+            if (right)              container.Add(rightBorderVE);
+            if (bottom)             container.Add(bottomBorderVE);
+            if (left)               container.Add(leftBorderVE);
+
+            State                   = TileState.EMPTY;
+        }
+        else
+        {
+            State = TileState.BLANK;
+        }
+
+        position                    = pos;    
+    }
+
+    public void SetAsStartEnd(Line l, EndTileRotation rotation)
+    {
+        Line                = l;
+        State               = TileState.END;
+        endPieceRotation    = rotation;
+
+        if (rotation == EndTileRotation.LEFT)
+        {
+            Image.style.rotate = new StyleRotate(new Rotate(270f));
+        }
+        else if (rotation == EndTileRotation.RIGHT)
+        {
+            Image.style.rotate = new StyleRotate(new Rotate(90f));
+        }
+        else if (rotation == EndTileRotation.TOP)
+        {
+            Image.style.rotate = new StyleRotate(new Rotate(0f));
+        }
+        else
+        {
+            Image.style.rotate = new StyleRotate(new Rotate(180f));
+        }
+    }
+
+    public void SetState(Line l, Tile previous, Tile next)
+    {
+        if (state == TileState.END) //Start and end pts should never change state
+            return;
+
+        Line = l;
+
+        if (next == null)
+        {
+            //State = TileState.LINE;
+            State = TileState.HEAD;
+
+            if (previous == null)
+                return;
+            else if (previous.X == X - 1) //Coming in from left
+                Image.style.rotate = new StyleRotate(new Rotate(270f));
+            else if (previous.X == X + 1) //Coming in from right
+                Image.style.rotate = new StyleRotate(new Rotate(90f));
+            else if (previous.Y == Y - 1) //Coming in from top
+                Image.style.rotate = new StyleRotate(new Rotate(0f));
+            else //Bottom
+                Image.style.rotate = new StyleRotate(new Rotate(180f));
+        }
+        else if (previous.X == X && next.X == X) //horizontal line
+        {
+            State = TileState.LINE;
+
+            Image.style.rotate = new StyleRotate(new Rotate(0f));
+        }
+        else if (previous.Y == Y && next.Y == Y) //vertical line
+        {
+            State = TileState.LINE;
+
+            Image.style.rotate = new StyleRotate(new Rotate(90f));
+        }
+        //B L corner
+        else if (
+            (previous.X == X && previous.Y == Y + 1 && next.X == X - 1 && next.Y == Y) ||
+            (previous.X == X - 1 && previous.Y == Y && next.X == X && next.Y == Y + 1))
+        {
+            State = TileState.CORNER;
+
+            Image.style.rotate = new StyleRotate(new Rotate(90f));
+        }
+        //B R corner
+        else if ((previous.X == X && previous.Y == Y + 1 && next.X == X + 1 && next.Y == Y) ||
+                (previous.X == X + 1 && previous.Y == Y && next.X == X && next.Y == Y + 1))
+        {
+            State = TileState.CORNER;
+
+            Image.style.rotate = new StyleRotate(new Rotate(0f));
+        }
+        //T L Corner
+        else if ((previous.X == X && previous.Y == Y - 1 && next.X == X - 1 && next.Y == Y) ||
+            (previous.X == X - 1 && previous.Y == Y && next.X == X && next.Y == Y - 1))
+        {
+            State = TileState.CORNER;
+
+            Image.style.rotate = new StyleRotate(new Rotate(180f));
+        }
+        //T R Corner
+        else if ((previous.X == X + 1 && previous.Y == Y && next.X == X && next.Y == Y - 1) ||
+            (previous.X == X && previous.Y == Y - 1 && next.X == X + 1 && next.Y == Y))
+        {
+            State = TileState.CORNER;
+
+            Image.style.rotate = new StyleRotate(new Rotate(270f));
+        }
+    }
+
+    public void ClearLine()
+    {
+        if (Line == null || State == TileState.END)
+            return;
+
+        //line = null;
+        Line = null;
+        State = TileState.EMPTY;
+        //SetColor(Color.white);
+    }
+
+    public void SetColor(Color c)
+    {
+        Image.style.unityBackgroundImageTintColor = c;
+    }
+
+    public void PuzzleComplete()
+    {
+        Color bgColor = new Color(Line.color.r, Line.color.g, Line.color.b, Line.color.a / 2f);
+
+        Container.style.backgroundColor = Color.white;
+        image.style.backgroundColor = bgColor;
+
+        if (!top)       topBorderVE.style.Hide();
+        if (!right)     rightBorderVE.style.Hide();
+        if (!bottom)    bottomBorderVE.style.Hide();
+        if (!left)      leftBorderVE.style.Hide();
+    }
+}

@@ -1,0 +1,184 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a89a4ad53e408f748947467a89173cc8, type: 3}
+  m_Name: Test Blanks
+  m_EditorClassIdentifier: 
+  levelNum: 01
+  rows: 5
+  cols: 5
+  lines:
+  - end1position: {x: 4, y: 1}
+    end1rotation: 3
+    end2position: {x: 0, y: 3}
+    end2rotation: 2
+    color: {r: 0, g: 0.12270379, b: 1, a: 1}
+  - end1position: {x: 0, y: 0}
+    end1rotation: 1
+    end2position: {x: 4, y: 0}
+    end2rotation: 0
+    color: {r: 1, g: 0, b: 0, a: 1}
+  - end1position: {x: 0, y: 4}
+    end1rotation: 1
+    end2position: {x: 4, y: 4}
+    end2rotation: 0
+    color: {r: 0.066497564, g: 1, b: 0, a: 1}
+  specialTiles:
+  - tilePosition: {x: 0, y: 0}
+    blank: 0
+    topBorder: 1
+    rightBorder: 0
+    bottomBorder: 1
+    leftBorder: 1
+  - tilePosition: {x: 1, y: 0}
+    blank: 0
+    topBorder: 1
+    rightBorder: 0
+    bottomBorder: 1
+    leftBorder: 0
+  - tilePosition: {x: 2, y: 0}
+    blank: 0
+    topBorder: 1
+    rightBorder: 0
+    bottomBorder: 1
+    leftBorder: 0
+  - tilePosition: {x: 3, y: 0}
+    blank: 0
+    topBorder: 1
+    rightBorder: 0
+    bottomBorder: 1
+    leftBorder: 0
+  - tilePosition: {x: 4, y: 0}
+    blank: 0
+    topBorder: 1
+    rightBorder: 1
+    bottomBorder: 0
+    leftBorder: 0
+  - tilePosition: {x: 0, y: 1}
+    blank: 1
+    topBorder: 0
+    rightBorder: 0
+    bottomBorder: 0
+    leftBorder: 0
+  - tilePosition: {x: 1, y: 1}
+    blank: 1
+    topBorder: 0
+    rightBorder: 0
+    bottomBorder: 0
+    leftBorder: 0
+  - tilePosition: {x: 2, y: 1}
+    blank: 1
+    topBorder: 0
+    rightBorder: 0
+    bottomBorder: 0
+    leftBorder: 0
+  - tilePosition: {x: 3, y: 1}
+    blank: 1
+    topBorder: 0
+    rightBorder: 0
+    bottomBorder: 0
+    leftBorder: 0
+  - tilePosition: {x: 4, y: 1}
+    blank: 0
+    topBorder: 0
+    rightBorder: 1
+    bottomBorder: 0
+    leftBorder: 1
+  - tilePosition: {x: 0, y: 2}
+    blank: 0
+    topBorder: 1
+    rightBorder: 0
+    bottomBorder: 0
+    leftBorder: 1
+  - tilePosition: {x: 1, y: 2}
+    blank: 0
+    topBorder: 1
+    rightBorder: 0
+    bottomBorder: 1
+    leftBorder: 0
+  - tilePosition: {x: 2, y: 2}
+    blank: 0
+    topBorder: 1
+    rightBorder: 0
+    bottomBorder: 1
+    leftBorder: 0
+  - tilePosition: {x: 3, y: 2}
+    blank: 0
+    topBorder: 1
+    rightBorder: 0
+    bottomBorder: 1
+    leftBorder: 0
+  - tilePosition: {x: 4, y: 2}
+    blank: 0
+    topBorder: 0
+    rightBorder: 1
+    bottomBorder: 1
+    leftBorder: 0
+  - tilePosition: {x: 0, y: 3}
+    blank: 0
+    topBorder: 0
+    rightBorder: 1
+    bottomBorder: 0
+    leftBorder: 1
+  - tilePosition: {x: 1, y: 3}
+    blank: 1
+    topBorder: 0
+    rightBorder: 0
+    bottomBorder: 0
+    leftBorder: 0
+  - tilePosition: {x: 2, y: 3}
+    blank: 1
+    topBorder: 0
+    rightBorder: 0
+    bottomBorder: 0
+    leftBorder: 0
+  - tilePosition: {x: 3, y: 3}
+    blank: 1
+    topBorder: 0
+    rightBorder: 0
+    bottomBorder: 0
+    leftBorder: 0
+  - tilePosition: {x: 4, y: 3}
+    blank: 1
+    topBorder: 0
+    rightBorder: 0
+    bottomBorder: 0
+    leftBorder: 0
+  - tilePosition: {x: 0, y: 4}
+    blank: 0
+    topBorder: 0
+    rightBorder: 0
+    bottomBorder: 1
+    leftBorder: 1
+  - tilePosition: {x: 1, y: 4}
+    blank: 0
+    topBorder: 1
+    rightBorder: 0
+    bottomBorder: 1
+    leftBorder: 0
+  - tilePosition: {x: 2, y: 4}
+    blank: 0
+    topBorder: 1
+    rightBorder: 0
+    bottomBorder: 1
+    leftBorder: 0
+  - tilePosition: {x: 3, y: 4}
+    blank: 0
+    topBorder: 1
+    rightBorder: 0
+    bottomBorder: 1
+    leftBorder: 0
+  - tilePosition: {x: 4, y: 4}
+    blank: 0
+    topBorder: 1
+    rightBorder: 1
+    bottomBorder: 1
+    leftBorder: 0

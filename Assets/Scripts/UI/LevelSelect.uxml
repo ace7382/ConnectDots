@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/GlobalStyles.uss?fileID=7433441132597879392&amp;guid=72ac875abbfffce4288508c5b6f9e712&amp;type=3#GlobalStyles" />
+    <ui:VisualElement name="Page" style="width: 100%; height: auto; max-width: 100%; max-height: none; min-width: 100%; min-height: 100%; align-items: center; justify-content: center; flex-grow: 1; flex-shrink: 0;">
+        <ui:ScrollView name="ScrollView" style="margin-left: 15px; margin-right: 15px; margin-top: 15px; margin-bottom: 15px; width: 90%;" />
+    </ui:VisualElement>
+</ui:UXML>

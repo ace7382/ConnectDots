@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="LevelSelectButton" style="width: 75px; height: 75px; margin-left: 15px; margin-right: 15px; margin-top: 15px; margin-bottom: 15px; border-top-left-radius: 15px; border-bottom-left-radius: 15px; border-top-right-radius: 15px; border-bottom-right-radius: 15px; background-color: rgb(255, 173, 13); justify-content: center; align-items: center;">
+        <ui:VisualElement name="Icon" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); width: 30px; height: 30px; background-image: url(&apos;project://database/Assets/Artwork/star_noBorder.png?fileID=2800000&amp;guid=f540d163eaeb67f42918267b89d1450a&amp;type=3#star_noBorder&apos;); -unity-background-scale-mode: scale-to-fit;" />
+        <ui:Label text="Label" display-tooltip-when-elided="true" name="Number" style="display: none;" />
+    </ui:VisualElement>
+</ui:UXML>

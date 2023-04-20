@@ -146,6 +146,54 @@ public class InputController : MonoBehaviour
         //    }
         //}
 
+        ////THIS ALL WORKS vvv
+        //if (tile.Line == draggingLine)
+        //{
+        //    if (tile.State == TileState.LINE || tile.State == TileState.CORNER)         //Drag over the same line's pieces
+        //        draggingLine.RemoveAfterTile(tile);
+        //    else if (tile.State == TileState.END && draggingLine.ContainsTile(tile))    //Drag over the start point
+        //        draggingLine.ClearTilesAndAdd(tile);
+        //    else                                                                        //Drag over the other end point\
+        //    {
+        //        List<Tile> path = BoardCreator.instance.FindPath(draggingLine.LineHead, tile);
+
+        //        if (path != null)
+        //        {
+
+        //            for (int i = 0; i < path.Count; i++)
+        //            {
+        //                if (path[i] == draggingLine.LineHead)
+        //                    continue;
+
+        //                draggingLine.AddTile(path[i]);
+        //            }
+        //        }
+        //    }
+        //}
+        //else if (tile.Line == null) //This will exclude other lines and their end points
+        //{
+        //    if (draggingLine.LineHead.State == TileState.END && draggingLine.ContainsTwoEndTiles()) //Check to see if you're dragging FROM a completed line
+        //        draggingLine.RemoveAfterTile(draggingLine.PreLineHead);
+
+        //    List<Tile> path = BoardCreator.instance.FindPath(draggingLine.LineHead, tile);
+
+        //    if (path != null)
+        //    {
+
+        //        for (int i = 0; i < path.Count; i++)
+        //        {
+        //            if (path[i] == draggingLine.LineHead)
+        //                continue;
+
+        //            draggingLine.AddTile(path[i]);
+        //        }
+        //    }
+        //}
+        ////^^^
+
+        //TODO: Dragging from a completed line end > off the board > onto the same completed line end will restart the
+        //      line. Probably should just have it do nothing
+
         if (tile.Line == draggingLine)
         {
             if (tile.State == TileState.LINE || tile.State == TileState.CORNER)         //Drag over the same line's pieces
@@ -154,17 +202,25 @@ public class InputController : MonoBehaviour
                 draggingLine.ClearTilesAndAdd(tile);
             else                                                                        //Drag over the other end point\
             {
-                List<Tile> path = BoardCreator.instance.FindPath(draggingLine.LineHead, tile);
+                List<Tile> tempList = new List<Tile>(draggingLine.Tiles);
+                List<Tile> path = BoardCreator.instance.FindPath(draggingLine.FirstTile, tile);
 
                 if (path != null)
                 {
+                    draggingLine.ClearTilesAndAdd(draggingLine.FirstTile);
 
-                    for (int i = 0; i < path.Count; i++)
+                    for (int i = 1; i < path.Count; i++) //First tile will always be the same?
                     {
-                        if (path[i] == draggingLine.LineHead)
-                            continue;
-
                         draggingLine.AddTile(path[i]);
+                    }
+                }
+                else
+                {
+                    draggingLine.ClearTilesAndAdd(draggingLine.FirstTile);
+
+                    for (int i = 1; i < tempList.Count; i++)
+                    {
+                        draggingLine.AddTile(tempList[i]);
                     }
                 }
             }
@@ -174,20 +230,92 @@ public class InputController : MonoBehaviour
             if (draggingLine.LineHead.State == TileState.END && draggingLine.ContainsTwoEndTiles()) //Check to see if you're dragging FROM a completed line
                 draggingLine.RemoveAfterTile(draggingLine.PreLineHead);
 
-            List<Tile> path = BoardCreator.instance.FindPath(draggingLine.LineHead, tile);
+            List<Tile> tempList = new List<Tile>(draggingLine.Tiles);
+            List<Tile> path = BoardCreator.instance.FindPath(draggingLine.FirstTile, tile);
 
             if (path != null)
             {
+                draggingLine.ClearTilesAndAdd(draggingLine.FirstTile);
 
-                for (int i = 0; i < path.Count; i++)
+                for (int i = 1; i < path.Count; i++) //First tile will always be the same?
                 {
-                    if (path[i] == draggingLine.LineHead)
-                        continue;
-
                     draggingLine.AddTile(path[i]);
                 }
             }
+            else
+            {
+                draggingLine.ClearTilesAndAdd(draggingLine.FirstTile);
+
+                for (int i = 1; i < tempList.Count; i++)
+                {
+                    draggingLine.AddTile(tempList[i]);
+                }
+            }
         }
+
+
+        //if (tile.Line == draggingLine)
+        //{
+        //    if (tile.State == TileState.LINE || tile.State == TileState.CORNER)         //Drag over the same line's pieces
+        //        draggingLine.RemoveAfterTile(tile);
+        //    else if (tile.State == TileState.END && draggingLine.ContainsTile(tile))    //Drag over the start point
+        //        draggingLine.ClearTilesAndAdd(tile);
+        //    else                                                                        //Drag over the other end point\
+        //    {
+        //        List<Tile> tempTiles = new List<Tile>(draggingLine.Tiles);
+        //        draggingLine.ClearTilesAndAdd(draggingLine.FirstTile);
+
+        //        List<Tile> path = BoardCreator.instance.FindPath(draggingLine.FirstTile, tile);
+
+        //        if (path != null)
+        //        {
+        //            //draggingLine.ClearTilesAndAdd(draggingLine.FirstTile);
+
+        //            for (int i = 0; i < path.Count; i++)
+        //            {
+        //                if (path[i] == draggingLine.FirstTile)
+        //                    continue;
+
+        //                draggingLine.AddTile(path[i]);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            for (int i = 1; i < tempTiles.Count; i++)
+        //                draggingLine.AddTile(tempTiles[i]);
+        //        }
+        //    }
+        //}
+        //else if (tile.Line == null) //This will exclude other lines and their end points
+        //{
+        //    if (draggingLine.LineHead.State == TileState.END && draggingLine.ContainsTwoEndTiles()) //Check to see if you're dragging FROM a completed line
+        //        draggingLine.RemoveAfterTile(draggingLine.PreLineHead);
+
+        //    List<Tile> tempTiles = new List<Tile>(draggingLine.Tiles);
+        //    draggingLine.ClearTilesAndAdd(draggingLine.FirstTile);
+
+        //    List<Tile> path = BoardCreator.instance.FindPath(draggingLine.FirstTile, tile);
+
+        //    if (path != null)
+        //    {
+        //        //draggingLine.ClearTilesAndAdd(draggingLine.FirstTile);
+
+        //        for (int i = 0; i < path.Count; i++)
+        //        {
+        //            if (path[i] == draggingLine.FirstTile)
+        //                continue;
+
+        //            draggingLine.AddTile(path[i]);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        for (int i = 1; i < tempTiles.Count; i++) //Starts at 1 so the first tile isn't added
+        //        {
+        //            draggingLine.AddTile(tempTiles[i]);
+        //        }
+        //    }
+        //}
     }
 
     private void TileDraggedOutHandler(PointerOutEvent evt)

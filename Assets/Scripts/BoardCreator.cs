@@ -245,29 +245,34 @@ public class BoardCreator : MonoBehaviour
 
         if (currentTile.X - 1 >= 0)
             if (currentTile.CanEnterTile(tiles[currentTile.Y][currentTile.X - 1]))
-            //if (tiles[currentTile.Y][currentTile.X - 1].State == TileState.EMPTY)
                 neighbors.Add(tiles[currentTile.Y][currentTile.X - 1]);
 
         if (currentTile.X + 1 < level.Cols)
             if (currentTile.CanEnterTile(tiles[currentTile.Y][currentTile.X + 1]))
-            //if(tiles[currentTile.Y][currentTile.X + 1].State == TileState.EMPTY)
                 neighbors.Add(tiles[currentTile.Y][currentTile.X + 1]);
 
         if (currentTile.Y - 1 >= 0)
             if (currentTile.CanEnterTile(tiles[currentTile.Y - 1][currentTile.X]))
-            //if(tiles[currentTile.Y - 1][currentTile.X].State == TileState.EMPTY)
                 neighbors.Add(tiles[currentTile.Y - 1][currentTile.X]);
 
         if (currentTile.Y + 1 < level.Rows)
             if (currentTile.CanEnterTile(tiles[currentTile.Y + 1][currentTile.X]))
-            //if(tiles[currentTile.Y + 1][currentTile.X].State == TileState.EMPTY)
                 neighbors.Add(tiles[currentTile.Y + 1][currentTile.X]);
+
+        string deb = "Tile " + currentTile.Position + "'s neighbors: ";
+        for (int i = 0; i < neighbors.Count; i++)
+        {
+            deb += "\n" + "Neighbor " + i.ToString() + ": " + neighbors[i].Position;
+        }
+        Debug.Log(deb);
 
         return neighbors;
     }
 
     public List<Tile> FindPath(Tile startTile, Tile endTile)
     {
+        Debug.Log("Finding Path From: " + startTile.Position + " to: " + endTile.Position);
+
         openList = new List<Tile>() { startTile };
         closedList = new List<Tile>();
 
@@ -275,7 +280,11 @@ public class BoardCreator : MonoBehaviour
         {
             for (int j = 0; j < tiles[i].Count; j++)
             {
-                tiles[i][j].gCost = int.MaxValue;
+                if (tiles[i][j].Line == startTile.Line)
+                    tiles[i][j].gCost = 0;
+                else
+                    tiles[i][j].gCost = 5000;//int.MaxValue;
+
                 tiles[i][j].CalcFCost();
                 tiles[i][j].cameFromTile = null;
             }
@@ -285,10 +294,7 @@ public class BoardCreator : MonoBehaviour
         startTile.hCost = CalculateDistance(startTile, endTile);
         startTile.CalcFCost();
 
-        int TODO_REMOVE = 0;
-        int TODO_MAXCYCLES = level.Rows * level.Cols + 1;
-
-        while (openList.Count > 0 && TODO_REMOVE < TODO_MAXCYCLES)
+        while (openList.Count > 0)
         {
             Tile currentTile = GetLowestFCostTile(openList);
 
@@ -307,21 +313,19 @@ public class BoardCreator : MonoBehaviour
                 if (closedList.Contains(temp[i]))
                     continue;
 
-                int tempGCost = currentTile.gCost + CalculateDistance(currentTile, temp[i]);
+                //int tempGCost = currentTile.gCost + CalculateDistance(currentTile, temp[i]);
 
-                if (tempGCost < temp[i].gCost)
-                {
+                //if (tempGCost < temp[i].gCost)
+                //{
                     temp[i].cameFromTile = currentTile;
-                    temp[i].gCost = tempGCost;
+                    //temp[i].gCost = tempGCost;
                     temp[i].hCost = CalculateDistance(temp[i], endTile);
                     temp[i].CalcFCost();
 
                     if (!openList.Contains(temp[i]))
                         openList.Add(temp[i]);
-                }
+                //}
             }
-
-            TODO_REMOVE++;
         }
 
         return null;

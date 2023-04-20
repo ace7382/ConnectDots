@@ -9,8 +9,10 @@ public class Line
     [SerializeField] public Color        color;
     [SerializeField] public bool         isCompleted;
 
+    public List<Tile> Tiles { get { return lineTiles; } }
     public Tile LineHead { get { return GetLeadTile(); } }
     public Tile PreLineHead { get { return GetPreLeadTile(); } }
+    public Tile FirstTile { get { return GetFirstTile(); } }
 
     public Line(Color color)
     {
@@ -103,6 +105,11 @@ public class Line
         return lineTiles[lineTiles.Count - 2];
     }
 
+    private Tile GetFirstTile()
+    {
+        return lineTiles[0];
+    }
+
     public void RemoveAfterTile(Tile removeAfterThisTile)
     {
         int indexOfTile = lineTiles.IndexOf(removeAfterThisTile);
@@ -115,5 +122,11 @@ public class Line
 
         //There will always be 2 tiles if this function is called
         lineTiles[indexOfTile].SetState(this, lineTiles[indexOfTile - 1], null);
+    }
+
+    public void RemoveHeadTile()
+    {
+        LineHead.ClearLine();
+        lineTiles.Remove(LineHead);
     }
 }

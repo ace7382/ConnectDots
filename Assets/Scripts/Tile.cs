@@ -92,48 +92,10 @@ public class Tile
         }
     }
 
-    public bool CanLeaveEndTile(Tile tileToLeaveTo)
-    {
-        if (State != TileState.END)
-            return true;
-
-        switch (endPieceRotation)
-        {
-            case EndTileRotation.LEFT:
-                return tileToLeaveTo.X == X - 1 && tileToLeaveTo.Y == Y;
-            case EndTileRotation.RIGHT:
-                return tileToLeaveTo.X == X + 1 && tileToLeaveTo.Y == Y;
-            case EndTileRotation.TOP:
-                return tileToLeaveTo.X == X && tileToLeaveTo.Y == Y - 1;
-            case EndTileRotation.BOTTOM:
-                return tileToLeaveTo.X == X && tileToLeaveTo.Y == Y + 1;
-        }
-
-        return false;
-    }
-
-    public bool CanEnterEndTile(Tile tileToEnter)
-    {
-        if (State != TileState.END)
-            return true;
-
-        switch (endPieceRotation)
-        {
-            case EndTileRotation.LEFT:
-                return tileToEnter.X == X - 1 && tileToEnter.Y == Y;
-            case EndTileRotation.RIGHT:
-                return tileToEnter.X == X + 1 && tileToEnter.Y == Y;
-            case EndTileRotation.TOP:
-                return tileToEnter.X == X && tileToEnter.Y == Y - 1;
-            case EndTileRotation.BOTTOM:
-                return tileToEnter.X == X && tileToEnter.Y == Y + 1;
-        }
-
-        return false;
-    }
-
     public bool CanEnterTile(Tile tileToEnter)
     {
+        Debug.Log("Can " + this + " enter " + tileToEnter);
+
         if (tileToEnter.State == TileState.BLANK)
             return false;
         else if (State == TileState.END) //If this tile is an end piece, check that it can be exited
@@ -174,6 +136,17 @@ public class Tile
                 return !(bottom || tileToEnter.top);
             else if (tileToEnter.X == X && tileToEnter.Y + 1 == Y)
                 return !(top || tileToEnter.bottom);
+        }
+        else if ((tileToEnter.State == TileState.HEAD || tileToEnter.State == TileState.LINE || tileToEnter.State == TileState.CORNER) 
+                && Line != null && Line.ContainsTile(tileToEnter))
+        {
+            int indexOfTileToEnter = Line.Tiles.FindIndex(x => x == tileToEnter);
+
+            if (indexOfTileToEnter < 1)
+                return false;
+
+            if (Line.Tiles[indexOfTileToEnter - 1] == this)
+                return true;
         }
 
         return false;
@@ -260,7 +233,6 @@ public class Tile
 
         if (next == null)
         {
-            //State = TileState.LINE;
             State = TileState.HEAD;
 
             if (previous == null)
@@ -323,13 +295,11 @@ public class Tile
 
     public void ClearLine()
     {
-        if (Line == null || State == TileState.END)
+        if (Line == null || State == TileState.END || State == TileState.BLANK)
             return;
 
-        //line = null;
         Line = null;
         State = TileState.EMPTY;
-        //SetColor(Color.white);
     }
 
     public void SetColor(Color c)
@@ -348,5 +318,10 @@ public class Tile
         if (!right)     rightBorderVE.style.Hide();
         if (!bottom)    bottomBorderVE.style.Hide();
         if (!left)      leftBorderVE.style.Hide();
+    }
+
+    public override string ToString()
+    {
+        return string.Format("\nTile: [{0},{1}] STATE: {2} LINE: {3}\n", X, Y, State, Line == null ? "null" : Line);
     }
 }

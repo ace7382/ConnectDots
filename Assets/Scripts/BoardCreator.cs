@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -32,6 +33,7 @@ public class BoardCreator : MonoBehaviour
     #region Private Variables
 
     private VisualElement screen;
+    private VisualElement board;
     [SerializeField] private List<Line> lines; //TODO: remove serialization. It's jsut for debugging
     private List<List<Tile>> tiles;
 
@@ -43,6 +45,7 @@ public class BoardCreator : MonoBehaviour
     public float SoftBorderSize { get { return softBorderSize; } }
     public Color HardBorderColor { get { return hardBorderColor; } }
     public Color SoftBorderColor { get { return softBorderColor; } }
+    public Level CurrentLevel { get { return level; } }
 
     #endregion
 
@@ -106,9 +109,9 @@ public class BoardCreator : MonoBehaviour
             {
                 InputController.instance.UnregisterTileInteractionCallbacks(lines[i].lineTiles[t].Container);
             }
-
-            StartCoroutine(HighlightLine(lines[i]));
         }
+
+        StartCoroutine(LevelCompleteAnimation());
 
         return true;
     }
@@ -120,7 +123,7 @@ public class BoardCreator : MonoBehaviour
     private void CreateBoard()
     {
         screen                      = uiDoc.rootVisualElement.Q<VisualElement>("Screen");
-        VisualElement board         = screen.Q<VisualElement>("Board");
+        board                       = screen.Q<VisualElement>("Board");
 
         board.style.width           = 100 * level.Cols;
         board.style.maxWidth        = board.style.width;
@@ -169,6 +172,12 @@ public class BoardCreator : MonoBehaviour
             }
         }
 
+        //TODO: maybe reevaluate borders. Can't round the corners with current process
+        //tiles[0][0].Container.style.SetBorderRadius(15f, true, false, false, false);
+        //tiles[0][level.Rows - 1].Container.style.SetBorderRadius(15f, false, false, true, false);
+        //tiles[level.Cols - 1][0].Container.style.SetBorderRadius(15f, false, true, false, false);
+        //tiles[level.Cols - 1][level.Rows - 1].Container.style.SetBorderRadius(15f, false, false, false);
+
         lines = new List<Line>();
 
         for (int i = 0; i < level.Lines.Count; i++)
@@ -183,17 +192,40 @@ public class BoardCreator : MonoBehaviour
 
     #endregion
 
-    public IEnumerator HighlightLine(Line l)
+    public IEnumerator LevelCompleteAnimation()
     {
-        Color bgColor = new Color(l.color.r, l.color.g, l.color.b, l.color.a / 2f);
-        WaitForSeconds w = new WaitForSeconds(.07f);
+        int diags = level.Rows + level.Cols - 1;
+        float animLength = 1.05f;
+        float spinDur = animLength / (float)(diags / 2);
+        WaitForSeconds waitDur = new WaitForSeconds((animLength / (float)diags));
 
-        for (int i = 0; i < l.lineTiles.Count; i++)
+        Tween scaleUp = DOTween.To(() => board.transform.scale,
+            x => board.transform.scale = x, new Vector3(1.2f, 1.2f, 1f), animLength/2f)
+            .SetEase(Ease.InOutQuart).SetAutoKill(false);
+
+        //Algo from https://www.geeksforgeeks.org/zigzag-or-diagonal-traversal-of-matrix/#
+        for (int i = 1; i <= diags; i++)
         {
-            l.lineTiles[i].PuzzleComplete();
+            int startCol = Mathf.Max(0, i - level.Rows);
+            int count = Mathf.Min(i, Mathf.Min(level.Cols - startCol), level.Rows);
 
-            yield return w;
+            for (int j = 0; j < count; j++)
+            {
+                tiles[Mathf.Min(level.Rows, i) - j - 1][startCol + j].PuzzleComplete(spinDur);
+            }
+
+            if (i != diags) yield return waitDur;
         }
+
+        yield return scaleUp.Play().WaitForCompletion();
+
+        Tween s = DOTween.To(() => board.transform.scale,
+                    x => board.transform.scale = x, new Vector3(1f, 1f, 1f), animLength/2f)
+                    .SetEase(Ease.OutBounce);
+
+        yield return s.Play().WaitForCompletion();
+
+        PageManager.instance.StartCoroutine(PageManager.instance.AddPageToStack<EndOfLevelPopup>());
     }
 
     private List<Tile> openList;

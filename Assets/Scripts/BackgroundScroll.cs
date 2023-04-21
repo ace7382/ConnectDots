@@ -36,7 +36,7 @@ public class BackgroundScroll : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        SetScale();
+        //SetScale(); TODO: This is probably not needed in Update. It should only change if the application is resized i think?
 
         offset += scroll * Time.deltaTime;
         _image.uvRect = new Rect(offset, repeatCount);

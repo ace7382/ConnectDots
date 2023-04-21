@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -94,7 +95,7 @@ public class Tile
 
     public bool CanEnterTile(Tile tileToEnter)
     {
-        Debug.Log("Can " + this + " enter " + tileToEnter);
+        //Debug.Log("Can " + this + " enter " + tileToEnter);
 
         if (tileToEnter.State == TileState.BLANK)
             return false;
@@ -307,17 +308,27 @@ public class Tile
         Image.style.unityBackgroundImageTintColor = c;
     }
 
-    public void PuzzleComplete()
+    public void PuzzleComplete(float duration)
     {
-        Color bgColor = new Color(Line.color.r, Line.color.g, Line.color.b, Line.color.a / 2f);
+        if (line != null)
+        {
+            Color bgColor = new Color(Line.color.r, Line.color.g, Line.color.b, Line.color.a / 2f);
 
-        Container.style.backgroundColor = Color.white;
-        image.style.backgroundColor = bgColor;
+            Container.style.backgroundColor = Color.white;
+            image.style.backgroundColor = bgColor;
+        }
 
         if (!top)       topBorderVE.style.Hide();
         if (!right)     rightBorderVE.style.Hide();
         if (!bottom)    bottomBorderVE.style.Hide();
         if (!left)      leftBorderVE.style.Hide();
+
+        Tween shake = DOTween.To(
+                        () => container.worldTransform.rotation.eulerAngles,
+                        x => container.transform.rotation = Quaternion.Euler(x),
+                        new Vector3(0f, 0f, 360f), duration).SetEase(Ease.InOutBounce).SetLoops(1);
+        
+        shake.Play();
     }
 
     public override string ToString()

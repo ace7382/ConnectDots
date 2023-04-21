@@ -16,8 +16,17 @@ public abstract class Page
 
     #region Abstract Functions
 
+    //Function Execution Order is:
+    //1) Show Page
+    //2) Animate In
+    //3) Animate Out
+    //4) Hide Page
+
     public abstract void ShowPage(object[] args);
     public abstract void HidePage();
+
+    public abstract IEnumerator AnimateOut();
+    public abstract IEnumerator AnimateIn();
 
     #endregion
 

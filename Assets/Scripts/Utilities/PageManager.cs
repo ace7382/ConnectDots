@@ -19,7 +19,7 @@ public class PageManager : MonoBehaviour
 
     [Space]
 
-    [SerializeField] private List<VisualTreeAsset>  templates; //TODO: Move this to UIManager?
+    [SerializeField] private List<VisualTreeAsset>  templates;
 
     #endregion
 
@@ -47,24 +47,33 @@ public class PageManager : MonoBehaviour
 
     private void Start()
     {
-        OpenPageOnAnEmptyStack<MainMenu>();
+        StartCoroutine(OpenPageOnAnEmptyStack<MainMenu>());
     }
 
     #endregion
 
     #region Public Functions
 
-    public void CloseTopPage()
+    public IEnumerator CloseTopPage(bool animateOut = true, bool executeHideCall = true)
     {
-        (stack.Cast<DictionaryEntry>().ElementAt(stack.Count - 1).Key as Page).HidePage();
+        if (animateOut)
+            yield return (stack.Cast<DictionaryEntry>().ElementAt(stack.Count - 1).Key as Page).AnimateOut();
+
+        if (executeHideCall)
+            (stack.Cast<DictionaryEntry>().ElementAt(stack.Count - 1).Key as Page).HidePage();
+
         GOPages.Push(stack[stack.Count - 1] as GameObject);
         stack.RemoveAt(stack.Count - 1);
     }
 
-    public void OpenPageOnAnEmptyStack<T>(object[] arfs = null, bool executeHideCalls = true) where T : Page, new()
+    public IEnumerator OpenPageOnAnEmptyStack<T>(object[] arfs = null, bool animateOut = true
+        , bool executeHideCalls = true, bool animateIn = true, bool executeShowCall = true) where T : Page, new()
     {
         for (int i = stack.Count - 1; i >= 0; i--)
         {
+            if (animateOut)
+                yield return (stack.Cast<DictionaryEntry>().ElementAt(i).Key as Page).AnimateOut();
+
             if (executeHideCalls)
                 (stack.Cast<DictionaryEntry>().ElementAt(i).Key as Page).HidePage();
 
@@ -87,11 +96,13 @@ public class PageManager : MonoBehaviour
         stack.Add(pageToAdd, page);
 
         page.SetActive(true);
-        pageToAdd.ShowPage(arfs);
         pageToAdd.SetSortOrder(stack.Count);
+
+        if (executeShowCall) pageToAdd.ShowPage(arfs);
+        if (animateIn) yield return pageToAdd.AnimateIn();
     }
 
-    public void AddPageToStack<T>(object[] args = null) where T : Page, new()
+    public IEnumerator AddPageToStack<T>(object[] args = null, bool animateIn = true, bool executeShowCall = true) where T : Page, new()
     {
         GameObject page             = GOPages.Pop();
         page.transform.localScale   = Vector3.one;
@@ -106,8 +117,10 @@ public class PageManager : MonoBehaviour
         stack.Add(pageToAdd, page);
 
         page.SetActive(true);
-        pageToAdd.ShowPage(args);
         pageToAdd.SetSortOrder(stack.Count);
+
+        if (executeShowCall) pageToAdd.ShowPage(args);
+        if (animateIn) yield return pageToAdd.AnimateIn();
     }
 
     #endregion
@@ -116,7 +129,7 @@ public class PageManager : MonoBehaviour
 
     private void MaxPageLimitReached()
     {
-        //TODO: Add a cap to the number of pagees that can be added to the stack
+        //TODO: Add a cap to the number of pages that can be added to the stack
     }
 
     #endregion

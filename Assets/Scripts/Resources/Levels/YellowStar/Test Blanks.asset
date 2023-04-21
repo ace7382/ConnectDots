@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a89a4ad53e408f748947467a89173cc8, type: 3}
   m_Name: Test Blanks
   m_EditorClassIdentifier: 
+  levelCategory: {fileID: 11400000, guid: 935d5c80aa378944a8b6e55adb387757, type: 2}
   levelNum: 01
   rows: 5
   cols: 5

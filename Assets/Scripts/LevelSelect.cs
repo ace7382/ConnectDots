@@ -49,7 +49,7 @@ public class LevelSelect : Page
                     object[] data = new object[1];
                     data[0] = lev;
 
-                    PageManager.instance.OpenPageOnAnEmptyStack<GamePlayPage>(data);
+                    PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<GamePlayPage>(data));
                 });
 
                 scroll.contentContainer.Add(button);
@@ -62,6 +62,16 @@ public class LevelSelect : Page
     public override void HidePage()
     {
         
+    }
+
+    public override IEnumerator AnimateIn()
+    {
+        return null;
+    }
+
+    public override IEnumerator AnimateOut()
+    {
+        return null;
     }
 
     #endregion

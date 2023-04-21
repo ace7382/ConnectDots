@@ -33,6 +33,7 @@ public class Level : ScriptableObject
 
     #region Inspector Variables
 
+    [SerializeField] private LevelCategory levelCategory;
     [SerializeField] private string levelNum;
     [SerializeField] private int rows;
     [SerializeField] private int cols;
@@ -43,6 +44,7 @@ public class Level : ScriptableObject
 
     #region Public Properties
 
+    public LevelCategory                LevelCategory       { get { return levelCategory; } }
     public string                       LevelNumber         { get { return levelNum; } }
     public int                          Rows                { get { return rows; } }
     public int                          Cols                { get { return cols; } }

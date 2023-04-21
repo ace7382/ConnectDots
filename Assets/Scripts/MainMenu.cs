@@ -25,13 +25,23 @@ public class MainMenu : Page
         playButton.UnregisterCallback<PointerDownEvent>(PlayButtonClicked);
     }
 
+    public override IEnumerator AnimateIn()
+    {
+        return null;
+    }
+
+    public override IEnumerator AnimateOut()
+    {
+        return null;
+    }
+
     #endregion
 
     #region Private Functions
 
     private void PlayButtonClicked(PointerDownEvent evt)
     {
-        PageManager.instance.OpenPageOnAnEmptyStack<CategorySelect>();
+        PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<CategorySelect>());
     }
 
     #endregion

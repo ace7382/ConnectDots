@@ -18,5 +18,15 @@ public class GamePlayPage : Page
         
     }
 
+    public override IEnumerator AnimateIn()
+    {
+        return null;
+    }
+
+    public override IEnumerator AnimateOut()
+    {
+        return null;
+    }
+
     #endregion
 }

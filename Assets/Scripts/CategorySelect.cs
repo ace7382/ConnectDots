@@ -42,7 +42,7 @@ public class CategorySelect : Page
                 object[] data   = new object[1];
                 data[0]         = lCat;
 
-                PageManager.instance.OpenPageOnAnEmptyStack<LevelSelect>(data);
+                PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<LevelSelect>(data));
             });
 
             scroll.contentContainer.Add(button);
@@ -52,6 +52,16 @@ public class CategorySelect : Page
     public override void HidePage()
     {
         
+    }
+
+    public override IEnumerator AnimateIn()
+    {
+        return null;
+    }
+
+    public override IEnumerator AnimateOut()
+    {
+        return null;
     }
 
     #endregion

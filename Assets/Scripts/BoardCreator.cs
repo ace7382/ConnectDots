@@ -259,20 +259,11 @@ public class BoardCreator : MonoBehaviour
             if (currentTile.CanEnterTile(tiles[currentTile.Y + 1][currentTile.X]))
                 neighbors.Add(tiles[currentTile.Y + 1][currentTile.X]);
 
-        string deb = "Tile " + currentTile.Position + "'s neighbors: ";
-        for (int i = 0; i < neighbors.Count; i++)
-        {
-            deb += "\n" + "Neighbor " + i.ToString() + ": " + neighbors[i].Position;
-        }
-        Debug.Log(deb);
-
         return neighbors;
     }
 
     public List<Tile> FindPath(Tile startTile, Tile endTile)
     {
-        Debug.Log("Finding Path From: " + startTile.Position + " to: " + endTile.Position);
-
         openList = new List<Tile>() { startTile };
         closedList = new List<Tile>();
 

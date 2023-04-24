@@ -13,6 +13,7 @@ public class Line
     public Tile LineHead { get { return GetLeadTile(); } }
     public Tile PreLineHead { get { return GetPreLeadTile(); } }
     public Tile FirstTile { get { return GetFirstTile(); } }
+    public bool LineCancelled { get { return lineTiles.FindIndex(x => x.LineCancelled) >= 0; } }
 
     public Line(Color color)
     {

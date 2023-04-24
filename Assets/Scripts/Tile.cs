@@ -51,11 +51,19 @@ public class Tile
     [SerializeField] private TileState          state;
     [SerializeField] private EndTileRotation    endPieceRotation;
 
+    private int multiplier = 1;
+    private bool lineCancel = false;
+    private Color[] restrictedColors;
+
+    #region Public Properties
+
     public Vector2          Position            { get { return position; } }
     public int              X                   { get { return position.x; } }
     public int              Y                   { get { return position.y; } }
     public VisualElement    Container           { get { return container; } }
     public VisualElement    Image               { get { return image; } }
+    public int              Multiplier          { get { return multiplier; } }
+    public bool             LineCancelled       { get { return lineCancel; } }
     
     public Line             Line            
     { 
@@ -93,65 +101,9 @@ public class Tile
         }
     }
 
-    public bool CanEnterTile(Tile tileToEnter)
-    {
-        //Debug.Log("Can " + this + " enter " + tileToEnter);
+    #endregion
 
-        if (tileToEnter.State == TileState.BLANK)
-            return false;
-        else if (State == TileState.END) //If this tile is an end piece, check that it can be exited
-        {
-            switch (endPieceRotation)
-            {
-                case EndTileRotation.LEFT:
-                    return tileToEnter.X == X - 1 && tileToEnter.Y == Y;
-                case EndTileRotation.RIGHT:
-                    return tileToEnter.X == X + 1 && tileToEnter.Y == Y;
-                case EndTileRotation.TOP:
-                    return tileToEnter.X == X && tileToEnter.Y == Y - 1;
-                case EndTileRotation.BOTTOM:
-                    return tileToEnter.X == X && tileToEnter.Y == Y + 1;
-            }
-        }
-        else if (tileToEnter.State == TileState.END) //If entering an end piece, check that the entrance in the correct direction
-        {
-            switch (tileToEnter.endPieceRotation)
-            {
-                case EndTileRotation.LEFT:
-                    return tileToEnter.X == X + 1 && tileToEnter.Y == Y;
-                case EndTileRotation.RIGHT:
-                    return tileToEnter.X == X - 1 && tileToEnter.Y == Y;
-                case EndTileRotation.TOP:
-                    return tileToEnter.X == X && tileToEnter.Y == Y + 1;
-                case EndTileRotation.BOTTOM:
-                    return tileToEnter.X == X && tileToEnter.Y == Y - 1;
-            }
-        }
-        else if (tileToEnter.State == TileState.EMPTY)
-        {
-            if (tileToEnter.X == X + 1 && tileToEnter.Y == Y) //Moving into tile to the right
-                return !(right || tileToEnter.left);
-            else if (tileToEnter.X == X - 1 && tileToEnter.Y == Y) //left
-                return !(left || tileToEnter.right);
-            else if (tileToEnter.X == X && tileToEnter.Y - 1 == Y) //bottom
-                return !(bottom || tileToEnter.top);
-            else if (tileToEnter.X == X && tileToEnter.Y + 1 == Y)
-                return !(top || tileToEnter.bottom);
-        }
-        else if ((tileToEnter.State == TileState.HEAD || tileToEnter.State == TileState.LINE || tileToEnter.State == TileState.CORNER) 
-                && Line != null && Line.ContainsTile(tileToEnter))
-        {
-            int indexOfTileToEnter = Line.Tiles.FindIndex(x => x == tileToEnter);
-
-            if (indexOfTileToEnter < 1)
-                return false;
-
-            if (Line.Tiles[indexOfTileToEnter - 1] == this)
-                return true;
-        }
-
-        return false;
-    }
+    #region Constructor
 
     public Tile(Vector2Int pos, VisualElement visualElement, bool blank = false,
                 bool top = false, bool right = false, bool bottom = false, bool left = false)
@@ -198,7 +150,133 @@ public class Tile
             State = TileState.BLANK;
         }
 
-        position                    = pos;    
+        position                    = pos; 
+    }
+
+    #endregion
+
+    #region Public Functions
+
+    public bool CanExitEndPiece(Tile tileToEnter)
+    {
+        switch (endPieceRotation)
+        {
+            case EndTileRotation.LEFT:
+                return tileToEnter.X == X - 1 && tileToEnter.Y == Y;
+            case EndTileRotation.RIGHT:
+                return tileToEnter.X == X + 1 && tileToEnter.Y == Y;
+            case EndTileRotation.TOP:
+                return tileToEnter.X == X && tileToEnter.Y == Y - 1;
+            case EndTileRotation.BOTTOM:
+                return tileToEnter.X == X && tileToEnter.Y == Y + 1;
+        }
+
+        return false;
+    }
+
+    public bool CanEnterTile(Tile tileToEnter, Color potentialColor)
+    {
+        //Debug.Log("Can " + this + " enter " + tileToEnter);
+
+        //Debug.Log(string.Format("{0} >>> {1}",
+        //    "[" + this.X + ", " + this.Y + "]",
+        //    "[" + tileToEnter.X + ", " + tileToEnter.Y + "]"));
+
+        if (tileToEnter.State == TileState.BLANK)
+            return false;
+
+        if (tileToEnter.restrictedColors != null)
+            if (tileToEnter.restrictedColors[0] != potentialColor && tileToEnter.restrictedColors[1] != potentialColor)
+                    return false;
+
+        if (State == TileState.END) //If this tile is an end piece, check that it can be exited
+        {
+            if (!CanExitEndPiece(tileToEnter))
+                return false;
+        }
+
+        if (tileToEnter.State == TileState.END) //If entering an end piece, check that the entrance in the correct direction
+        {
+            switch (tileToEnter.endPieceRotation)
+            {
+                case EndTileRotation.LEFT:
+                    return tileToEnter.X == X + 1 && tileToEnter.Y == Y;
+                case EndTileRotation.RIGHT:
+                    return tileToEnter.X == X - 1 && tileToEnter.Y == Y;
+                case EndTileRotation.TOP:
+                    return tileToEnter.X == X && tileToEnter.Y == Y + 1;
+                case EndTileRotation.BOTTOM:
+                    return tileToEnter.X == X && tileToEnter.Y == Y - 1;
+            }
+        }
+        else if (tileToEnter.State == TileState.EMPTY)
+        {
+            if (tileToEnter.X == X + 1 && tileToEnter.Y == Y) //Moving into tile to the right
+                return !(right || tileToEnter.left);
+            else if (tileToEnter.X == X - 1 && tileToEnter.Y == Y) //left
+                return !(left || tileToEnter.right);
+            else if (tileToEnter.X == X && tileToEnter.Y - 1 == Y) //bottom
+                return !(bottom || tileToEnter.top);
+            else if (tileToEnter.X == X && tileToEnter.Y + 1 == Y)
+                return !(top || tileToEnter.bottom);
+        }
+        else if ((tileToEnter.State == TileState.HEAD || tileToEnter.State == TileState.LINE || tileToEnter.State == TileState.CORNER) 
+                && Line != null && Line.ContainsTile(tileToEnter))
+        {
+            int indexOfTileToEnter = Line.Tiles.FindIndex(x => x == tileToEnter);
+
+            if (indexOfTileToEnter < 1)
+                return false;
+
+            if (Line.Tiles[indexOfTileToEnter - 1] == this)
+                return true;
+        }
+
+        return false;
+    }
+
+    public void SetMultiplier(int mult)
+    {
+        multiplier = mult;
+
+        Label lab = container.Q<Label>("Multiplier");
+        lab.text = "x" + multiplier.ToString();
+        lab.style.Show();
+    }
+
+    public void SetLineCancel()
+    {
+        lineCancel = true;
+        container.Q<Label>("Multiplier").Show(false); //Hide the multiplier incase the tile is marked canceled at the end of the level
+
+        for (int i = 1; i <= 4; i++)
+        {
+            Label lab = container.Q<Label>("LineCancel" + i.ToString());
+            lab.Show();
+        }
+    }
+
+    public void SetRestrictedColors(Color color0, Color color1)
+    {
+        restrictedColors = new Color[2];
+
+        restrictedColors[0] = color0;
+        restrictedColors[1] = color1;
+
+        Color[] pixels = UIManager.instance.RestrictedTile.GetPixels();
+
+        for (int i = 0; i < pixels.Length; i++)
+            if (pixels[i].a == 1f)
+                pixels[i] = restrictedColors[0];
+            else
+                pixels[i] = restrictedColors[1];
+
+        Texture2D final = new Texture2D(UIManager.instance.RestrictedTile.width, UIManager.instance.RestrictedTile.height);
+        final.SetPixels(pixels);
+        final.Apply();
+
+        Container.style.backgroundImage = final;
+        Container.style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, .5f);
     }
 
     public void SetAsStartEnd(Line l, EndTileRotation rotation)
@@ -312,10 +390,15 @@ public class Tile
     {
         if (line != null)
         {
-            Color bgColor = new Color(Line.color.r, Line.color.g, Line.color.b, Line.color.a / 2f);
+            if (line.LineCancelled)
+                SetLineCancel();
+            else
+            {
+                Color bgColor = new Color(Line.color.r, Line.color.g, Line.color.b, Line.color.a / 2f);
 
-            Container.style.backgroundColor = Color.white;
-            image.style.backgroundColor = bgColor;
+                Container.style.backgroundColor = Color.white;
+                image.style.backgroundColor = bgColor;
+            }
         }
 
         if (!top)       topBorderVE.style.Hide();
@@ -330,6 +413,8 @@ public class Tile
         
         shake.Play();
     }
+
+    #endregion
 
     public override string ToString()
     {

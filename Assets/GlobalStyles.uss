@@ -7,4 +7,19 @@
     min-height: 100px;
     flex-shrink: 0;
     background-color: rgb(255, 255, 255);
+    opacity: 1;
+}
+
+.HeaderLabel {
+    -unity-font: url('project://database/Assets/Artwork/Kenney%20Bold.ttf?fileID=12800000&guid=e0c621fdd32557943b6535e37b858c1d&type=3#Kenney Bold');
+    -unity-font-definition: initial;
+    font-size: 40px;
+    -unity-text-align: middle-center;
+    -unity-font-style: bold;
+}
+
+.NormalLabel {
+    -unity-font: url('project://database/Assets/Artwork/Kenney%20Bold.ttf?fileID=12800000&guid=e0c621fdd32557943b6535e37b858c1d&type=3#Kenney Bold');
+    -unity-font-definition: initial;
+    font-size: 25px;
 }

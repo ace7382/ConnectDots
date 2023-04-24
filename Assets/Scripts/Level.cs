@@ -27,6 +27,10 @@ public class Level : ScriptableObject
         public bool             rightBorder;
         public bool             bottomBorder;
         public bool             leftBorder;
+        public int              multiplier;
+        public bool             lineCancel;
+        public Color            restrictedColor1 = Color.white;
+        public Color            restrictedColor2 = Color.white;
     }
 
     #endregion

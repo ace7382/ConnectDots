@@ -20,6 +20,10 @@ public class EndOfLevelPopup : Page
 
     public override void ShowPage(object[] args)
     {
+        //args[0]   -   Dictionary<Color, int>  -   The coins awarded from the level
+
+        Dictionary<Color, int> coinsWon = (Dictionary<Color, int>)args[0];
+
         homeButton = uiDoc.rootVisualElement.Q<VisualElement>("HomeButton");
         replayButton = uiDoc.rootVisualElement.Q<VisualElement>("ReplayButton");
         nextLevelButton = uiDoc.rootVisualElement.Q<VisualElement>("NextLevelButton");
@@ -36,16 +40,18 @@ public class EndOfLevelPopup : Page
         else
             nextLevel = levels[levelIndex + 1];
 
+        foreach (KeyValuePair<Color, int> coins in coinsWon)
+        {
+            CurrencyManager.instance.AddCurrency(coins.Key, coins.Value);
+        }
+
         homeButton.RegisterCallback<PointerDownEvent>(GoHome);
         replayButton.RegisterCallback<PointerDownEvent>((evt) => LoadLevel(BoardCreator.instance.CurrentLevel, evt));
         nextLevelButton.RegisterCallback<PointerDownEvent>((evt) => LoadLevel(nextLevel, evt));
-
-        //PageManager.instance.StartCoroutine(AnimateIn());
     }
 
     public override void HidePage()
     {
-        uiDoc.rootVisualElement.Q<VisualElement>("Page").style.translate = new StyleTranslate(new Translate(new Length(100f, LengthUnit.Percent), new Length(100f, LengthUnit.Percent)));
         homeButton.UnregisterCallback<PointerDownEvent>(GoHome);
         replayButton.UnregisterCallback<PointerDownEvent>((evt) => LoadLevel(BoardCreator.instance.CurrentLevel, evt));
         nextLevelButton.UnregisterCallback<PointerDownEvent>((evt) => LoadLevel(nextLevel, evt));
@@ -60,12 +66,19 @@ public class EndOfLevelPopup : Page
                                 new Vector3(0f, 0f, page.transform.position.z), .75f)
                                 .SetEase(Ease.OutQuart);
 
-        yield return flyIn;
+        yield return flyIn.WaitForCompletion();
     }
 
     public override IEnumerator AnimateOut()
     {
-        return null;
+        VisualElement page = uiDoc.rootVisualElement.Q<VisualElement>("Page");
+        
+        Tween flyOut = DOTween.To(() => page.transform.position,
+                                x => page.transform.position = x,
+                                new Vector3(0f, Screen.height, page.transform.position.z), .45f)
+                                .SetEase(Ease.OutQuart);
+
+        yield return flyOut.WaitForCompletion();
     }
 
     #endregion

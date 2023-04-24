@@ -20,12 +20,12 @@ public class GamePlayPage : Page
 
     public override IEnumerator AnimateIn()
     {
-        return null;
+        yield return BoardCreator.instance.AnimateBoardIn();
     }
 
     public override IEnumerator AnimateOut()
     {
-        return null;
+        yield return BoardCreator.instance.AnimateBoardOut();
     }
 
     #endregion

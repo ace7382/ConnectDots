@@ -15,12 +15,14 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] private VisualTreeAsset levelSelectButton;
     [SerializeField] private BackgroundScroll scrollingBG;
+    [SerializeField] private Texture2D restrictedTileTexture;
 
     #endregion
 
     #region Public Properties
 
     public VisualTreeAsset LevelSelectButton { get { return levelSelectButton; } }
+    public Texture2D RestrictedTile { get { return restrictedTileTexture; } }
 
     #endregion
 

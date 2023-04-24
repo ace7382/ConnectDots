@@ -71,11 +71,13 @@ public class PageManager : MonoBehaviour
     {
         for (int i = stack.Count - 1; i >= 0; i--)
         {
+            Page p = stack.Cast<DictionaryEntry>().ElementAt(i).Key as Page;
+
             if (animateOut)
-                yield return (stack.Cast<DictionaryEntry>().ElementAt(i).Key as Page).AnimateOut();
+                yield return p.AnimateOut();
 
             if (executeHideCalls)
-                (stack.Cast<DictionaryEntry>().ElementAt(i).Key as Page).HidePage();
+                p.HidePage();
 
             GOPages.Push((GameObject)stack[i]);
 

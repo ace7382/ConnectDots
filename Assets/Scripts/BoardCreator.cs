@@ -57,6 +57,8 @@ public class BoardCreator : MonoBehaviour
             instance = this;
         else if (instance != this)
             Destroy(gameObject);
+
+        DOTween.SetTweensCapacity(1000, 100);
     }
 
     #endregion
@@ -138,6 +140,8 @@ public class BoardCreator : MonoBehaviour
 
         List<Vector2Int> startEndPoints = new List<Vector2Int>();
 
+        StyleFloat opacity0 = new StyleFloat(0f);
+
         for (int row = 0; row < level.Rows; row++)
         {
             for (int col = 0; col < level.Cols; col++)
@@ -151,6 +155,16 @@ public class BoardCreator : MonoBehaviour
                 if (rules != null)
                 {
                     t               = new Tile(new Vector2Int(col, row), tile, rules.blank, rules.topBorder, rules.rightBorder, rules.bottomBorder, rules.leftBorder);
+
+                    if (rules.multiplier > 1)
+                        t.SetMultiplier(rules.multiplier);
+                    else if (rules.lineCancel)
+                        t.SetLineCancel();
+
+                    if(rules.restrictedColor1 != Color.white)
+                    {
+                        t.SetRestrictedColors(rules.restrictedColor1, rules.restrictedColor2);
+                    }
                 }
                 else
                 {
@@ -169,6 +183,8 @@ public class BoardCreator : MonoBehaviour
                 tiles[row].Add(t);
 
                 startEndPoints.Add(new Vector2Int(col, row));
+
+                tile.style.opacity = opacity0;
             }
         }
 
@@ -223,10 +239,175 @@ public class BoardCreator : MonoBehaviour
                     x => board.transform.scale = x, new Vector3(1f, 1f, 1f), animLength/2f)
                     .SetEase(Ease.OutBounce);
 
-        yield return s.Play().WaitForCompletion();
+        //yield return s.Play().WaitForCompletion();
 
-        PageManager.instance.StartCoroutine(PageManager.instance.AddPageToStack<EndOfLevelPopup>());
+        s.Play();
+
+        yield return new WaitForSeconds(animLength / 2f * .55f);
+
+        float widthbound = board.worldBound.width / 2f * .7f;
+        float heightbound = board.worldBound.height / 2f * .7f;
+        Vector2 destination = new Vector2(screen.worldBound.width / 2f, screen.worldBound.height / -2f);
+
+        Dictionary<Color, int> coinsWon = new Dictionary<Color, int>();
+
+        for (int i = 0; i < tiles.Count; i++)
+        {
+            for (int j = 0; j < tiles[i].Count; j++)
+            {
+                Tile t = tiles[i][j];
+
+                if (t.State == TileState.BLANK || t.LineCancelled)
+                    continue;
+                
+                for (int mult = 1; mult <= t.Multiplier; mult++)
+                {
+                    VisualElement coin = new VisualElement();
+                    coin.style.SetWidth(25f);
+                    coin.style.SetHeight(25f);
+
+                    float animationTime = Random.Range(.75f, 1f);
+
+                    Color c = Color.white;
+
+                    if (t.Line != null)
+                        c = new Color(t.Line.color.r, t.Line.color.g, t.Line.color.b, 255f);
+
+                    if (coinsWon.ContainsKey(c))
+                        coinsWon[c]++;
+                    else
+                        coinsWon.Add(c, 1);
+
+                    coin.style.backgroundColor = c;
+                    coin.style.SetBorderColor(Color.black);
+                    coin.style.SetBorderWidth(3f);
+                    coin.style.position = Position.Absolute;
+
+                    //VisualElement par = new VisualElement();
+                    //par.style.SetHeight(new StyleLength(new Length(100f, LengthUnit.Percent)));
+                    //par.style.SetWidth(new StyleLength(new Length(100f, LengthUnit.Percent)));
+                    //par.style.position = Position.Absolute;
+
+                    //screen.parent.Add(par);
+                    //par.Add(coin);
+
+                    screen.Add(coin);
+
+                    float delay = Random.Range(0f, animationTime * .9f);
+
+                    coin.transform.position = new Vector3(Random.Range(-widthbound, widthbound),
+                                                Random.Range(-heightbound, heightbound),
+                                                coin.transform.position.z);
+
+                    Tween goToCorner = DOTween.To(() => coin.transform.position,
+                                        x => coin.transform.position = x,
+                                        new Vector3(destination.x, destination.y, coin.transform.position.z),
+                                        animationTime - delay)
+                                        .SetDelay(delay)
+                                        .SetEase(Ease.InBack)
+                                        .Play();
+
+                    Tween scaleDwn = DOTween.To(() => coin.transform.scale,
+                                        x => coin.transform.scale = x,
+                                        new Vector3(0f, 0f, coin.transform.scale.z),
+                                        animationTime - delay)
+                                        .SetDelay(delay)
+                                        .SetEase(Ease.InBack)
+                                        .Play();
+                }
+
+                //float targetX = Random.Range(-widthbound, widthbound);
+                //float targetY = Random.Range(-heightbound, heightbound);
+
+                //Tween initialBurstX = DOTween.To(() => coin.transform.position.x,
+                //                    x => coin.transform.position = new Vector3(x, coin.transform.position.y, coin.transform.position.z),
+                //                    targetX, .5f)
+                //                    .SetEase(Ease.OutBack);
+
+                //Tween initialBurstY = DOTween.To(() => coin.transform.position.y,
+                //                    x => coin.transform.position = new Vector3(coin.transform.position.x, x, coin.transform.position.z),
+                //                    targetY, .5f)
+                //                    .SetEase(Ease.OutBack);
+
+                //Sequence initialBurst = DOTween.Sequence();
+                //initialBurst.Insert(0, initialBurstX);
+                //initialBurst.Insert(0, initialBurstY);
+
+                //initialBurst.Play();
+            }
+        }
+
+        object[] data = new object[1];
+        data[0] = coinsWon;
+
+        PageManager.instance.StartCoroutine(PageManager.instance.AddPageToStack<EndOfLevelPopup>(data));
     }
+
+    public IEnumerator AnimateBoardIn()
+    {
+        List<Tween> intweens = new List<Tween>();
+
+        WaitForSeconds w = new WaitForSeconds(.01f);
+
+        for (int i = 0; i < tiles.Count; i++)
+        {
+            for (int j = 0; j < tiles[i].Count; j++)
+            {
+                Tile t = tiles[i][j];
+
+                Tween fadein = DOTween.To(() => t.Container.style.opacity.value,
+                    x => t.Container.style.opacity = new StyleFloat(x),
+                    1f, .15f);
+
+                intweens.Add(fadein);
+
+                fadein.Play();
+
+                fadein.onKill += () => intweens.Remove(fadein);
+
+                yield return w;
+            }
+        }
+
+        while (intweens.Count > 0)
+            yield return null;
+
+        Debug.Log("Board Animate In Complete");
+    }
+
+    public IEnumerator AnimateBoardOut()
+    {
+        List<Tween> outtweens = new List<Tween>();
+
+        WaitForSeconds w = new WaitForSeconds(.01f);
+
+        for (int i = tiles.Count - 1; i >= 0; i--)
+        {
+            for (int j = tiles[i].Count - 1; j >= 0; j--)
+            {
+                Tile t = tiles[i][j];
+                t.Container.style.opacity = new StyleFloat(1f);
+
+                Tween fadeout = DOTween.To(() => t.Container.style.opacity.value,
+                    x => t.Container.style.opacity = new StyleFloat(x),
+                    0f, .15f);
+
+                outtweens.Add(fadeout);
+
+                fadeout.Play();
+
+                fadeout.onKill += () => outtweens.Remove(fadeout);
+
+                yield return w;
+            }
+        }
+
+        while (outtweens.Count > 0)
+            yield return null;
+    }
+
+
+    #region Pathfinding
 
     private List<Tile> openList;
     private List<Tile> closedList;
@@ -271,24 +452,24 @@ public class BoardCreator : MonoBehaviour
         return path;
     }
 
-    private List<Tile> GetNeighborList(Tile currentTile)
+    private List<Tile> GetNeighborList(Tile currentTile, Color lineColor)
     {
         List<Tile> neighbors = new List<Tile>();
 
         if (currentTile.X - 1 >= 0)
-            if (currentTile.CanEnterTile(tiles[currentTile.Y][currentTile.X - 1]))
+            if (currentTile.CanEnterTile(tiles[currentTile.Y][currentTile.X - 1], lineColor))
                 neighbors.Add(tiles[currentTile.Y][currentTile.X - 1]);
 
         if (currentTile.X + 1 < level.Cols)
-            if (currentTile.CanEnterTile(tiles[currentTile.Y][currentTile.X + 1]))
+            if (currentTile.CanEnterTile(tiles[currentTile.Y][currentTile.X + 1], lineColor))
                 neighbors.Add(tiles[currentTile.Y][currentTile.X + 1]);
 
         if (currentTile.Y - 1 >= 0)
-            if (currentTile.CanEnterTile(tiles[currentTile.Y - 1][currentTile.X]))
+            if (currentTile.CanEnterTile(tiles[currentTile.Y - 1][currentTile.X], lineColor))
                 neighbors.Add(tiles[currentTile.Y - 1][currentTile.X]);
 
         if (currentTile.Y + 1 < level.Rows)
-            if (currentTile.CanEnterTile(tiles[currentTile.Y + 1][currentTile.X]))
+            if (currentTile.CanEnterTile(tiles[currentTile.Y + 1][currentTile.X], lineColor))
                 neighbors.Add(tiles[currentTile.Y + 1][currentTile.X]);
 
         return neighbors;
@@ -317,6 +498,8 @@ public class BoardCreator : MonoBehaviour
         startTile.hCost = CalculateDistance(startTile, endTile);
         startTile.CalcFCost();
 
+        Color lineColor = startTile.Line.color;
+
         while (openList.Count > 0)
         {
             Tile currentTile = GetLowestFCostTile(openList);
@@ -329,7 +512,7 @@ public class BoardCreator : MonoBehaviour
             openList.Remove(currentTile);
             closedList.Add(currentTile);
 
-            List<Tile> temp = GetNeighborList(currentTile);
+            List<Tile> temp = GetNeighborList(currentTile, lineColor);
 
             for (int i = 0; i < temp.Count; i++)
             {
@@ -353,4 +536,6 @@ public class BoardCreator : MonoBehaviour
 
         return null;
     }
+
+    #endregion
 }

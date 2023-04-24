@@ -1,3 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:VisualElement style="flex-grow: 1; background-color: rgba(152, 152, 152, 0.59); width: 100px; height: 100px;" />
+    <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); align-items: center; align-self: auto; justify-content: center;">
+        <ui:VisualElement style="flex-grow: 1; background-color: rgb(255, 0, 0); width: 200px; height: 200px; max-width: 200px; max-height: 200px; min-width: 200px; min-height: 200px; align-items: center; justify-content: center;">
+            <ui:VisualElement name="VisualElement" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; max-width: 80px; max-height: 80px; min-width: 80px; min-height: 80px; background-image: url(&apos;project://database/Assets/Artwork/star_noBorder.png?fileID=2800000&amp;guid=f540d163eaeb67f42918267b89d1450a&amp;type=3#star_noBorder&apos;);" />
+        </ui:VisualElement>
+    </ui:VisualElement>
 </ui:UXML>

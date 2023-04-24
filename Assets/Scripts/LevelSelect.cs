@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,12 +67,28 @@ public class LevelSelect : Page
 
     public override IEnumerator AnimateIn()
     {
-        return null;
+        VisualElement page = uiDoc.rootVisualElement;
+
+        page.style.opacity = new StyleFloat(0f);
+
+        Tween fadein = DOTween.To(() => page.style.opacity.value,
+                x => page.style.opacity = new StyleFloat(x),
+                1f, .33f);
+
+        yield return fadein.Play().WaitForCompletion();
     }
 
     public override IEnumerator AnimateOut()
     {
-        return null;
+        VisualElement page = uiDoc.rootVisualElement;
+
+        page.style.opacity = new StyleFloat(1f);
+
+        Tween fadeout = DOTween.To(() => page.style.opacity.value,
+                x => page.style.opacity = new StyleFloat(x),
+                0f, .33f);
+
+        yield return fadeout.Play().WaitForCompletion();
     }
 
     #endregion

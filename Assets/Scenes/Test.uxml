@@ -1,2 +1,8 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="VisualElement" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); flex-basis: auto;">
+        <ui:VisualElement name="BG" style="flex-grow: 0; background-color: rgba(255, 0, 0, 0.73);">
+            <ui:Label tabindex="-1" text="qw&#10;dqw&#10;Label" display-tooltip-when-elided="true" style="font-size: 28px;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:ProgressBar value="22" title="my-progress" />
 </ui:UXML>

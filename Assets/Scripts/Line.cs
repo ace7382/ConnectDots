@@ -5,19 +5,20 @@ using UnityEngine;
 [System.Serializable] //TODO: remove serialization. It's jsut for debugging
 public class Line
 {
-    [SerializeField] public List<Tile>   lineTiles;
-    [SerializeField] public Color        color;
-    [SerializeField] public bool         isCompleted;
+    [SerializeField] public List<Tile>      lineTiles;
+    [SerializeField] public int             colorIndex;
+    [SerializeField] public bool            isCompleted;
 
     public List<Tile> Tiles { get { return lineTiles; } }
     public Tile LineHead { get { return GetLeadTile(); } }
     public Tile PreLineHead { get { return GetPreLeadTile(); } }
     public Tile FirstTile { get { return GetFirstTile(); } }
     public bool LineCancelled { get { return lineTiles.FindIndex(x => x.LineCancelled) >= 0; } }
+    public Color Color { get { return UIManager.instance.GetColor(colorIndex); } }
 
-    public Line(Color color)
+    public Line(int colorIndex)
     {
-        this.color = color;
+        this.colorIndex = colorIndex;
         lineTiles = new List<Tile>();
         isCompleted = false;
     }

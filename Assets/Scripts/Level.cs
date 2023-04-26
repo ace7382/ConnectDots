@@ -15,7 +15,7 @@ public class Level : ScriptableObject
         public EndTileRotation  end1rotation;
         public Vector2Int       end2position;
         public EndTileRotation  end2rotation;
-        public Color            color;
+        public int              colorIndex;
     }
 
     [System.Serializable]
@@ -29,8 +29,8 @@ public class Level : ScriptableObject
         public bool             leftBorder;
         public int              multiplier;
         public bool             lineCancel;
-        public Color            restrictedColor1 = Color.white;
-        public Color            restrictedColor2 = Color.white;
+        public int              restrictedColor1 = 0;
+        public int              restrictedColor2 = 0;
     }
 
     #endregion
@@ -44,6 +44,8 @@ public class Level : ScriptableObject
     [SerializeField] private List<LineDefinitions> lines;
     [SerializeField] private List<SpecialTileDefinitions> specialTiles;
 
+    [SerializeField] private bool isComplete;
+
     #endregion
 
     #region Public Properties
@@ -54,6 +56,7 @@ public class Level : ScriptableObject
     public int                          Cols                { get { return cols; } }
     public List<LineDefinitions>        Lines               { get { return lines;} }
     public List<SpecialTileDefinitions> SpecialTiles        { get { return specialTiles; } }
+    public bool                         IsComplete          { get { return isComplete; } private set { isComplete = value; } }
 
     #endregion
 
@@ -70,6 +73,16 @@ public class Level : ScriptableObject
             return null;
         else
             return SpecialTiles[index];
+    }
+
+    public void LevelComplete()
+    {
+        IsComplete = true;
+    }
+
+    public void ResetLevel()
+    {
+        IsComplete = false;
     }
 
     #endregion

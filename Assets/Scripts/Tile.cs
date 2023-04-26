@@ -53,7 +53,7 @@ public class Tile
 
     private int multiplier = 1;
     private bool lineCancel = false;
-    private Color[] restrictedColors;
+    private int[] restrictedColors;
 
     #region Public Properties
 
@@ -75,7 +75,7 @@ public class Tile
 
             line = value;
 
-            SetColor(line == null ? Color.white : line.color);
+            SetColor(line == null ? UIManager.instance.GetColor(0) : line.Color); ;
         }
     }
 
@@ -174,7 +174,7 @@ public class Tile
         return false;
     }
 
-    public bool CanEnterTile(Tile tileToEnter, Color potentialColor)
+    public bool CanEnterTile(Tile tileToEnter, int potentialColor)
     {
         //Debug.Log("Can " + this + " enter " + tileToEnter);
 
@@ -256,20 +256,20 @@ public class Tile
         }
     }
 
-    public void SetRestrictedColors(Color color0, Color color1)
+    public void SetRestrictedColors(int colorIndex0, int colorIndex1)
     {
-        restrictedColors = new Color[2];
+        restrictedColors = new int[2];
 
-        restrictedColors[0] = color0;
-        restrictedColors[1] = color1;
+        restrictedColors[0] = colorIndex0;
+        restrictedColors[1] = colorIndex1;
 
         Color[] pixels = UIManager.instance.RestrictedTile.GetPixels();
 
         for (int i = 0; i < pixels.Length; i++)
             if (pixels[i].a == 1f)
-                pixels[i] = restrictedColors[0];
+                pixels[i] = UIManager.instance.GetColor(restrictedColors[0]);
             else
-                pixels[i] = restrictedColors[1];
+                pixels[i] = UIManager.instance.GetColor(restrictedColors[1]);
 
         Texture2D final = new Texture2D(UIManager.instance.RestrictedTile.width, UIManager.instance.RestrictedTile.height);
         final.SetPixels(pixels);
@@ -394,10 +394,10 @@ public class Tile
                 SetLineCancel();
             else
             {
-                Color bgColor = new Color(Line.color.r, Line.color.g, Line.color.b, Line.color.a / 2f);
+                Color bgColor = new Color(Line.Color.r, Line.Color.g, Line.Color.b, Line.Color.a / 2f);
 
                 Container.style.backgroundColor = Color.white;
-                image.style.backgroundColor = bgColor;
+                image.style.backgroundColor     = bgColor;
             }
         }
 

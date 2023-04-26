@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5814ba4cd01a79f40bbefacf189ab50a, type: 3}
+  m_Name: TestObjectiveGreenInYellowStar
+  m_EditorClassIdentifier: 
+  description: Color 10 tiles Green in Yellow Star
+  levelCategory: {fileID: 11400000, guid: 935d5c80aa378944a8b6e55adb387757, type: 2}
+  level: {fileID: 0}
+  progressBarColorIndex: 3
+  icon: {fileID: 2800000, guid: 8f1effc5f04900c4bab4f060e59e6ab6, type: 3}
+  isComplete: 0
+  colorIndex: 2
+  goal: 10
+  progress: 0

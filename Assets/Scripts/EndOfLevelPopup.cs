@@ -20,9 +20,9 @@ public class EndOfLevelPopup : Page
 
     public override void ShowPage(object[] args)
     {
-        //args[0]   -   Dictionary<Color, int>  -   The coins awarded from the level
+        //args[0]   -   Dictionary<int, int>    -   The coins awarded from the level
 
-        Dictionary<Color, int> coinsWon = (Dictionary<Color, int>)args[0];
+        Dictionary<int, int> coinsWon = (Dictionary<int, int>)args[0];
 
         homeButton = uiDoc.rootVisualElement.Q<VisualElement>("HomeButton");
         replayButton = uiDoc.rootVisualElement.Q<VisualElement>("ReplayButton");
@@ -40,7 +40,7 @@ public class EndOfLevelPopup : Page
         else
             nextLevel = levels[levelIndex + 1];
 
-        foreach (KeyValuePair<Color, int> coins in coinsWon)
+        foreach (KeyValuePair<int, int> coins in coinsWon)
         {
             CurrencyManager.instance.AddCurrency(coins.Key, coins.Value);
         }

@@ -9,6 +9,9 @@ public class LevelSelect : Page
 {
     #region Private Variables
 
+    ScrollView levelScroll, objectiveScroll;
+    VisualElement levelsButton, objectivesButton;
+
     #endregion
 
     #region Inherited Functions
@@ -19,23 +22,16 @@ public class LevelSelect : Page
 
         LevelCategory cat = (LevelCategory)args[0];
 
-        List<Level> levels = Resources.LoadAll<Level>("Levels/" + cat.FilePath).ToList();
+        List<Level> levels = cat.GetLevels(); //Resources.LoadAll<Level>("Levels/" + cat.FilePath).ToList();
 
-        ScrollView scroll = uiDoc.rootVisualElement.Q<ScrollView>();
-        scroll.verticalScrollerVisibility = ScrollerVisibility.Hidden;
+        levelScroll = uiDoc.rootVisualElement.Q<ScrollView>("LevelScroll");
+        levelScroll.contentContainer.style.flexGrow = 1f;
 
-        scroll.contentContainer.style.flexDirection = FlexDirection.Row;
-        scroll.contentContainer.style.flexWrap = Wrap.Wrap;
-        scroll.contentContainer.style
-            .justifyContent = Justify.Center;
-        scroll.contentContainer.style.SetMargins(15f);
-
-        scroll.style.SetBorderRadius(10f);
-        scroll.style.backgroundColor = new StyleColor(new Color(0f, 0f, 0f, .5f));
+        VisualElement levelScrollContent = levelScroll.contentContainer.Q<VisualElement>("LevelScrollContent");
 
         for (int i = 0; i < levels.Count; i++)
         {
-            for (int test = 0; test < 30; test++)
+            for (int test = 0; test < 130; test++)
             {
                 VisualElement button = UIManager.instance.LevelSelectButton.Instantiate();
                 Level lev = levels[i];
@@ -53,16 +49,44 @@ public class LevelSelect : Page
                     PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<GamePlayPage>(data));
                 });
 
-                scroll.contentContainer.Add(button);
+                levelScrollContent.Add(button);
             }
         }
 
+        objectiveScroll = uiDoc.rootVisualElement.Q<ScrollView>("ObjectiveScroll");
+        objectiveScroll.contentContainer.style.flexGrow = 1f;
+        VisualElement objectiveScrollContent = objectiveScroll.contentContainer.Q<VisualElement>("ObjectiveScrollContent");
+        List<Objective> objectives = ObjectiveManager.instance.GetObjectivesForCategory(cat);
+
+        Debug.Log("Found " + objectives.Count + " objectives for " + cat.name);
+
+        for (int i = 0; i < objectives.Count; i++)
+        {
+            VisualElement card = UIManager.instance.ObjectiveCard.Instantiate();
+            card.style.SetWidth(new StyleLength(new Length(100f, LengthUnit.Percent)));
+            card.style.SetMargins(10f, i != 0, false, i != objectives.Count - 1, false);
+
+            ObjectiveCard controller = new ObjectiveCard(objectives[i], card);
+            card.userData = controller;
+
+            objectiveScrollContent.Add(card);
+        }
+
+        levelsButton = uiDoc.rootVisualElement.Q<VisualElement>("LevelsButton");
+        objectivesButton = uiDoc.rootVisualElement.Q<VisualElement>("ObjectivesButton");
+
+        levelsButton.RegisterCallback<PointerDownEvent>(ShowLevels);
+        objectivesButton.RegisterCallback<PointerDownEvent>(ShowObjectives);
+
         UIManager.instance.SetBackground(cat.BackgroundImage, cat.Color);
+
+        ShowLevels(null);
     }
 
     public override void HidePage()
     {
-        
+        levelsButton.UnregisterCallback<PointerDownEvent>(ShowLevels);
+        objectivesButton.UnregisterCallback<PointerDownEvent>(ShowObjectives);
     }
 
     public override IEnumerator AnimateIn()
@@ -89,6 +113,26 @@ public class LevelSelect : Page
                 0f, .33f);
 
         yield return fadeout.Play().WaitForCompletion();
+    }
+
+    #endregion
+
+    #region Private Functions
+
+    private void ShowLevels(PointerDownEvent evt)
+    {
+        (objectiveScroll as VisualElement).Show(false);
+        (levelScroll as VisualElement).Show();
+
+        levelScroll.GoToTop();
+    }
+
+    private void ShowObjectives(PointerDownEvent evt)
+    {
+        (objectiveScroll as VisualElement).Show();
+        (levelScroll as VisualElement).Show(false);
+
+        objectiveScroll.GoToTop();
     }
 
     #endregion

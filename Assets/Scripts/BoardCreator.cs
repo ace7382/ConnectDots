@@ -161,7 +161,7 @@ public class BoardCreator : MonoBehaviour
                     else if (rules.lineCancel)
                         t.SetLineCancel();
 
-                    if(rules.restrictedColor1 != Color.white)
+                    if(rules.restrictedColor1 != 0)
                     {
                         t.SetRestrictedColors(rules.restrictedColor1, rules.restrictedColor2);
                     }
@@ -198,7 +198,7 @@ public class BoardCreator : MonoBehaviour
 
         for (int i = 0; i < level.Lines.Count; i++)
         {
-            lines.Add(new Line(level.Lines[i].color));
+            lines.Add(new Line(level.Lines[i].colorIndex));
             lines[i].SetStartEndTiles(
                 tiles[level.Lines[i].end1position.y][level.Lines[i].end1position.x],
                 tiles[level.Lines[i].end2position.y][level.Lines[i].end2position.x],
@@ -249,7 +249,8 @@ public class BoardCreator : MonoBehaviour
         float heightbound = board.worldBound.height / 2f * .7f;
         Vector2 destination = new Vector2(screen.worldBound.width / 2f, screen.worldBound.height / -2f);
 
-        Dictionary<Color, int> coinsWon = new Dictionary<Color, int>();
+        Dictionary<int, int> coinsWon = new Dictionary<int, int>();
+        Dictionary<int, int> notifications = new Dictionary<int, int>();
 
         for (int i = 0; i < tiles.Count; i++)
         {
@@ -259,7 +260,22 @@ public class BoardCreator : MonoBehaviour
 
                 if (t.State == TileState.BLANK || t.LineCancelled)
                     continue;
-                
+
+                if (t.Line != null)
+                {
+                    if (notifications.ContainsKey(t.Line.colorIndex))
+                        notifications[t.Line.colorIndex]++;
+                    else
+                        notifications.Add(t.Line.colorIndex, 1);
+                }
+                else
+                {
+                    if (notifications.ContainsKey(0))
+                        notifications[0]++;
+                    else
+                        notifications.Add(0, 1);
+                }
+
                 for (int mult = 1; mult <= t.Multiplier; mult++)
                 {
                     VisualElement coin = new VisualElement();
@@ -268,17 +284,17 @@ public class BoardCreator : MonoBehaviour
 
                     float animationTime = Random.Range(.75f, 1f);
 
-                    Color c = Color.white;
+                    int colorIndex = 0;
 
                     if (t.Line != null)
-                        c = new Color(t.Line.color.r, t.Line.color.g, t.Line.color.b, 255f);
+                        colorIndex = t.Line.colorIndex;
 
-                    if (coinsWon.ContainsKey(c))
-                        coinsWon[c]++;
+                    if (coinsWon.ContainsKey(colorIndex))
+                        coinsWon[colorIndex]++;
                     else
-                        coinsWon.Add(c, 1);
+                        coinsWon.Add(colorIndex, 1);
 
-                    coin.style.backgroundColor = c;
+                    coin.style.backgroundColor = UIManager.instance.GetColor(colorIndex);
                     coin.style.SetBorderColor(Color.black);
                     coin.style.SetBorderWidth(3f);
                     coin.style.position = Position.Absolute;
@@ -337,8 +353,20 @@ public class BoardCreator : MonoBehaviour
             }
         }
 
+        foreach (KeyValuePair<int, int> not in notifications)
+        {
+            object[] notifData = new object[3];
+            notifData[0] = BoardCreator.instance.CurrentLevel;
+            notifData[1] = not.Key;
+            notifData[2] = not.Value;
+
+            this.PostNotification(Notifications.TILES_COLORED, notifData);
+        }
+
         object[] data = new object[1];
         data[0] = coinsWon;
+
+        CurrentLevel.LevelComplete();
 
         PageManager.instance.StartCoroutine(PageManager.instance.AddPageToStack<EndOfLevelPopup>(data));
     }
@@ -452,24 +480,24 @@ public class BoardCreator : MonoBehaviour
         return path;
     }
 
-    private List<Tile> GetNeighborList(Tile currentTile, Color lineColor)
+    private List<Tile> GetNeighborList(Tile currentTile, int lineColorIndex)
     {
         List<Tile> neighbors = new List<Tile>();
 
         if (currentTile.X - 1 >= 0)
-            if (currentTile.CanEnterTile(tiles[currentTile.Y][currentTile.X - 1], lineColor))
+            if (currentTile.CanEnterTile(tiles[currentTile.Y][currentTile.X - 1], lineColorIndex))
                 neighbors.Add(tiles[currentTile.Y][currentTile.X - 1]);
 
         if (currentTile.X + 1 < level.Cols)
-            if (currentTile.CanEnterTile(tiles[currentTile.Y][currentTile.X + 1], lineColor))
+            if (currentTile.CanEnterTile(tiles[currentTile.Y][currentTile.X + 1], lineColorIndex))
                 neighbors.Add(tiles[currentTile.Y][currentTile.X + 1]);
 
         if (currentTile.Y - 1 >= 0)
-            if (currentTile.CanEnterTile(tiles[currentTile.Y - 1][currentTile.X], lineColor))
+            if (currentTile.CanEnterTile(tiles[currentTile.Y - 1][currentTile.X], lineColorIndex))
                 neighbors.Add(tiles[currentTile.Y - 1][currentTile.X]);
 
         if (currentTile.Y + 1 < level.Rows)
-            if (currentTile.CanEnterTile(tiles[currentTile.Y + 1][currentTile.X], lineColor))
+            if (currentTile.CanEnterTile(tiles[currentTile.Y + 1][currentTile.X], lineColorIndex))
                 neighbors.Add(tiles[currentTile.Y + 1][currentTile.X]);
 
         return neighbors;
@@ -498,7 +526,7 @@ public class BoardCreator : MonoBehaviour
         startTile.hCost = CalculateDistance(startTile, endTile);
         startTile.CalcFCost();
 
-        Color lineColor = startTile.Line.color;
+        int lineColorIndex = startTile.Line.colorIndex;
 
         while (openList.Count > 0)
         {
@@ -512,7 +540,7 @@ public class BoardCreator : MonoBehaviour
             openList.Remove(currentTile);
             closedList.Add(currentTile);
 
-            List<Tile> temp = GetNeighborList(currentTile, lineColor);
+            List<Tile> temp = GetNeighborList(currentTile, lineColorIndex);
 
             for (int i = 0; i < temp.Count; i++)
             {

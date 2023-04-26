@@ -14,14 +14,21 @@ public class UIManager : MonoBehaviour
     #region Inspector Variables
 
     [SerializeField] private VisualTreeAsset levelSelectButton;
+    [SerializeField] private VisualTreeAsset objectiveCard;
     [SerializeField] private BackgroundScroll scrollingBG;
     [SerializeField] private Texture2D restrictedTileTexture;
+
+    [Space]
+
+    [Header("Colors")]
+    [SerializeField] private List<Color> gameColors;
 
     #endregion
 
     #region Public Properties
 
     public VisualTreeAsset LevelSelectButton { get { return levelSelectButton; } }
+    public VisualTreeAsset ObjectiveCard { get { return objectiveCard; } }
     public Texture2D RestrictedTile { get { return restrictedTileTexture; } }
 
     #endregion
@@ -43,6 +50,17 @@ public class UIManager : MonoBehaviour
     public void SetBackground(Texture2D texture, Color color)
     {
         scrollingBG.Set(texture, color);
+    }
+
+    public Color GetColor(int index)
+    {
+        if (index > gameColors.Count - 1)
+        {
+            Debug.LogError("UIManager does not have enough colors for this request");
+            return Color.clear;
+        }
+
+        return gameColors[index];
     }
 
     #endregion

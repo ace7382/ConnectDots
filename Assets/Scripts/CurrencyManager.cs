@@ -12,7 +12,7 @@ public class CurrencyManager : MonoBehaviour
 
     #region Private Variables
 
-    private Dictionary<Color, int> ownedColors;
+    private Dictionary<int, int> ownedColors;
 
     #endregion
 
@@ -28,19 +28,19 @@ public class CurrencyManager : MonoBehaviour
 
     private void Start()
     {
-        ownedColors = new Dictionary<Color, int>();
+        ownedColors = new Dictionary<int, int>();
     }
 
     #endregion
 
     #region Public Functions
 
-    public void AddCurrency(Color color, int amount)
+    public void AddCurrency(int colorIndex, int amount)
     {
-        if (!ownedColors.ContainsKey(color))
-            ownedColors.Add(color, 0);
+        if (!ownedColors.ContainsKey(colorIndex))
+            ownedColors.Add(colorIndex, 0);
 
-        ownedColors[color] += amount;
+        ownedColors[colorIndex] += amount;
 
         Debug.Log(this);
     }
@@ -49,7 +49,7 @@ public class CurrencyManager : MonoBehaviour
     {
         string ret = "***Current Currency***";
 
-        foreach (KeyValuePair<Color, int> color in ownedColors)
+        foreach (KeyValuePair<int, int> color in ownedColors)
             ret += "\n" + color.Key.ToString() + ": " + color.Value.ToString();
 
         return ret;

@@ -9,7 +9,7 @@ public class CategorySelect : Page
 {
     #region Private Variables
 
-    VisualElement bigCategoryIcon, selectACategory, detailsPanel;
+    VisualElement bigCategoryIcon, instructionsVE, levelsCompletedPanel, objectivesPanel;
     Label categoryTitle, levelsCompleted, categoryObjectivesMet;
     VisualElement selectedButton;
     List<VisualElement> categoryButtons;
@@ -27,11 +27,26 @@ public class CategorySelect : Page
                 return;
 
             if (selectedButton != null)
-                selectedButton.style.SetBorderColor(Color.clear);
+            {
+                VisualElement old = selectedButton;
 
-            value.style.SetBorderColor(Color.green);
+                old.Q<VisualElement>("LevelSelectButton").style.SetBorderColor(Color.clear);
+
+                Tween scaleDown = DOTween.To(() => old.transform.scale,
+                                    x => old.transform.scale = x,
+                                    Vector3.one, .02f).SetEase(Ease.OutQuad).Play();
+            }
 
             selectedButton = value;
+
+            if (selectedButton != null)
+            {
+                selectedButton.Q<VisualElement>("LevelSelectButton").style.SetBorderColor(Color.green);
+
+                Tween scaleUp = DOTween.To(() => selectedButton.transform.scale,
+                        x => selectedButton.transform.scale = x,
+                        new Vector3(1.15f, 1.15f, 1f), .02f).SetEase(Ease.OutQuad).Play();
+            }
 
             ShowCategoryDetails();
         }
@@ -58,12 +73,13 @@ public class CategorySelect : Page
         List<LevelCategory> cats                    = Resources.LoadAll<LevelCategory>("Categories").ToList();
         categoryButtons                             = new List<VisualElement>();
 
-        detailsPanel                                = uiDoc.rootVisualElement.Q<VisualElement>("DetailsPanel");
-        selectACategory                             = uiDoc.rootVisualElement.Q<VisualElement>("InstructionsLabel");
+        instructionsVE                              = uiDoc.rootVisualElement.Q<VisualElement>("InstructionsLabel");
         bigCategoryIcon                             = uiDoc.rootVisualElement.Q<VisualElement>("CategoryIcon_Big");
         categoryTitle                               = uiDoc.rootVisualElement.Q<Label>("CategoryName");
         levelsCompleted                             = uiDoc.rootVisualElement.Q<Label>("LevelsCompleteCount");
+        levelsCompletedPanel                        = uiDoc.rootVisualElement.Q<VisualElement>("LevelsCompletePanel");
         categoryObjectivesMet                       = uiDoc.rootVisualElement.Q<Label>("ObjectivesCompleteCount");
+        objectivesPanel                             = uiDoc.rootVisualElement.Q<VisualElement>("ObjectivesCompletePanel");
 
         //StyleFloat opacity0                         = new StyleFloat(0f);
 
@@ -103,6 +119,7 @@ public class CategorySelect : Page
         }
 
         SelectedCategoryButton = null;
+        ShowCategoryDetails();
     }
 
     public override void HidePage()
@@ -170,42 +187,57 @@ public class CategorySelect : Page
     {
         if (selectedButton == null)
         {
-            selectACategory.style.Show();
+            instructionsVE.style.Show();
 
-            detailsPanel.style.Hide();
-            bigCategoryIcon.style.Hide();
-            categoryTitle.style.Hide();
-            categoryObjectivesMet.style.Hide();
-            levelsCompleted.style.Hide();
+            bigCategoryIcon.Hide();
+            categoryTitle.Hide();
+            levelsCompletedPanel.Hide();
+            objectivesPanel.Hide();
         }
         else
         {
-            selectACategory.style.Hide();
-            
+            LevelCategory cat = SelectedCategoryButton.userData as LevelCategory;
+
+            instructionsVE.Hide();
+
             bigCategoryIcon.Clear();
 
-            VisualElement buttonBG = new VisualElement();
-            VisualElement icon = new VisualElement();
+            VisualElement buttonBG          = new VisualElement();
+            VisualElement icon              = new VisualElement();
 
-            buttonBG.style.alignItems = Align.Center;
-            buttonBG.style.justifyContent = Justify.Center;
-            buttonBG.style.backgroundColor = (SelectedCategoryButton.userData as LevelCategory).Color;
-            buttonBG.style.SetHeight(200f);
-            buttonBG.style.SetWidth(200f);
+            buttonBG.style.alignItems       = Align.Center;
+            buttonBG.style.justifyContent   = Justify.Center;
+            buttonBG.style.backgroundColor  = cat.Color;
+            buttonBG.style.SetHeight(150f);
+            buttonBG.style.SetWidth(150f);
             buttonBG.style.SetBorderRadius(15f);
 
-            icon.style.SetWidth(80f);
-            icon.style.SetHeight(80f);
-            icon.style.backgroundImage = (selectedButton.userData as LevelCategory).LevelSelectImage;
+            icon.style.SetWidth(60f);
+            icon.style.SetHeight(60f);
+            icon.style.backgroundImage = cat.LevelSelectImage;
 
             buttonBG.Add(icon);
             bigCategoryIcon.Add(buttonBG);
 
-            detailsPanel.style.Show();
-            bigCategoryIcon.style.Show();
-            categoryTitle.style.Show();
-            categoryObjectivesMet.style.Show();
-            levelsCompleted.style.Show();
+            bigCategoryIcon.Show();
+
+            categoryTitle.text = cat.name;
+            categoryTitle.Show();
+
+            List<Objective> catObjectives = ObjectiveManager.instance.GetObjectivesForCategory(cat);
+
+            categoryObjectivesMet.text = string.Format("{0} / {1}",
+                                        catObjectives.FindAll(x => x.IsComplete).Count.ToString("000"),
+                                        catObjectives.Count.ToString("000"));
+
+            List<Level> catLevels = cat.GetLevels();
+
+            levelsCompleted.text = string.Format("{0} / {1}",
+                                    catLevels.FindAll(x => x.IsComplete).Count.ToString("000"),
+                                    catLevels.Count.ToString("000"));
+                                            
+            levelsCompletedPanel.Show();
+            objectivesPanel.Show();
         }
     }
 

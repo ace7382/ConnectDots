@@ -23,3 +23,11 @@
     -unity-font-definition: initial;
     font-size: 25px;
 }
+
+.ProgressBarFont {
+    font-size: 18px;
+    -unity-text-align: middle-center;
+    color: rgb(255, 255, 255);
+    -unity-text-outline-width: 1px;
+    -unity-text-outline-color: rgb(0, 0, 0);
+}

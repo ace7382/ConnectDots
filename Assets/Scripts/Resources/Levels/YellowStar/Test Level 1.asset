@@ -21,12 +21,12 @@ MonoBehaviour:
     end1rotation: 3
     end2position: {x: 0, y: 4}
     end2rotation: 2
-    color: {r: 1, g: 0, b: 0, a: 1}
+    colorIndex: 2
   - end1position: {x: 4, y: 0}
     end1rotation: 0
     end2position: {x: 4, y: 4}
     end2rotation: 0
-    color: {r: 1, g: 1, b: 0, a: 1}
+    colorIndex: 5
   specialTiles:
   - tilePosition: {x: 0, y: 0}
     blank: 0
@@ -36,8 +36,8 @@ MonoBehaviour:
     leftBorder: 1
     multiplier: 0
     lineCancel: 0
-    restrictedColor1: {r: 1, g: 0, b: 0, a: 1}
-    restrictedColor2: {r: 1, g: 1, b: 0, a: 1}
+    restrictedColor1: 2
+    restrictedColor2: 5
   - tilePosition: {x: 1, y: 0}
     blank: 0
     topBorder: 1
@@ -46,8 +46,8 @@ MonoBehaviour:
     leftBorder: 0
     multiplier: 0
     lineCancel: 0
-    restrictedColor1: {r: 1, g: 0, b: 0, a: 1}
-    restrictedColor2: {r: 1, g: 1, b: 0, a: 1}
+    restrictedColor1: 2
+    restrictedColor2: 5
   - tilePosition: {x: 2, y: 0}
     blank: 0
     topBorder: 1
@@ -56,8 +56,8 @@ MonoBehaviour:
     leftBorder: 0
     multiplier: 0
     lineCancel: 0
-    restrictedColor1: {r: 1, g: 0, b: 0, a: 1}
-    restrictedColor2: {r: 1, g: 1, b: 0, a: 1}
+    restrictedColor1: 2
+    restrictedColor2: 5
   - tilePosition: {x: 3, y: 0}
     blank: 0
     topBorder: 1
@@ -66,8 +66,8 @@ MonoBehaviour:
     leftBorder: 0
     multiplier: 0
     lineCancel: 0
-    restrictedColor1: {r: 1, g: 0, b: 0, a: 1}
-    restrictedColor2: {r: 1, g: 1, b: 0, a: 1}
+    restrictedColor1: 2
+    restrictedColor2: 5
   - tilePosition: {x: 4, y: 0}
     blank: 0
     topBorder: 1
@@ -76,8 +76,8 @@ MonoBehaviour:
     leftBorder: 0
     multiplier: 0
     lineCancel: 0
-    restrictedColor1: {r: 1, g: 0, b: 0, a: 1}
-    restrictedColor2: {r: 1, g: 1, b: 0, a: 1}
+    restrictedColor1: 2
+    restrictedColor2: 5
   - tilePosition: {x: 0, y: 1}
     blank: 0
     topBorder: 0
@@ -86,8 +86,8 @@ MonoBehaviour:
     leftBorder: 1
     multiplier: 0
     lineCancel: 0
-    restrictedColor1: {r: 1, g: 0, b: 0, a: 1}
-    restrictedColor2: {r: 1, g: 1, b: 0, a: 1}
+    restrictedColor1: 2
+    restrictedColor2: 5
   - tilePosition: {x: 1, y: 1}
     blank: 0
     topBorder: 0
@@ -96,8 +96,8 @@ MonoBehaviour:
     leftBorder: 0
     multiplier: 0
     lineCancel: 0
-    restrictedColor1: {r: 1, g: 0, b: 0, a: 1}
-    restrictedColor2: {r: 1, g: 1, b: 0, a: 1}
+    restrictedColor1: 2
+    restrictedColor2: 5
   - tilePosition: {x: 2, y: 1}
     blank: 0
     topBorder: 0
@@ -106,8 +106,8 @@ MonoBehaviour:
     leftBorder: 0
     multiplier: 0
     lineCancel: 0
-    restrictedColor1: {r: 1, g: 0, b: 0, a: 1}
-    restrictedColor2: {r: 1, g: 1, b: 0, a: 1}
+    restrictedColor1: 2
+    restrictedColor2: 5
   - tilePosition: {x: 3, y: 1}
     blank: 0
     topBorder: 0
@@ -116,8 +116,8 @@ MonoBehaviour:
     leftBorder: 0
     multiplier: 0
     lineCancel: 0
-    restrictedColor1: {r: 1, g: 0, b: 0, a: 1}
-    restrictedColor2: {r: 1, g: 1, b: 0, a: 1}
+    restrictedColor1: 2
+    restrictedColor2: 5
   - tilePosition: {x: 4, y: 1}
     blank: 0
     topBorder: 0
@@ -126,8 +126,8 @@ MonoBehaviour:
     leftBorder: 0
     multiplier: 0
     lineCancel: 0
-    restrictedColor1: {r: 1, g: 0, b: 0, a: 1}
-    restrictedColor2: {r: 1, g: 1, b: 0, a: 1}
+    restrictedColor1: 2
+    restrictedColor2: 5
   - tilePosition: {x: 0, y: 2}
     blank: 0
     topBorder: 0
@@ -136,8 +136,8 @@ MonoBehaviour:
     leftBorder: 1
     multiplier: 0
     lineCancel: 0
-    restrictedColor1: {r: 1, g: 0, b: 0, a: 1}
-    restrictedColor2: {r: 1, g: 1, b: 0, a: 1}
+    restrictedColor1: 2
+    restrictedColor2: 5
   - tilePosition: {x: 1, y: 2}
     blank: 0
     topBorder: 0
@@ -146,8 +146,8 @@ MonoBehaviour:
     leftBorder: 0
     multiplier: 0
     lineCancel: 0
-    restrictedColor1: {r: 1, g: 0, b: 0, a: 1}
-    restrictedColor2: {r: 1, g: 1, b: 0, a: 1}
+    restrictedColor1: 2
+    restrictedColor2: 5
   - tilePosition: {x: 2, y: 2}
     blank: 0
     topBorder: 0
@@ -156,8 +156,8 @@ MonoBehaviour:
     leftBorder: 0
     multiplier: 0
     lineCancel: 0
-    restrictedColor1: {r: 1, g: 0, b: 0, a: 1}
-    restrictedColor2: {r: 1, g: 1, b: 0, a: 1}
+    restrictedColor1: 2
+    restrictedColor2: 5
   - tilePosition: {x: 3, y: 2}
     blank: 0
     topBorder: 0
@@ -166,8 +166,8 @@ MonoBehaviour:
     leftBorder: 0
     multiplier: 0
     lineCancel: 0
-    restrictedColor1: {r: 1, g: 0, b: 0, a: 1}
-    restrictedColor2: {r: 1, g: 1, b: 0, a: 1}
+    restrictedColor1: 2
+    restrictedColor2: 5
   - tilePosition: {x: 4, y: 2}
     blank: 0
     topBorder: 0
@@ -176,8 +176,8 @@ MonoBehaviour:
     leftBorder: 0
     multiplier: 0
     lineCancel: 0
-    restrictedColor1: {r: 1, g: 0, b: 0, a: 1}
-    restrictedColor2: {r: 1, g: 1, b: 0, a: 1}
+    restrictedColor1: 2
+    restrictedColor2: 5
   - tilePosition: {x: 0, y: 3}
     blank: 0
     topBorder: 0
@@ -186,8 +186,8 @@ MonoBehaviour:
     leftBorder: 1
     multiplier: 0
     lineCancel: 0
-    restrictedColor1: {r: 1, g: 0, b: 0, a: 1}
-    restrictedColor2: {r: 1, g: 1, b: 0, a: 1}
+    restrictedColor1: 2
+    restrictedColor2: 5
   - tilePosition: {x: 1, y: 3}
     blank: 0
     topBorder: 0
@@ -196,8 +196,8 @@ MonoBehaviour:
     leftBorder: 0
     multiplier: 0
     lineCancel: 0
-    restrictedColor1: {r: 1, g: 0, b: 0, a: 1}
-    restrictedColor2: {r: 1, g: 1, b: 0, a: 1}
+    restrictedColor1: 2
+    restrictedColor2: 5
   - tilePosition: {x: 2, y: 3}
     blank: 0
     topBorder: 0
@@ -206,8 +206,8 @@ MonoBehaviour:
     leftBorder: 0
     multiplier: 0
     lineCancel: 0
-    restrictedColor1: {r: 1, g: 0, b: 0, a: 1}
-    restrictedColor2: {r: 1, g: 1, b: 0, a: 1}
+    restrictedColor1: 2
+    restrictedColor2: 5
   - tilePosition: {x: 3, y: 3}
     blank: 0
     topBorder: 0
@@ -216,8 +216,8 @@ MonoBehaviour:
     leftBorder: 0
     multiplier: 0
     lineCancel: 0
-    restrictedColor1: {r: 1, g: 0, b: 0, a: 1}
-    restrictedColor2: {r: 1, g: 1, b: 0, a: 1}
+    restrictedColor1: 2
+    restrictedColor2: 5
   - tilePosition: {x: 4, y: 3}
     blank: 0
     topBorder: 0
@@ -226,8 +226,8 @@ MonoBehaviour:
     leftBorder: 0
     multiplier: 0
     lineCancel: 0
-    restrictedColor1: {r: 1, g: 0, b: 0, a: 1}
-    restrictedColor2: {r: 1, g: 1, b: 0, a: 1}
+    restrictedColor1: 2
+    restrictedColor2: 5
   - tilePosition: {x: 0, y: 4}
     blank: 0
     topBorder: 0
@@ -236,8 +236,8 @@ MonoBehaviour:
     leftBorder: 1
     multiplier: 0
     lineCancel: 0
-    restrictedColor1: {r: 1, g: 0, b: 0, a: 1}
-    restrictedColor2: {r: 1, g: 1, b: 0, a: 1}
+    restrictedColor1: 2
+    restrictedColor2: 5
   - tilePosition: {x: 1, y: 4}
     blank: 0
     topBorder: 0
@@ -246,8 +246,8 @@ MonoBehaviour:
     leftBorder: 0
     multiplier: 0
     lineCancel: 0
-    restrictedColor1: {r: 1, g: 0, b: 0, a: 1}
-    restrictedColor2: {r: 1, g: 1, b: 0, a: 1}
+    restrictedColor1: 2
+    restrictedColor2: 5
   - tilePosition: {x: 2, y: 4}
     blank: 0
     topBorder: 0
@@ -256,8 +256,8 @@ MonoBehaviour:
     leftBorder: 0
     multiplier: 0
     lineCancel: 0
-    restrictedColor1: {r: 1, g: 0, b: 0, a: 1}
-    restrictedColor2: {r: 1, g: 1, b: 0, a: 1}
+    restrictedColor1: 2
+    restrictedColor2: 5
   - tilePosition: {x: 3, y: 4}
     blank: 0
     topBorder: 0
@@ -266,8 +266,8 @@ MonoBehaviour:
     leftBorder: 0
     multiplier: 0
     lineCancel: 0
-    restrictedColor1: {r: 1, g: 0, b: 0, a: 1}
-    restrictedColor2: {r: 1, g: 1, b: 0, a: 1}
+    restrictedColor1: 2
+    restrictedColor2: 5
   - tilePosition: {x: 4, y: 4}
     blank: 0
     topBorder: 0
@@ -276,5 +276,5 @@ MonoBehaviour:
     leftBorder: 0
     multiplier: 0
     lineCancel: 0
-    restrictedColor1: {r: 1, g: 0, b: 0, a: 1}
-    restrictedColor2: {r: 1, g: 1, b: 0, a: 1}
+    restrictedColor1: 2
+    restrictedColor2: 5

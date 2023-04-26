@@ -21,20 +21,20 @@ MonoBehaviour:
     end1rotation: 3
     end2position: {x: 0, y: 2}
     end2rotation: 2
-    color: {r: 0, g: 0.12270379, b: 1, a: 1}
+    colorIndex: 1
   - end1position: {x: 1, y: 1}
     end1rotation: 2
     end2position: {x: 2, y: 3}
     end2rotation: 1
-    color: {r: 1, g: 0, b: 0, a: 1}
+    colorIndex: 2
   - end1position: {x: 0, y: 3}
     end1rotation: 3
     end2position: {x: 4, y: 0}
     end2rotation: 3
-    color: {r: 0.97404873, g: 1, b: 0, a: 1}
+    colorIndex: 3
   - end1position: {x: 2, y: 1}
     end1rotation: 3
     end2position: {x: 1, y: 3}
     end2rotation: 2
-    color: {r: 0.066497564, g: 1, b: 0, a: 1}
+    colorIndex: 4
   specialTiles: []

@@ -388,8 +388,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelSelectButton: {fileID: 9197481963319205126, guid: 33c15d8e480526a46b46edea8e7e16a1, type: 3}
+  objectiveCard: {fileID: 9197481963319205126, guid: bab16855fe8431b4aa00d16f346a6afc, type: 3}
   scrollingBG: {fileID: 522809990}
   restrictedTileTexture: {fileID: 2800000, guid: 6ef43b2fa630ce04c8e6f83fd6c7ab32, type: 3}
+  gameColors:
+  - {r: 1, g: 1, b: 1, a: 1}
+  - {r: 1, g: 0, b: 0, a: 1}
+  - {r: 0, g: 1, b: 0, a: 1}
+  - {r: 0, g: 0, b: 1, a: 1}
+  - {r: 1, g: 1, b: 0, a: 1}
+  - {r: 1, g: 0, b: 1, a: 1}
+  - {r: 0, g: 1, b: 1, a: 1}
+  - {r: 0.5, g: 0.5, b: 0.5, a: 1}
 --- !u!4 &685428500
 Transform:
   m_ObjectHideFlags: 0
@@ -448,6 +458,54 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1125119773
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1125119775}
+  - component: {fileID: 1125119774}
+  m_Layer: 0
+  m_Name: Objective Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1125119774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1125119773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49f8fb9f3b9aa02408305b57f89fc38e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectives:
+  - {fileID: 11400000, guid: 91a236fafac3001409d6825242e6909f, type: 2}
+  - {fileID: 11400000, guid: 5de0903b3bc3018438a6aeaa058ef592, type: 2}
+  - {fileID: 11400000, guid: dcfc5ef924d8b03489b36ba4b0e377bf, type: 2}
+--- !u!4 &1125119775
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1125119773}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1245435755
 GameObject:

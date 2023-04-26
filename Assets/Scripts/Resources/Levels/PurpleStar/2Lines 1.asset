@@ -21,10 +21,10 @@ MonoBehaviour:
     end1rotation: 1
     end2position: {x: 7, y: 0}
     end2rotation: 0
-    color: {r: 1, g: 0, b: 0, a: 1}
+    colorIndex: 2
   - end1position: {x: 2, y: 2}
     end1rotation: 0
     end2position: {x: 5, y: 5}
     end2rotation: 0
-    color: {r: 0.10215378, g: 1, b: 0, a: 1}
+    colorIndex: 4
   specialTiles: []

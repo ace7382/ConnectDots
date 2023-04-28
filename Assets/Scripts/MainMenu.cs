@@ -8,7 +8,8 @@ public class MainMenu : Page
 {
     #region Private Variables
 
-    VisualElement playButton;
+    private VisualElement playButton;
+    private bool canClick;
 
     #endregion
 
@@ -16,9 +17,13 @@ public class MainMenu : Page
 
     public override void ShowPage(object[] args)
     {
+        UIManager.instance.TopBar.ShowTopBar(false);
+
         playButton = uiDoc.rootVisualElement.Q<VisualElement>("PlayButton");
 
         playButton.RegisterCallback<PointerDownEvent>(PlayButtonClicked);
+
+        canClick = true;
     }
 
     public override void HidePage()
@@ -33,6 +38,8 @@ public class MainMenu : Page
 
     public override IEnumerator AnimateOut()
     {
+        canClick = false;
+
         VisualElement page = uiDoc.rootVisualElement;
 
         page.style.opacity = new StyleFloat(1f);
@@ -40,6 +47,8 @@ public class MainMenu : Page
         Tween fadeout = DOTween.To(() => page.style.opacity.value,
                 x => page.style.opacity = new StyleFloat(x),
                 0f, .33f);
+
+        UIManager.instance.TopBar.ShowTopBar();
 
         yield return fadeout.Play().WaitForCompletion();
     }
@@ -50,6 +59,9 @@ public class MainMenu : Page
 
     private void PlayButtonClicked(PointerDownEvent evt)
     {
+        if (!canClick)
+            return;
+
         PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<CategorySelect>());
     }
 

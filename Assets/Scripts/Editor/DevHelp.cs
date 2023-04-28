@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,11 +29,13 @@ public class DevHelp : MonoBehaviour
             return;
         }
 
-        List<Level> allobjectives = Resources.LoadAll<Level>("Levels").ToList();
+        List<Level> allLevels = Resources.LoadAll<Level>("Levels").ToList();
 
-        for (int i = 0; i < allobjectives.Count; i++)
+        for (int i = 0; i < allLevels.Count; i++)
         {
-            allobjectives[i].ResetLevel();
+            allLevels[i].ResetLevel();
         }
     }
 }
+
+#endif

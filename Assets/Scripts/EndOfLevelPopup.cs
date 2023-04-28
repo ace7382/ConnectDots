@@ -9,10 +9,11 @@ public class EndOfLevelPopup : Page
 {
     #region Private Variables
 
-    VisualElement   homeButton;
-    VisualElement   replayButton;
-    VisualElement   nextLevelButton;
-    Level           nextLevel;
+    private VisualElement   homeButton;
+    private VisualElement   replayButton;
+    private VisualElement   nextLevelButton;
+    private Level           nextLevel;
+    private bool            canClick;
 
     #endregion
 
@@ -48,6 +49,8 @@ public class EndOfLevelPopup : Page
         homeButton.RegisterCallback<PointerDownEvent>(GoHome);
         replayButton.RegisterCallback<PointerDownEvent>((evt) => LoadLevel(BoardCreator.instance.CurrentLevel, evt));
         nextLevelButton.RegisterCallback<PointerDownEvent>((evt) => LoadLevel(nextLevel, evt));
+
+        canClick = false;
     }
 
     public override void HidePage()
@@ -67,10 +70,14 @@ public class EndOfLevelPopup : Page
                                 .SetEase(Ease.OutQuart);
 
         yield return flyIn.WaitForCompletion();
+
+        canClick = true;
     }
 
     public override IEnumerator AnimateOut()
     {
+        canClick = false;
+
         VisualElement page = uiDoc.rootVisualElement.Q<VisualElement>("Page");
         
         Tween flyOut = DOTween.To(() => page.transform.position,
@@ -87,11 +94,17 @@ public class EndOfLevelPopup : Page
 
     private void GoHome(PointerDownEvent evt)
     {
+        if (!canClick)
+            return;
+
         PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<MainMenu>());
     }
 
     private void LoadLevel(Level l, PointerDownEvent evt)
     {
+        if (!canClick)
+            return;
+
         object[] data = new object[1];
         data[0] = l;
 

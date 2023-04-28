@@ -28,6 +28,8 @@ public class BoardCreator : MonoBehaviour
     [SerializeField] private float softBorderSize;
     [SerializeField] private Color softBorderColor;
 
+    [SerializeField] private float boardBorder = 10f;
+
     #endregion
 
     #region Private Variables
@@ -70,7 +72,7 @@ public class BoardCreator : MonoBehaviour
         this.level = level;
         this.uiDoc = uiDoc;
 
-        CreateBoard();
+        //CreateBoard();
     }
 
     public Sprite GetTileStateTexture(TileState state)
@@ -124,12 +126,12 @@ public class BoardCreator : MonoBehaviour
 
     private void CreateBoard()
     {
-        screen                      = uiDoc.rootVisualElement.Q<VisualElement>("Screen");
-        board                       = screen.Q<VisualElement>("Board");
+        screen = uiDoc.rootVisualElement.Q<VisualElement>("Screen");
+        board = screen.Q<VisualElement>("Board");
 
-        board.style.width           = 100 * level.Cols;
-        board.style.maxWidth        = board.style.width;
-        board.style.minWidth        = board.style.width;
+        float tileSize              = Mathf.Floor((screen.worldBound.width - (2f * boardBorder)) / (float)level.Cols);
+
+        board.SetWidth(new StyleLength(tileSize * level.Cols));
 
         InputController.instance.RegisterBoardInteractionCallbacks(screen);
 
@@ -148,6 +150,11 @@ public class BoardCreator : MonoBehaviour
             {
                 VisualElement pref  = BoardCreator.instance.tilePrefab.Instantiate();
                 VisualElement tile  = pref.Q<VisualElement>("Tile");
+
+                tile.RemoveFromClassList("Tile");
+                tile.style.backgroundColor = new StyleColor(Color.white);
+                tile.SetWidth(new StyleLength(tileSize));
+                tile.SetHeight(tile.style.width);
 
                 Level.SpecialTileDefinitions rules = level.GetSpecialTileDef(col, row);
                 Tile t;
@@ -239,8 +246,6 @@ public class BoardCreator : MonoBehaviour
                     x => board.transform.scale = x, new Vector3(1f, 1f, 1f), animLength/2f)
                     .SetEase(Ease.OutBounce);
 
-        //yield return s.Play().WaitForCompletion();
-
         s.Play();
 
         yield return new WaitForSeconds(animLength / 2f * .55f);
@@ -299,14 +304,6 @@ public class BoardCreator : MonoBehaviour
                     coin.style.SetBorderWidth(3f);
                     coin.style.position = Position.Absolute;
 
-                    //VisualElement par = new VisualElement();
-                    //par.style.SetHeight(new StyleLength(new Length(100f, LengthUnit.Percent)));
-                    //par.style.SetWidth(new StyleLength(new Length(100f, LengthUnit.Percent)));
-                    //par.style.position = Position.Absolute;
-
-                    //screen.parent.Add(par);
-                    //par.Add(coin);
-
                     screen.Add(coin);
 
                     float delay = Random.Range(0f, animationTime * .9f);
@@ -331,25 +328,6 @@ public class BoardCreator : MonoBehaviour
                                         .SetEase(Ease.InBack)
                                         .Play();
                 }
-
-                //float targetX = Random.Range(-widthbound, widthbound);
-                //float targetY = Random.Range(-heightbound, heightbound);
-
-                //Tween initialBurstX = DOTween.To(() => coin.transform.position.x,
-                //                    x => coin.transform.position = new Vector3(x, coin.transform.position.y, coin.transform.position.z),
-                //                    targetX, .5f)
-                //                    .SetEase(Ease.OutBack);
-
-                //Tween initialBurstY = DOTween.To(() => coin.transform.position.y,
-                //                    x => coin.transform.position = new Vector3(coin.transform.position.x, x, coin.transform.position.z),
-                //                    targetY, .5f)
-                //                    .SetEase(Ease.OutBack);
-
-                //Sequence initialBurst = DOTween.Sequence();
-                //initialBurst.Insert(0, initialBurstX);
-                //initialBurst.Insert(0, initialBurstY);
-
-                //initialBurst.Play();
             }
         }
 
@@ -373,6 +351,10 @@ public class BoardCreator : MonoBehaviour
 
     public IEnumerator AnimateBoardIn()
     {
+        yield return null; //This is needed because the width of the screen/board are not calculated on the same frame in which they're initialized
+
+        CreateBoard();
+
         List<Tween> intweens = new List<Tween>();
 
         WaitForSeconds w = new WaitForSeconds(.01f);
@@ -515,7 +497,7 @@ public class BoardCreator : MonoBehaviour
                 if (tiles[i][j].Line == startTile.Line)
                     tiles[i][j].gCost = 0;
                 else
-                    tiles[i][j].gCost = 5000;//int.MaxValue;
+                    tiles[i][j].gCost = 50000;//int.MaxValue;
 
                 tiles[i][j].CalcFCost();
                 tiles[i][j].cameFromTile = null;

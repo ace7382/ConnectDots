@@ -13,6 +13,7 @@ public class UIManager : MonoBehaviour
 
     #region Inspector Variables
 
+    [SerializeField] private TopBarController topBarControl;
     [SerializeField] private VisualTreeAsset levelSelectButton;
     [SerializeField] private VisualTreeAsset objectiveCard;
     [SerializeField] private BackgroundScroll scrollingBG;
@@ -27,6 +28,7 @@ public class UIManager : MonoBehaviour
 
     #region Public Properties
 
+    public TopBarController TopBar { get { return topBarControl; } }
     public VisualTreeAsset LevelSelectButton { get { return levelSelectButton; } }
     public VisualTreeAsset ObjectiveCard { get { return objectiveCard; } }
     public Texture2D RestrictedTile { get { return restrictedTileTexture; } }

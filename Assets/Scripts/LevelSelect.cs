@@ -11,6 +11,7 @@ public class LevelSelect : Page
 
     ScrollView levelScroll, objectiveScroll;
     VisualElement levelsButton, objectivesButton;
+    private bool canClick;
 
     #endregion
 
@@ -43,6 +44,11 @@ public class LevelSelect : Page
 
                 button.RegisterCallback<PointerDownEvent>((PointerDownEvent evt) =>
                 {
+                    if (!canClick)
+                        return;
+
+                    canClick = false;
+
                     object[] data = new object[1];
                     data[0] = lev;
 
@@ -80,7 +86,19 @@ public class LevelSelect : Page
 
         UIManager.instance.SetBackground(cat.BackgroundImage, cat.Color);
 
+        canClick = true;
+
         ShowLevels(null);
+
+        EventCallback<PointerDownEvent> backbuttonAction = (evt) =>
+        {
+            if (!canClick)
+                return;
+
+            PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<CategorySelect>());
+        };
+
+        UIManager.instance.TopBar.UpdateBackButtonOnClick(backbuttonAction);
     }
 
     public override void HidePage()
@@ -104,6 +122,8 @@ public class LevelSelect : Page
 
     public override IEnumerator AnimateOut()
     {
+        canClick = false;
+
         VisualElement page = uiDoc.rootVisualElement;
 
         page.style.opacity = new StyleFloat(1f);
@@ -121,18 +141,28 @@ public class LevelSelect : Page
 
     private void ShowLevels(PointerDownEvent evt)
     {
+        if (!canClick)
+            return;
+
         (objectiveScroll as VisualElement).Show(false);
         (levelScroll as VisualElement).Show();
 
         levelScroll.GoToTop();
+
+        canClick = true;
     }
 
     private void ShowObjectives(PointerDownEvent evt)
     {
+        if (!canClick)
+            return;
+
         (objectiveScroll as VisualElement).Show();
         (levelScroll as VisualElement).Show(false);
 
         objectiveScroll.GoToTop();
+
+        canClick = true;
     }
 
     #endregion

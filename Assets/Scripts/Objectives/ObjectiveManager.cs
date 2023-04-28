@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 public class ObjectiveManager : MonoBehaviour
@@ -36,11 +37,13 @@ public class ObjectiveManager : MonoBehaviour
     private void OnEnable()
     {
         this.AddObserver(OnTileColored, Notifications.TILES_COLORED);
+        this.AddObserver(OnLevelCompleted, Notifications.LEVEL_COMPLETE);
     }
 
     private void OnDisable()
     {
         this.RemoveObserver(OnTileColored, Notifications.TILES_COLORED);
+        this.RemoveObserver(OnLevelCompleted, Notifications.LEVEL_COMPLETE);
     }
 
     #endregion
@@ -96,10 +99,30 @@ public class ObjectiveManager : MonoBehaviour
 
     #region Private Functions
 
+    private void OnLevelCompleted(object sender, object info)
+    {
+        //Sender    -   Level       -   The level that was completed
+        //info      -   N/A
+
+        Level completedLevel = (Level)sender;
+
+        for (int i = 0; i < objectives.Count; i++)
+        {
+            if (objectives[i] is CompleteCategory_Objective)
+            {
+                CompleteCategory_Objective objective = (CompleteCategory_Objective)objectives[i];
+
+                if (objective.LevelCategory == completedLevel.LevelCategory)
+                    objective.CheckComplete();
+            }
+        }
+    }
+
     private void OnTileColored(object sender, object info)
     {
+        //Sender    -   N/A
         //info      -   object[]    -   An object array with the following information
-        //info[o]   -   Level       -   The level the tiles were colored on
+        //info[0]   -   Level       -   The level the tiles were colored on
         //info[1]   -   int         -   The ColorIndex of the tiles colored
         //info[2]   -   int         -   The number of tiles colored
 
@@ -134,4 +157,24 @@ public class ObjectiveManager : MonoBehaviour
     }
 
     #endregion
+
+
+#if UNITY_EDITOR
+    #region Dev Help Functions
+
+    [MenuItem("Dev Commands/Link Objectives")]
+    public static void LinkObjectivesToObjectiveManager()
+    {
+        if (Application.isPlaying)
+        {
+            Debug.LogWarning("Editor is in Playmode. This function cannot be used");
+            return;
+        }
+
+        GameObject.FindObjectOfType<ObjectiveManager>().objectives = Resources.LoadAll<Objective>("Objectives").ToList();
+    }
+
+    #endregion
+#endif
+
 }

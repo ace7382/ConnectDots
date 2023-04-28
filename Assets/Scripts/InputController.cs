@@ -10,6 +10,9 @@ public class InputController : MonoBehaviour
     public static InputController instance;
 
     private Line draggingLine;
+    private bool canClick;
+
+    public bool CanAcceptClick { get { return canClick; } }
 
     public void Awake()
     {
@@ -47,6 +50,11 @@ public class InputController : MonoBehaviour
         tile.UnregisterCallback<PointerOutEvent>(TileDraggedOutHandler);
     }
 
+    public void CanClick(bool canClick = true)
+    {
+        this.canClick = canClick;
+    }
+
     #region Board Handlers
 
     private void ClickReleasedHandler(PointerUpEvent evt)
@@ -70,6 +78,9 @@ public class InputController : MonoBehaviour
 
     private void TileClickedHandler(PointerDownEvent evt)
     {
+        if (!canClick)
+            return;
+
         VisualElement ve = (evt.target as VisualElement);
         Tile tile = ve.userData as Tile;
 
@@ -97,7 +108,7 @@ public class InputController : MonoBehaviour
 
     private void TileDraggedOverHandler(PointerOverEvent evt)
     {
-        if (draggingLine == null)
+        if (draggingLine == null || !canClick)
             return;
 
         VisualElement ve = evt.target as VisualElement;

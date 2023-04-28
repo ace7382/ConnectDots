@@ -1,4 +1,5 @@
 public enum Notifications
 {
-    TILES_COLORED
+    TILES_COLORED,
+    LEVEL_COMPLETE
 }

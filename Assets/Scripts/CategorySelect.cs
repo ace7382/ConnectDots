@@ -9,10 +9,11 @@ public class CategorySelect : Page
 {
     #region Private Variables
 
-    VisualElement bigCategoryIcon, instructionsVE, levelsCompletedPanel, objectivesPanel;
-    Label categoryTitle, levelsCompleted, categoryObjectivesMet;
-    VisualElement selectedButton;
-    List<VisualElement> categoryButtons;
+    private VisualElement bigCategoryIcon, instructionsVE, levelsCompletedPanel, objectivesPanel;
+    private Label categoryTitle, levelsCompleted, categoryObjectivesMet;
+    private VisualElement selectedButton;
+    private List<VisualElement> categoryButtons;
+    private bool canClick;
 
     #endregion
 
@@ -58,17 +59,19 @@ public class CategorySelect : Page
 
     public override void ShowPage(object[] args)
     {
-        ScrollView scroll                           = uiDoc.rootVisualElement.Q<ScrollView>();
-        scroll.verticalScrollerVisibility           = ScrollerVisibility.Hidden;
+        EventCallback<PointerDownEvent> backbuttonAction = (evt) =>
+        {
+            if (!canClick)
+                return;
 
-        scroll.contentContainer.style.flexDirection = FlexDirection.Row;
-        scroll.contentContainer.style.flexWrap = Wrap.Wrap;
-        scroll.contentContainer.style
-            .justifyContent                         = Justify.Center;
-        scroll.contentContainer.style               .SetMargins(15f);
+            PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<MainMenu>(null, false));
+        };
 
-        scroll.style                                .SetBorderRadius(10f);
-        scroll.style.backgroundColor                = new StyleColor(new Color(0f, 0f, 0f, .5f));
+        UIManager.instance.TopBar.UpdateBackButtonOnClick(backbuttonAction);
+
+        ScrollView scroll                           = uiDoc.rootVisualElement.Q<ScrollView>("CategoryScroll");
+        scroll.contentContainer.style.flexGrow      = 1f;
+        VisualElement scrollContent                 = scroll.contentContainer.Q<VisualElement>("CategoryScrollContent");
 
         List<LevelCategory> cats                    = Resources.LoadAll<LevelCategory>("Categories").ToList();
         categoryButtons                             = new List<VisualElement>();
@@ -80,8 +83,6 @@ public class CategorySelect : Page
         levelsCompletedPanel                        = uiDoc.rootVisualElement.Q<VisualElement>("LevelsCompletePanel");
         categoryObjectivesMet                       = uiDoc.rootVisualElement.Q<Label>("ObjectivesCompleteCount");
         objectivesPanel                             = uiDoc.rootVisualElement.Q<VisualElement>("ObjectivesCompletePanel");
-
-        //StyleFloat opacity0                         = new StyleFloat(0f);
 
         for (int i = 0; i < cats.Count; i++)
         {
@@ -98,6 +99,11 @@ public class CategorySelect : Page
 
                 button.RegisterCallback<PointerDownEvent>((PointerDownEvent evt) =>
                 {
+                    if (!canClick)
+                        return;
+
+                    canClick = false;
+
                     if (SelectedCategoryButton == button)
                     {
                         object[] data = new object[1];
@@ -108,27 +114,30 @@ public class CategorySelect : Page
                     else
                     {
                         SelectedCategoryButton = button;
+                        canClick = true;
                     }
                 });
 
-                scroll.contentContainer.Add(button);
+                scrollContent.Add(button);
 
-                //button.style.opacity = opacity0;
                 categoryButtons.Add(button);
             }
         }
 
+        canClick = true;
         SelectedCategoryButton = null;
         ShowCategoryDetails();
     }
 
     public override void HidePage()
     {
-        //TODO: Remove ability to click on animate in and animate out
+
     }
 
     public override IEnumerator AnimateIn()
     {
+        canClick = false;
+
         VisualElement page = uiDoc.rootVisualElement;
 
         page.style.opacity = new StyleFloat(0f);
@@ -139,35 +148,13 @@ public class CategorySelect : Page
 
         yield return fadein.Play().WaitForCompletion();
 
-        //System.Random r = new System.Random();
-        //categoryButtons = categoryButtons.OrderBy(x => r.Next()).ToList();
-
-        //WaitForSeconds w = new WaitForSeconds(.005f);
-        //List<Tween> waitFor = new List<Tween>();
-
-        //for (int i = 0; i < categoryButtons.Count; i++)
-        //{
-        //    VisualElement v = categoryButtons[i];
-
-        //    Tween a = DOTween.To(() => v.style.opacity.value,
-        //        x => v.style.opacity = new StyleFloat(x),
-        //        1f, .025f);
-
-        //    waitFor.Add(a);
-
-        //    a.Play();
-
-        //    a.onKill += () => waitFor.Remove(a);
-
-        //    yield return w;
-        //}
-
-        //while (waitFor.Count > 0)
-        //    yield return null;
+        canClick = true;
     }
 
     public override IEnumerator AnimateOut()
     {
+        canClick = false;
+
         VisualElement page = uiDoc.rootVisualElement;
 
         page.style.opacity = new StyleFloat(1f);

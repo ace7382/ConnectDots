@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/GlobalStyles.uss?fileID=7433441132597879392&amp;guid=72ac875abbfffce4288508c5b6f9e712&amp;type=3#GlobalStyles" />
-    <ui:VisualElement name="Page" style="width: 100%; height: auto; max-width: 100%; max-height: none; min-width: 100%; min-height: 100%; align-items: center; justify-content: flex-start; flex-grow: 1; flex-shrink: 0;">
+    <ui:VisualElement name="Page" class="PageSize" style="width: 100%; height: auto; max-width: 100%; max-height: none; min-width: 100%; min-height: auto; align-items: center; justify-content: flex-start;">
         <ui:VisualElement name="TopPanel" style="background-color: rgba(0, 0, 0, 0.5); height: auto; width: 90%; max-height: none; max-width: 90%; min-width: 90%; min-height: 385px; flex-shrink: 0; flex-direction: column; margin-left: 15px; margin-right: 15px; margin-top: 15px; margin-bottom: 15px; border-top-left-radius: 15px; border-bottom-left-radius: 15px; border-top-right-radius: 15px; border-bottom-right-radius: 15px; justify-content: center; align-self: auto; align-items: center;">
             <ui:Label tabindex="-1" text="Select A Level Category" display-tooltip-when-elided="false" name="InstructionsLabel" enable-rich-text="false" class="HeaderLabel" style="font-size: 20px; white-space: normal; display: none; margin-left: 15px; margin-right: 15px; margin-top: 15px; margin-bottom: 15px; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
             <ui:Label tabindex="-1" text="Purple Star" display-tooltip-when-elided="true" name="CategoryName" class="HeaderLabel" style="padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; margin-left: 15px; margin-right: 15px; margin-top: 15px; margin-bottom: 15px; align-items: auto; align-self: auto; white-space: normal;" />
@@ -14,8 +14,13 @@
                 <ui:Label tabindex="-1" text="000 / 000" display-tooltip-when-elided="true" name="ObjectivesCompleteCount" class="NormalLabel" style="margin-left: 15px; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="BottomPanel" style="flex-grow: 1; width: 100%; justify-content: center; flex-direction: row;">
+        <ui:VisualElement name="BottomPanel" style="flex-grow: 1; width: 100%; justify-content: center; flex-direction: row; display: none;">
             <ui:ScrollView name="ScrollView" style="margin-left: 15px; margin-right: 15px; margin-top: 15px; margin-bottom: 15px; width: 90%; max-width: 90%; min-width: 90%;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="ScrollPanel" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0.5); border-top-left-radius: 15px; border-bottom-left-radius: 15px; border-top-right-radius: 15px; border-bottom-right-radius: 15px; width: 90%; max-width: 90%; min-width: 90%; margin-bottom: 15px;">
+            <ui:ScrollView name="CategoryScroll" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" style="margin-left: 15px; margin-right: 15px; margin-top: 15px; margin-bottom: 15px; width: 90%; flex-shrink: 0; align-self: center;">
+                <ui:VisualElement name="CategoryScrollContent" style="flex-grow: 1; padding-left: 15px; padding-right: 15px; padding-top: 15px; padding-bottom: 15px; flex-direction: row; flex-wrap: wrap; flex-shrink: 0; justify-content: space-around;" />
+            </ui:ScrollView>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

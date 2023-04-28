@@ -78,6 +78,8 @@ public class Level : ScriptableObject
     public void LevelComplete()
     {
         IsComplete = true;
+
+        this.PostNotification(Notifications.LEVEL_COMPLETE);
     }
 
     public void ResetLevel()

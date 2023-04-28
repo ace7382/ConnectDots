@@ -32,39 +32,34 @@ public class LevelSelect : Page
 
         for (int i = 0; i < levels.Count; i++)
         {
-            for (int test = 0; test < 130; test++)
+            VisualElement button = UIManager.instance.LevelSelectButton.Instantiate();
+            Level lev = levels[i];
+
+            button.Q<VisualElement>("Icon").RemoveFromHierarchy();
+            Label num = button.Q<Label>("Number");
+            num.style.Show();
+            num.text = lev.LevelNumber;
+
+            button.RegisterCallback<PointerDownEvent>((PointerDownEvent evt) =>
             {
-                VisualElement button = UIManager.instance.LevelSelectButton.Instantiate();
-                Level lev = levels[i];
+                if (!canClick)
+                    return;
 
-                button.Q<VisualElement>("Icon").RemoveFromHierarchy();
-                Label num = button.Q<Label>("Number");
-                num.style.Show();
-                num.text = lev.LevelNumber;
+                canClick = false;
 
-                button.RegisterCallback<PointerDownEvent>((PointerDownEvent evt) =>
-                {
-                    if (!canClick)
-                        return;
+                object[] data = new object[1];
+                data[0] = lev;
 
-                    canClick = false;
+                PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<GamePlayPage>(data));
+            });
 
-                    object[] data = new object[1];
-                    data[0] = lev;
-
-                    PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<GamePlayPage>(data));
-                });
-
-                levelScrollContent.Add(button);
-            }
+            levelScrollContent.Add(button);
         }
 
         objectiveScroll = uiDoc.rootVisualElement.Q<ScrollView>("ObjectiveScroll");
         objectiveScroll.contentContainer.style.flexGrow = 1f;
         VisualElement objectiveScrollContent = objectiveScroll.contentContainer.Q<VisualElement>("ObjectiveScrollContent");
         List<Objective> objectives = ObjectiveManager.instance.GetObjectivesForCategory(cat);
-
-        Debug.Log("Found " + objectives.Count + " objectives for " + cat.name);
 
         for (int i = 0; i < objectives.Count; i++)
         {

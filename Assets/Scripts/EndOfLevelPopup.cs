@@ -51,6 +51,8 @@ public class EndOfLevelPopup : Page
         nextLevelButton.RegisterCallback<PointerDownEvent>((evt) => LoadLevel(nextLevel, evt));
 
         canClick = false;
+
+        UIManager.instance.TopBar.ShowTopBar(false);
     }
 
     public override void HidePage()
@@ -84,6 +86,8 @@ public class EndOfLevelPopup : Page
                                 x => page.transform.position = x,
                                 new Vector3(0f, Screen.height, page.transform.position.z), .45f)
                                 .SetEase(Ease.OutQuart);
+
+        UIManager.instance.TopBar.ShowTopBar();
 
         yield return flyOut.WaitForCompletion();
     }

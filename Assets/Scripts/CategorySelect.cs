@@ -86,42 +86,39 @@ public class CategorySelect : Page
 
         for (int i = 0; i < cats.Count; i++)
         {
-            for (int test = 0; test < 50; test++)
+            VisualElement button = UIManager.instance.LevelSelectButton.Instantiate();
+            LevelCategory lCat = cats[i];
+
+            button.userData = lCat;
+
+            VisualElement icon = button.Q<VisualElement>("Icon");
+            button.Q<VisualElement>("LevelSelectButton").style.backgroundColor = lCat.Color;
+            icon.style.backgroundImage = lCat.LevelSelectImage;
+
+            button.RegisterCallback<PointerDownEvent>((PointerDownEvent evt) =>
             {
-                VisualElement button = UIManager.instance.LevelSelectButton.Instantiate();
-                LevelCategory lCat = cats[i];
+                if (!canClick)
+                    return;
 
-                button.userData = lCat;
+                canClick = false;
 
-                VisualElement icon = button.Q<VisualElement>("Icon");
-                button.Q<VisualElement>("LevelSelectButton").style.backgroundColor = lCat.Color;
-                icon.style.backgroundImage = lCat.LevelSelectImage;
-
-                button.RegisterCallback<PointerDownEvent>((PointerDownEvent evt) =>
+                if (SelectedCategoryButton == button)
                 {
-                    if (!canClick)
-                        return;
+                    object[] data = new object[1];
+                    data[0] = lCat;
 
-                    canClick = false;
+                    PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<LevelSelect>(data));
+                }
+                else
+                {
+                    SelectedCategoryButton = button;
+                    canClick = true;
+                }
+            });
 
-                    if (SelectedCategoryButton == button)
-                    {
-                        object[] data = new object[1];
-                        data[0] = lCat;
+            scrollContent.Add(button);
 
-                        PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<LevelSelect>(data));
-                    }
-                    else
-                    {
-                        SelectedCategoryButton = button;
-                        canClick = true;
-                    }
-                });
-
-                scrollContent.Add(button);
-
-                categoryButtons.Add(button);
-            }
+            categoryButtons.Add(button);
         }
 
         canClick = true;
@@ -145,6 +142,9 @@ public class CategorySelect : Page
         Tween fadein = DOTween.To(() => page.style.opacity.value,
                 x => page.style.opacity = new StyleFloat(x),
                 1f, .33f);
+
+        if (!UIManager.instance.TopBar.IsShowing)
+            UIManager.instance.TopBar.ShowTopBar();
 
         yield return fadein.Play().WaitForCompletion();
 

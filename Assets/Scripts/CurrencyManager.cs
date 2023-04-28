@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class CurrencyManager : MonoBehaviour
@@ -16,6 +17,12 @@ public class CurrencyManager : MonoBehaviour
 
     #endregion
 
+    #region Public Properties
+
+    public int TotalTokens { get { return ownedColors.Sum(x => x.Value); } }
+
+    #endregion
+
     #region Unity Functions
 
     private void Awake()
@@ -24,10 +31,7 @@ public class CurrencyManager : MonoBehaviour
             instance = this;
         else if (instance != this)
             Destroy(gameObject);
-    }
 
-    private void Start()
-    {
         ownedColors = new Dictionary<int, int>();
     }
 
@@ -53,6 +57,14 @@ public class CurrencyManager : MonoBehaviour
             ret += "\n" + color.Key.ToString() + ": " + color.Value.ToString();
 
         return ret;
+    }
+
+    public int GetCoinsForColorIndex(int index)
+    {
+        if (!ownedColors.ContainsKey(index))
+            return 0;
+
+        return ownedColors[index];
     }
 
     #endregion

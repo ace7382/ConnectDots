@@ -48,8 +48,6 @@ public class MainMenu : Page
                 x => page.style.opacity = new StyleFloat(x),
                 0f, .33f);
 
-        UIManager.instance.TopBar.ShowTopBar();
-
         yield return fadeout.Play().WaitForCompletion();
     }
 

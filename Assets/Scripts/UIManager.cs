@@ -16,6 +16,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TopBarController topBarControl;
     [SerializeField] private VisualTreeAsset levelSelectButton;
     [SerializeField] private VisualTreeAsset objectiveCard;
+    [SerializeField] private VisualTreeAsset coinDisplay;
     [SerializeField] private BackgroundScroll scrollingBG;
     [SerializeField] private Texture2D restrictedTileTexture;
 
@@ -31,7 +32,9 @@ public class UIManager : MonoBehaviour
     public TopBarController TopBar { get { return topBarControl; } }
     public VisualTreeAsset LevelSelectButton { get { return levelSelectButton; } }
     public VisualTreeAsset ObjectiveCard { get { return objectiveCard; } }
+    public VisualTreeAsset CoinDisplay { get { return coinDisplay; } }
     public Texture2D RestrictedTile { get { return restrictedTileTexture; } }
+    public int ColorCount { get { return gameColors.Count; } }
 
     #endregion
 

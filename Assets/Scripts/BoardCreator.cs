@@ -217,6 +217,8 @@ public class BoardCreator : MonoBehaviour
 
     public IEnumerator LevelCompleteAnimation()
     {
+        UIManager.instance.TopBar.CanClick = false;
+
         int diags = level.Rows + level.Cols - 1;
         float animLength = 1.05f;
         float spinDur = animLength / (float)(diags / 2);

@@ -56,6 +56,8 @@ public class PageManager : MonoBehaviour
 
     public IEnumerator CloseTopPage(bool animateOut = true, bool executeHideCall = true)
     {
+        UIManager.instance.TopBar.CanClick = false;
+
         if (animateOut)
             yield return (stack.Cast<DictionaryEntry>().ElementAt(stack.Count - 1).Key as Page).AnimateOut();
 
@@ -64,11 +66,15 @@ public class PageManager : MonoBehaviour
 
         GOPages.Push(stack[stack.Count - 1] as GameObject);
         stack.RemoveAt(stack.Count - 1);
+
+        UIManager.instance.TopBar.CanClick = true;
     }
 
     public IEnumerator OpenPageOnAnEmptyStack<T>(object[] arfs = null, bool animateOut = true
         , bool executeHideCalls = true, bool animateIn = true, bool executeShowCall = true) where T : Page, new()
     {
+        UIManager.instance.TopBar.CanClick = false;
+
         for (int i = stack.Count - 1; i >= 0; i--)
         {
             Page p = stack.Cast<DictionaryEntry>().ElementAt(i).Key as Page;
@@ -102,10 +108,14 @@ public class PageManager : MonoBehaviour
 
         if (executeShowCall) pageToAdd.ShowPage(arfs);
         if (animateIn) yield return pageToAdd.AnimateIn();
+
+        UIManager.instance.TopBar.CanClick = true;
     }
 
     public IEnumerator AddPageToStack<T>(object[] args = null, bool animateIn = true, bool executeShowCall = true) where T : Page, new()
     {
+        UIManager.instance.TopBar.CanClick = false;
+
         GameObject page             = GOPages.Pop();
         page.transform.localScale   = Vector3.one;
 
@@ -123,6 +133,8 @@ public class PageManager : MonoBehaviour
 
         if (executeShowCall) pageToAdd.ShowPage(args);
         if (animateIn) yield return pageToAdd.AnimateIn();
+
+        UIManager.instance.TopBar.CanClick = true;
     }
 
     #endregion

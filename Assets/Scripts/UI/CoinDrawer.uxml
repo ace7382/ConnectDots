@@ -1,0 +1,15 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/GlobalStyles.uss?fileID=7433441132597879392&amp;guid=72ac875abbfffce4288508c5b6f9e712&amp;type=3#GlobalStyles" />
+    <ui:VisualElement name="Page" class="PageSize" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);">
+        <ui:VisualElement name="BackgroundBlocker" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); align-self: auto; flex-shrink: 0; width: 100%; flex-direction: row; justify-content: flex-end;">
+            <ui:VisualElement name="ScrollPanel" style="flex-grow: 1; background-color: rgb(255, 255, 255); border-top-left-radius: 15px; border-bottom-left-radius: 15px; border-top-right-radius: 15px; border-bottom-right-radius: 15px; width: 65%; max-width: 65%; min-width: 65%; margin-bottom: 15px; margin-top: 15px; margin-right: 15px; align-self: flex-start; align-items: stretch; justify-content: flex-start; flex-direction: column;">
+                <ui:ScrollView name="CoinsScroll" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" style="margin-left: 15px; margin-right: 15px; margin-top: 15px; margin-bottom: 15px; width: 90%; flex-shrink: 0; align-self: center;">
+                    <ui:VisualElement name="CoinsScrollContent" style="flex-grow: 1; padding-left: 15px; padding-right: 15px; padding-top: 15px; padding-bottom: 15px; flex-direction: column; flex-wrap: nowrap; flex-shrink: 0; justify-content: space-around;">
+                        <ui:Label tabindex="-1" text="My Tokens" display-tooltip-when-elided="true" class="NormalLabel" style="-unity-text-align: middle-center; margin-bottom: 15px;" />
+                        <ui:Label tabindex="-1" text="You&apos;re all out of tokens!&#10;&#10;Complete some Puzzles to earn more!" display-tooltip-when-elided="true" name="EmptyLabel" class="NormalLabel" style="-unity-text-align: middle-center; margin-bottom: 15px; font-size: 18px; color: rgb(115, 115, 115); white-space: normal; border-top-left-radius: 15px; border-bottom-left-radius: 15px; border-top-right-radius: 15px; border-bottom-right-radius: 15px; border-left-width: 3px; border-right-width: 3px; border-top-width: 3px; border-bottom-width: 3px; border-left-color: rgb(115, 115, 115); border-right-color: rgb(115, 115, 115); border-top-color: rgb(115, 115, 115); border-bottom-color: rgb(115, 115, 115); padding-bottom: 15px; padding-top: 15px; margin-left: 5px; margin-right: 5px; margin-top: 15px; padding-left: 0; padding-right: 0;" />
+                    </ui:VisualElement>
+                </ui:ScrollView>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

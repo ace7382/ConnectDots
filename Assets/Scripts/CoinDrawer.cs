@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,9 +6,10 @@ using UnityEngine.UIElements;
 
 public class CoinDrawer : Page
 {
-    #region Private Functions
+    #region Private Varuables
 
     private EventCallback<PointerDownEvent> previousBackButtonAction;
+    private bool canClick;
 
     #endregion
 
@@ -19,6 +21,9 @@ public class CoinDrawer : Page
 
         EventCallback<PointerDownEvent> backButtonAction = (evt) =>
         {
+            if (!canClick)
+                return;
+
             UIManager.instance.TopBar.CoinButtonClicked(evt);
         };
 
@@ -62,12 +67,30 @@ public class CoinDrawer : Page
 
     public override IEnumerator AnimateIn()
     {
-        return null;
+        canClick = false;
+
+        uiDoc.rootVisualElement.style.translate = new StyleTranslate(new Translate(new Length(100f, LengthUnit.Percent), 0f));
+
+        Tween flyIn = DOTween.To(() => uiDoc.rootVisualElement.transform.position,
+                                x => uiDoc.rootVisualElement.transform.position = x,
+                                new Vector3(0f, 0f, uiDoc.rootVisualElement.transform.position.z), .65f)
+                                .SetEase(Ease.OutQuart);
+
+        yield return flyIn.WaitForCompletion();
+
+        canClick = true;
     }
 
     public override IEnumerator AnimateOut()
     {
-        return null;
+        canClick = false;
+
+        Tween flyout = DOTween.To(() => uiDoc.rootVisualElement.transform.position,
+                                x => uiDoc.rootVisualElement.transform.position = x,
+                                new Vector3(Screen.width, 0f, uiDoc.rootVisualElement.transform.position.z), .65f)
+                                .SetEase(Ease.InQuart);
+
+        yield return flyout.WaitForCompletion();
     }
 
     #endregion

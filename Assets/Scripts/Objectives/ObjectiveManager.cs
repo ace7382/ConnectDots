@@ -24,6 +24,12 @@ public class ObjectiveManager : MonoBehaviour
 
     #endregion
 
+    #region Public Properties
+
+    public int CompletedObjectivesCount { get { return completeObjectives.Count; } }
+
+    #endregion
+
     #region Unity Functions
 
     private void Awake()

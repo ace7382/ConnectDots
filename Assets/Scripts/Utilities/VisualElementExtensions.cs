@@ -15,6 +15,11 @@ public static class VisualElementExtensions
         ve.Show(false);
     }
 
+    public static bool IsShowing(this VisualElement ve)
+    {
+        return ve.style.display == DisplayStyle.Flex;
+    }
+
     public static void SetColor(this VisualElement ve, Color color)
     {
         ve.style.backgroundColor = color;

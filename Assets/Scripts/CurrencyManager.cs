@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 public class CurrencyManager : MonoBehaviour
@@ -49,6 +50,19 @@ public class CurrencyManager : MonoBehaviour
         Debug.Log(this);
     }
 
+    public void SpendCurrency(int colorIndex, int amount)
+    {
+        if (amount > ownedColors[colorIndex])
+        {
+            Debug.Log(string.Format("Trying to spend {0} of color {1}. Only have {2} though"
+                , amount.ToString(), colorIndex.ToString(), ownedColors[colorIndex].ToString()));
+
+            return;
+        }
+
+        ownedColors[colorIndex] -= amount;
+    }
+
     public override string ToString()
     {
         string ret = "***Current Currency***";
@@ -72,4 +86,23 @@ public class CurrencyManager : MonoBehaviour
     #region Private Functions
 
     #endregion
+
+#if UNITY_EDITOR
+    #region Dev Help Functions
+
+    [MenuItem("Dev Commands/Give 1000 of Each Color")]
+    public static void LinkObjectivesToObjectiveManager()
+    {
+        if (!Application.isPlaying)
+        {
+            Debug.LogWarning("Editor is not in Playmode. This function cannot be used");
+            return;
+        }
+
+        for (int i = 0; i < UIManager.instance.ColorCount; i++)
+            CurrencyManager.instance.AddCurrency(i, 1000);
+    }
+
+    #endregion
+#endif
 }

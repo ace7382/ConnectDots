@@ -68,7 +68,7 @@ public class EndOfLevelPopup : Page
 
         Tween flyIn = DOTween.To(() => page.transform.position,
                                 x => page.transform.position = x,
-                                new Vector3(0f, 0f, page.transform.position.z), .75f)
+                                new Vector3(0f, 0f, page.transform.position.z), .65f)
                                 .SetEase(Ease.OutQuart);
 
         yield return flyIn.WaitForCompletion();

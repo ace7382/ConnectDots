@@ -6,6 +6,7 @@ public abstract class Objective : ScriptableObject
 {
     #region Inspector Variables
 
+    [SerializeField] protected string           id;
     [SerializeField] protected string           description;
     [SerializeField] protected LevelCategory    levelCategory;
     [SerializeField] protected Level            level;
@@ -33,6 +34,7 @@ public abstract class Objective : ScriptableObject
         }
     }
 
+    public string           ID                  { get { return id; } }
     public Level            Level               { get { return level; } }
     public LevelCategory    LevelCategory       { get { return levelCategory; } }
     public string           Description         { get { return description; } }

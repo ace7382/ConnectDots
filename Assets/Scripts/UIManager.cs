@@ -17,8 +17,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private VisualTreeAsset levelSelectButton;
     [SerializeField] private VisualTreeAsset objectiveCard;
     [SerializeField] private VisualTreeAsset coinDisplay;
+    [SerializeField] private VisualTreeAsset requirementDisplay;
     [SerializeField] private BackgroundScroll scrollingBG;
     [SerializeField] private Texture2D restrictedTileTexture;
+    [SerializeField] private Texture2D trophyTexture;
 
     [Space]
 
@@ -33,7 +35,9 @@ public class UIManager : MonoBehaviour
     public VisualTreeAsset LevelSelectButton { get { return levelSelectButton; } }
     public VisualTreeAsset ObjectiveCard { get { return objectiveCard; } }
     public VisualTreeAsset CoinDisplay { get { return coinDisplay; } }
+    public VisualTreeAsset RequirementDisplay { get { return requirementDisplay; } }
     public Texture2D RestrictedTile { get { return restrictedTileTexture; } }
+    public Texture2D TrophyTexture { get { return trophyTexture; } }
     public int ColorCount { get { return gameColors.Count; } }
 
     #endregion

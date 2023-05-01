@@ -160,6 +160,7 @@ MonoBehaviour:
   - {fileID: 9197481963319205126, guid: fc46a566f02b8e9449be312cf7d72aba, type: 3}
   - {fileID: 9197481963319205126, guid: b097010f2e5d3c94397b1c183dca8529, type: 3}
   - {fileID: 9197481963319205126, guid: f014d65b84f5a504a956143cfe0b77e6, type: 3}
+  - {fileID: 9197481963319205126, guid: b7843884c3dee0a4a9af15f6275f0e94, type: 3}
 --- !u!4 &413392889
 Transform:
   m_ObjectHideFlags: 0
@@ -392,8 +393,10 @@ MonoBehaviour:
   levelSelectButton: {fileID: 9197481963319205126, guid: 33c15d8e480526a46b46edea8e7e16a1, type: 3}
   objectiveCard: {fileID: 9197481963319205126, guid: bab16855fe8431b4aa00d16f346a6afc, type: 3}
   coinDisplay: {fileID: 9197481963319205126, guid: afed470b92703424394881c5a3ffb1dd, type: 3}
+  requirementDisplay: {fileID: 9197481963319205126, guid: d9d05c636a5ac274f9ed086317f8b3e0, type: 3}
   scrollingBG: {fileID: 522809990}
   restrictedTileTexture: {fileID: 2800000, guid: 6ef43b2fa630ce04c8e6f83fd6c7ab32, type: 3}
+  trophyTexture: {fileID: 2800000, guid: 3243b89739027b64d8528fc403185760, type: 3}
   gameColors:
   - {r: 1, g: 1, b: 1, a: 1}
   - {r: 1, g: 0, b: 0, a: 1}

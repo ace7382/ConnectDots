@@ -41,6 +41,9 @@ public class CompleteCategory_Objective : Objective
     public void CheckComplete()
     {
         IsComplete = LevelCategory.GetLevels().FindIndex(x => !x.IsComplete) == -1; //This will be -1 if all levels in the cat are complete
+
+        if (IsComplete && !LevelCategory.IsComplete)
+            LevelCategory.IsComplete = true;
     }
 
     #endregion

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TimeMode : MonoBehaviour
+public class TimedModePage : MonoBehaviour
 {
     // Get a category and shuffle the levels
     // Create a board for the first level and start a timer

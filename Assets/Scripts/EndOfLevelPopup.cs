@@ -15,6 +15,8 @@ public class EndOfLevelPopup : Page
     private Level           nextLevel;
     private bool            canClick;
 
+    private Level           level;
+
     #endregion
 
     #region Inherited Functions
@@ -22,16 +24,18 @@ public class EndOfLevelPopup : Page
     public override void ShowPage(object[] args)
     {
         //args[0]   -   Dictionary<int, int>    -   The coins awarded from the level
+        //args[1]   -   Level                   -   The level that was just completed
 
         Dictionary<int, int> coinsWon = (Dictionary<int, int>)args[0];
+        level = (Level)args[1];
 
         homeButton = uiDoc.rootVisualElement.Q<VisualElement>("HomeButton");
         replayButton = uiDoc.rootVisualElement.Q<VisualElement>("ReplayButton");
         nextLevelButton = uiDoc.rootVisualElement.Q<VisualElement>("NextLevelButton");
 
-        List<Level> levels = Resources.LoadAll<Level>("Levels/" + BoardCreator.instance.CurrentLevel.LevelCategory.FilePath).ToList();
+        List<Level> levels = Resources.LoadAll<Level>("Levels/" + level.LevelCategory.FilePath).ToList();
 
-        int levelIndex = levels.FindIndex(x => x == BoardCreator.instance.CurrentLevel);
+        int levelIndex = levels.FindIndex(x => x == level);
 
         if (levelIndex == -1 || levelIndex == levels.Count - 1)
         {
@@ -47,7 +51,7 @@ public class EndOfLevelPopup : Page
         }
 
         homeButton.RegisterCallback<PointerDownEvent>(GoHome);
-        replayButton.RegisterCallback<PointerDownEvent>((evt) => LoadLevel(BoardCreator.instance.CurrentLevel, evt));
+        replayButton.RegisterCallback<PointerDownEvent>((evt) => LoadLevel(level, evt));
         nextLevelButton.RegisterCallback<PointerDownEvent>((evt) => LoadLevel(nextLevel, evt));
 
         canClick = false;
@@ -58,7 +62,7 @@ public class EndOfLevelPopup : Page
     public override void HidePage()
     {
         homeButton.UnregisterCallback<PointerDownEvent>(GoHome);
-        replayButton.UnregisterCallback<PointerDownEvent>((evt) => LoadLevel(BoardCreator.instance.CurrentLevel, evt));
+        replayButton.UnregisterCallback<PointerDownEvent>((evt) => LoadLevel(level, evt));
         nextLevelButton.UnregisterCallback<PointerDownEvent>((evt) => LoadLevel(nextLevel, evt));
     }
 

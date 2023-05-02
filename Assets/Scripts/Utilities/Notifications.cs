@@ -2,5 +2,7 @@ public enum Notifications
 {
     TILES_COLORED,
     LEVEL_COMPLETE,
-    CATEGORY_UNLOCKED
+    CATEGORY_UNLOCKED,
+    LINE_COMPLETED,
+    BOARD_COMPLETE
 }

@@ -46,8 +46,6 @@ public class CurrencyManager : MonoBehaviour
             ownedColors.Add(colorIndex, 0);
 
         ownedColors[colorIndex] += amount;
-
-        Debug.Log(this);
     }
 
     public void SpendCurrency(int colorIndex, int amount)

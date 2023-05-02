@@ -95,7 +95,7 @@ public class Tile
                 container.style.backgroundColor = s;
             }
             else
-                image.style.backgroundImage = new StyleBackground(BoardCreator.instance.GetTileStateTexture(value));
+                image.style.backgroundImage = new StyleBackground(UIManager.instance.GetTileStateTexture(value));
 
             state = value;
         }
@@ -129,14 +129,14 @@ public class Tile
             this.bottom             = bottom;
             this.left               = left;
 
-            topBorderVE.style.backgroundColor = top ? BoardCreator.instance.HardBorderColor : BoardCreator.instance.SoftBorderColor;
-            topBorderVE.style.SetHeight(new StyleLength(top ? BoardCreator.instance.HardBorderSize : BoardCreator.instance.SoftBorderSize));
-            rightBorderVE.style.backgroundColor = right ? BoardCreator.instance.HardBorderColor : BoardCreator.instance.SoftBorderColor;
-            rightBorderVE.style.SetWidth(new StyleLength(right ? BoardCreator.instance.HardBorderSize : BoardCreator.instance.SoftBorderSize));
-            bottomBorderVE.style.backgroundColor = bottom ? BoardCreator.instance.HardBorderColor : BoardCreator.instance.SoftBorderColor;
-            bottomBorderVE.style.SetHeight(new StyleLength(bottom ? BoardCreator.instance.HardBorderSize : BoardCreator.instance.SoftBorderSize));
-            leftBorderVE.style.backgroundColor = left ? BoardCreator.instance.HardBorderColor : BoardCreator.instance.SoftBorderColor;
-            leftBorderVE.style.SetWidth(new StyleLength(left ? BoardCreator.instance.HardBorderSize : BoardCreator.instance.SoftBorderSize));
+            topBorderVE.style.backgroundColor = top ? UIManager.instance.HardBorderColor : UIManager.instance.SoftBorderColor;
+            topBorderVE.style.SetHeight(new StyleLength(top ? UIManager.instance.HardBorderSize : UIManager.instance.SoftBorderSize));
+            rightBorderVE.style.backgroundColor = right ? UIManager.instance.HardBorderColor : UIManager.instance.SoftBorderColor;
+            rightBorderVE.style.SetWidth(new StyleLength(right ? UIManager.instance.HardBorderSize : UIManager.instance.SoftBorderSize));
+            bottomBorderVE.style.backgroundColor = bottom ? UIManager.instance.HardBorderColor : UIManager.instance.SoftBorderColor;
+            bottomBorderVE.style.SetHeight(new StyleLength(bottom ? UIManager.instance.HardBorderSize : UIManager.instance.SoftBorderSize));
+            leftBorderVE.style.backgroundColor = left ? UIManager.instance.HardBorderColor : UIManager.instance.SoftBorderColor;
+            leftBorderVE.style.SetWidth(new StyleLength(left ? UIManager.instance.HardBorderSize : UIManager.instance.SoftBorderSize));
 
             if (top)                container.Add(topBorderVE);
             if (right)              container.Add(rightBorderVE);
@@ -176,12 +176,6 @@ public class Tile
 
     public bool CanEnterTile(Tile tileToEnter, int potentialColor)
     {
-        //Debug.Log("Can " + this + " enter " + tileToEnter);
-
-        //Debug.Log(string.Format("{0} >>> {1}",
-        //    "[" + this.X + ", " + this.Y + "]",
-        //    "[" + tileToEnter.X + ", " + tileToEnter.Y + "]"));
-
         if (tileToEnter.State == TileState.BLANK)
             return false;
 

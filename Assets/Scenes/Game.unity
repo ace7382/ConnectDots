@@ -174,7 +174,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &519420028
 GameObject:
@@ -397,6 +397,12 @@ MonoBehaviour:
   scrollingBG: {fileID: 522809990}
   restrictedTileTexture: {fileID: 2800000, guid: 6ef43b2fa630ce04c8e6f83fd6c7ab32, type: 3}
   trophyTexture: {fileID: 2800000, guid: 3243b89739027b64d8528fc403185760, type: 3}
+  tilePrefab: {fileID: 9197481963319205126, guid: 34c19e51f2dc32344bb1818bee49950a, type: 3}
+  boardPadding: 25
+  hardBorderSize: 5
+  hardBorderColor: {r: 0, g: 0, b: 0, a: 1}
+  softBorderSize: 1
+  softBorderColor: {r: 0.8784314, g: 0.8784314, b: 0.8784314, a: 0.5882353}
   gameColors:
   - {r: 1, g: 1, b: 1, a: 1}
   - {r: 1, g: 0, b: 0, a: 1}
@@ -406,6 +412,9 @@ MonoBehaviour:
   - {r: 1, g: 0, b: 1, a: 1}
   - {r: 0, g: 1, b: 1, a: 1}
   - {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  dotSprite: {fileID: -12968011, guid: 82ad981caf2ce304dbfb1ef734b20121, type: 3}
+  lineSprite: {fileID: 1940002766, guid: 3388796c3984ea94eb64e5f455421956, type: 3}
+  cornerSprite: {fileID: -2008347178, guid: 9f9a8f06ac250a541af4769f9b797d79, type: 3}
 --- !u!4 &685428500
 Transform:
   m_ObjectHideFlags: 0
@@ -419,7 +428,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &947681499
 GameObject:
@@ -463,7 +472,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1125119773
 GameObject:
@@ -511,7 +520,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1245435755
 GameObject:
@@ -608,99 +617,13 @@ RectTransform:
   m_Children:
   - {fileID: 522809989}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!1 &1902665253
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1902665255}
-  - component: {fileID: 1902665256}
-  - component: {fileID: 1902665254}
-  - component: {fileID: 1902665257}
-  m_Layer: 5
-  m_Name: Board Manager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1902665254
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1902665253}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_PanelSettings: {fileID: 11400000, guid: 1b9a01e3f792f214dbcc75a466a99349, type: 2}
-  m_ParentUI: {fileID: 0}
-  sourceAsset: {fileID: 9197481963319205126, guid: fc46a566f02b8e9449be312cf7d72aba, type: 3}
-  m_SortingOrder: 0
---- !u!4 &1902665255
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1902665253}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1902665256
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1902665253}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9c7d4080a451ae644bd4e61e5415e3f7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  uiDoc: {fileID: 1902665254}
-  tilePrefab: {fileID: 9197481963319205126, guid: 34c19e51f2dc32344bb1818bee49950a, type: 3}
-  level: {fileID: 11400000, guid: 31b1d683f79b2334880fdc8bea363519, type: 2}
-  dotSprite: {fileID: -12968011, guid: 82ad981caf2ce304dbfb1ef734b20121, type: 3}
-  lineSprite: {fileID: 1940002766, guid: 3388796c3984ea94eb64e5f455421956, type: 3}
-  cornerSprite: {fileID: -2008347178, guid: 9f9a8f06ac250a541af4769f9b797d79, type: 3}
-  hardBorderSize: 5
-  hardBorderColor: {r: 0, g: 0, b: 0, a: 1}
-  softBorderSize: 1
-  softBorderColor: {r: 0.8773585, g: 0.8773585, b: 0.8773585, a: 0.5882353}
-  boardBorder: 25
-  lines: []
---- !u!114 &1902665257
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1902665253}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5283e124c040d4f42a5d710f8c975878, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1911041854
 GameObject:
   m_ObjectHideFlags: 0
@@ -748,7 +671,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1911041857
 MonoBehaviour:

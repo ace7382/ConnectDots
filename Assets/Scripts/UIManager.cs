@@ -24,13 +24,34 @@ public class UIManager : MonoBehaviour
 
     [Space]
 
+    [Header("Board Variables")]
+    [SerializeField] private VisualTreeAsset tilePrefab;
+    [SerializeField] private float boardPadding;
+    [SerializeField] private float hardBorderSize;
+    [SerializeField] private Color hardBorderColor;
+    [SerializeField] private float softBorderSize;
+    [SerializeField] private Color softBorderColor;
+
+    [Space]
+
     [Header("Colors")]
     [SerializeField] private List<Color> gameColors;
+
+    [Space]
+    [SerializeField] private Sprite dotSprite;
+    [SerializeField] private Sprite lineSprite;
+    [SerializeField] private Sprite cornerSprite;
 
     #endregion
 
     #region Public Properties
 
+    public VisualTreeAsset TilePrefab { get { return tilePrefab; } }
+    public float BoardPadding { get { return boardPadding; } }
+    public float HardBorderSize { get { return hardBorderSize; } }
+    public float SoftBorderSize { get { return softBorderSize; } }
+    public Color HardBorderColor { get { return hardBorderColor; } }
+    public Color SoftBorderColor { get { return softBorderColor; } }
     public TopBarController TopBar { get { return topBarControl; } }
     public VisualTreeAsset LevelSelectButton { get { return levelSelectButton; } }
     public VisualTreeAsset ObjectiveCard { get { return objectiveCard; } }
@@ -70,6 +91,28 @@ public class UIManager : MonoBehaviour
         }
 
         return gameColors[index];
+    }
+
+    public Sprite GetTileStateTexture(TileState state)
+    {
+        if (state == TileState.END)
+        {
+            return dotSprite;
+        }
+        else if (state == TileState.LINE)
+        {
+            return lineSprite;
+        }
+        else if (state == TileState.CORNER)
+        {
+            return cornerSprite;
+        }
+        else if (state == TileState.HEAD)
+        {
+            return dotSprite;
+        }
+
+        return null;
     }
 
     #endregion

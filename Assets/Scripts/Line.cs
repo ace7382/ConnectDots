@@ -34,7 +34,7 @@ public class Line
         isCompleted = ContainsTwoEndTiles();
 
         if (isCompleted)
-            Debug.Log("Are all lines complete? " + BoardCreator.instance.CheckLevelDone());
+            this.PostNotification(Notifications.LINE_COMPLETED);
     }
 
     public bool ContainsTwoEndTiles()

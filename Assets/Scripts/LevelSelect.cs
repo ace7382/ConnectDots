@@ -40,6 +40,10 @@ public class LevelSelect : Page
             num.style.Show();
             num.text = lev.LevelNumber;
 
+            VisualElement completedIcon = button.Q<VisualElement>("CompletedIcon");
+            completedIcon.Show(levels[i].IsComplete);
+            button.Q<VisualElement>("LevelSelectButton").SetBorderColor(levels[i].IsComplete ? Color.yellow : Color.clear);
+
             button.RegisterCallback<PointerDownEvent>((PointerDownEvent evt) =>
             {
                 if (!canClick)

@@ -239,7 +239,7 @@ public class CategorySelect : Page
             icon.style.backgroundImage      = cat.LevelSelectImage;
             button.SetColor(cat.Color);
 
-            button.transform.scale          = new Vector3(2f, 2f, 1f);
+            button.transform.scale          = new Vector3(2f / 1.5f, 2f / 1.5f, 1f);
             completeIcon.Show(cat.IsComplete);
             button.SetBorderColor(cat.IsComplete ? Color.yellow : Color.clear);
 

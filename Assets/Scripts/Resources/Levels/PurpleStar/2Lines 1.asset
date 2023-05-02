@@ -28,3 +28,4 @@ MonoBehaviour:
     end2rotation: 0
     colorIndex: 4
   specialTiles: []
+  isComplete: 1

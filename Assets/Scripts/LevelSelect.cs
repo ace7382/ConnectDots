@@ -9,8 +9,8 @@ public class LevelSelect : Page
 {
     #region Private Variables
 
-    ScrollView levelScroll, objectiveScroll;
-    VisualElement levelsButton, objectivesButton;
+    ScrollView levelScroll, objectiveScroll, timeAttackScroll;
+    VisualElement levelsButton, objectivesButton, timeAttackButton;
     private bool canClick;
 
     #endregion
@@ -23,7 +23,7 @@ public class LevelSelect : Page
 
         LevelCategory cat = (LevelCategory)args[0];
 
-        List<Level> levels = cat.GetLevels(); //Resources.LoadAll<Level>("Levels/" + cat.FilePath).ToList();
+        List<Level> levels = cat.GetLevels();
 
         levelScroll = uiDoc.rootVisualElement.Q<ScrollView>("LevelScroll");
         levelScroll.contentContainer.style.flexGrow = 1f;
@@ -77,11 +77,48 @@ public class LevelSelect : Page
             objectiveScrollContent.Add(card);
         }
 
+        timeAttackScroll = uiDoc.rootVisualElement.Q<ScrollView>("TimeAttackScroll");
+        timeAttackScroll.contentContainer.style.flexGrow = 1f;
+        VisualElement timeAttackScrollContent = timeAttackScroll.contentContainer.Q<VisualElement>("TimeAttackScrollContent");
+        
+        for (int i = 0; i < cat.TimeAttacks.Count; i++)
+        {
+            VisualElement card = UIManager.instance.TimeAttackButton.Instantiate();
+            card.style.SetWidth(new StyleLength(new Length(100f, LengthUnit.Percent)));
+            card.style.SetMargins(10f, i != 0, false, i != objectives.Count - 1, false);
+
+            //TODO: Make a card controller probably
+            card.Q<Label>("DifficultyLabel").text = cat.TimeAttacks[i].difficulty;
+            card.Q<Label>("PuzzleCount").text = cat.TimeAttacks[i].numberOfPuzzles.ToString() + " Puzzles";
+            card.Q<Label>("StartingTime").text = cat.TimeAttacks[i].totalTimeInSeconds.ToString(); //TODO: time format
+            card.Q<Label>("CompletionBonus").text = "+" + cat.TimeAttacks[i].timeAddedOnCompletePuzzle.ToString() + "s per completion";
+
+            int index = i;
+
+            card.RegisterCallback<PointerUpEvent>((evt) =>
+            {
+                if (!canClick)
+                    return;
+
+                canClick = false;
+
+                object[] data = new object[2];
+                data[0] = cat;
+                data[1] = index;
+
+                PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<TimedModePage>(data));
+            });
+
+            timeAttackScrollContent.Add(card);
+        }
+
         levelsButton = uiDoc.rootVisualElement.Q<VisualElement>("LevelsButton");
         objectivesButton = uiDoc.rootVisualElement.Q<VisualElement>("ObjectivesButton");
+        timeAttackButton = uiDoc.rootVisualElement.Q<VisualElement>("TimeAttackButton");
 
-        levelsButton.RegisterCallback<PointerDownEvent>(ShowLevels);
-        objectivesButton.RegisterCallback<PointerDownEvent>(ShowObjectives);
+        levelsButton.RegisterCallback<PointerUpEvent>(ShowLevels);
+        objectivesButton.RegisterCallback<PointerUpEvent>(ShowObjectives);
+        timeAttackButton.RegisterCallback<PointerUpEvent>(ShowTimeAttacks);
 
         UIManager.instance.SetBackground(cat.BackgroundImage, cat.Color);
 
@@ -102,8 +139,11 @@ public class LevelSelect : Page
 
     public override void HidePage()
     {
-        levelsButton.UnregisterCallback<PointerDownEvent>(ShowLevels);
-        objectivesButton.UnregisterCallback<PointerDownEvent>(ShowObjectives);
+        //Not sure this is needed? if it is tho then
+        //TODO: Unregister the level and time attack buttons
+        levelsButton.UnregisterCallback<PointerUpEvent>(ShowLevels);
+        objectivesButton.UnregisterCallback<PointerUpEvent>(ShowObjectives);
+        timeAttackButton.UnregisterCallback<PointerUpEvent>(ShowTimeAttacks);
     }
 
     public override IEnumerator AnimateIn()
@@ -138,30 +178,44 @@ public class LevelSelect : Page
 
     #region Private Functions
 
-    private void ShowLevels(PointerDownEvent evt)
+    private void ShowLevels(PointerUpEvent evt)
     {
         if (!canClick)
             return;
 
-        (objectiveScroll as VisualElement).Show(false);
-        (levelScroll as VisualElement).Show();
+        objectiveScroll.Hide();
+        levelScroll.Show();
+        timeAttackScroll.Hide();
 
         levelScroll.GoToTop();
 
         canClick = true;
     }
 
-    private void ShowObjectives(PointerDownEvent evt)
+    private void ShowObjectives(PointerUpEvent evt)
     {
         if (!canClick)
             return;
 
-        (objectiveScroll as VisualElement).Show();
-        (levelScroll as VisualElement).Show(false);
+        objectiveScroll.Show();
+        levelScroll.Hide();
+        timeAttackScroll.Hide();
 
         objectiveScroll.GoToTop();
 
         canClick = true;
+    }
+
+    private void ShowTimeAttacks(PointerUpEvent evt)
+    {
+        if (!canClick)
+            return;
+
+        objectiveScroll.Hide();
+        levelScroll.Hide();
+        timeAttackScroll.Show();
+
+        timeAttackScroll.GoToTop();
     }
 
     #endregion

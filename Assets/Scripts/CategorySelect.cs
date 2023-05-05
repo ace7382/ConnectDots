@@ -102,39 +102,36 @@ public class CategorySelect : Page
 
         for (int i = 0; i < cats.Count; i++)
         {
-            for (int test = 0; test < 20; test++)
+            VisualElement button = UIManager.instance.LevelSelectButton.Instantiate();
+            LevelCategory lCat = cats[i];
+
+            button.userData = lCat;
+
+            VisualElement icon = button.Q<VisualElement>("Icon");
+            VisualElement bg = button.Q<VisualElement>("LevelSelectButton");
+            bg.SetColor(lCat.Color);
+            icon.style.backgroundImage = lCat.LevelSelectImage;
+
+            VisualElement completedIcon = button.Q<VisualElement>("CompletedIcon");
+            completedIcon.Show(lCat.IsComplete);
+            bg.SetBorderColor(lCat.IsComplete ? Color.yellow : Color.clear);
+
+            button.RegisterCallback<PointerDownEvent>((PointerDownEvent evt) =>
             {
-                VisualElement button = UIManager.instance.LevelSelectButton.Instantiate();
-                LevelCategory lCat = cats[i];
+                if (!canClick)
+                    return;
 
-                button.userData = lCat;
+                canClick = false;
 
-                VisualElement icon = button.Q<VisualElement>("Icon");
-                VisualElement bg = button.Q<VisualElement>("LevelSelectButton");
-                bg.SetColor(lCat.Color);
-                icon.style.backgroundImage = lCat.LevelSelectImage;
-
-                VisualElement completedIcon = button.Q<VisualElement>("CompletedIcon");
-                completedIcon.Show(lCat.IsComplete);
-                bg.SetBorderColor(lCat.IsComplete ? Color.yellow : Color.clear);
-
-                button.RegisterCallback<PointerDownEvent>((PointerDownEvent evt) =>
+                if (SelectedCategoryButton != button)
                 {
-                    if (!canClick)
-                        return;
+                    SelectedCategoryButton = button;
+                }
 
-                    canClick = false;
+                canClick = true;
+            });
 
-                    if (SelectedCategoryButton != button)
-                    {
-                        SelectedCategoryButton = button;
-                    }
-
-                    canClick = true;
-                });
-
-                scrollContent.Add(button);
-            }
+            scrollContent.Add(button);
         }
 
         canClick = true;

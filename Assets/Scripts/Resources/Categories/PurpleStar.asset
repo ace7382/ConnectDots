@@ -20,3 +20,14 @@ MonoBehaviour:
   lock_NumberOfObjectives: 0
   lock_CompletedObjectives: []
   lock_CompletedLevelCategories: []
+  lock_Purcahse: []
+  timeAttackStats:
+  - difficulty: Easy
+    totalTimeInSeconds: 120
+    timeAddedOnCompletePuzzle: 15
+    numberOfPuzzles: 3
+  - difficulty: Hard
+    totalTimeInSeconds: 90
+    timeAddedOnCompletePuzzle: 5
+    numberOfPuzzles: 5
+  isComplete: 0

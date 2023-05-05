@@ -48,12 +48,6 @@ public class NotificationCenter
 			return;
 		}
 
-		//if (string.IsNullOrEmpty(notificationName))
-		//{
-		//	Debug.LogError("Can't observe an unnamed notification");
-		//	return;
-		//}
-
 		if (!_table.ContainsKey(notificationName))
 			_table.Add(notificationName, new SenderTable());
 
@@ -194,5 +188,6 @@ public class NotificationCenter
 			_invoking.Remove(handlers);
 		}
 	}
-	#endregion
+
+    #endregion
 }

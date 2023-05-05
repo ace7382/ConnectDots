@@ -21,7 +21,6 @@ public class GamePlayPage : Page
         currentLevel = (Level)args[0];
 
         currentBoard = new Board(currentLevel, uiDoc.rootVisualElement);
-        currentBoard.CreateBoard();
 
         EventCallback<PointerDownEvent> backbuttonAction = (evt) =>
         {

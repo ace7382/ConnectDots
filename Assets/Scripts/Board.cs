@@ -186,6 +186,22 @@ public class Board
         canClick = true;
     }
 
+    public void BoardInWithoutAnimation()
+    {
+        CreateBoard();
+
+        for (int i = 0; i < tiles.Count; i++)
+        {
+            for (int j = 0; j < tiles[i].Count; j++)
+            {
+                Tile t = tiles[i][j];
+                t.Container.style.opacity = 1f;
+            }
+        }
+
+        canClick = true;
+    }
+
     public IEnumerator AnimateBoardOut()
     {
         canClick = false;

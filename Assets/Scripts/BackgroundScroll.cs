@@ -17,6 +17,8 @@ public class BackgroundScroll : MonoBehaviour
     [SerializeField] private Vector2 scroll;
     [SerializeField] private Vector2 offset;
 
+    public Color Color { get { return _image.color; } }
+
     private void Awake()
     {
         if (!_image) _image = GetComponent<RawImage>();
@@ -58,5 +60,10 @@ public class BackgroundScroll : MonoBehaviour
     {
         _image.color = color;
         _image.texture = texture;
+    }
+
+    public void Set(Color color)
+    {
+        _image.color = color;
     }
 }

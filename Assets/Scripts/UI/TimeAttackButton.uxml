@@ -1,0 +1,17 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/GlobalStyles.uss?fileID=7433441132597879392&amp;guid=72ac875abbfffce4288508c5b6f9e712&amp;type=3#GlobalStyles" />
+    <ui:VisualElement name="Container" style="flex-grow: 1; background-color: rgb(255, 255, 255); border-top-left-radius: 15px; border-bottom-left-radius: 15px; border-top-right-radius: 15px; border-bottom-right-radius: 15px; flex-direction: row; padding-left: 15px; padding-right: 15px; padding-top: 15px; padding-bottom: 15px;">
+        <ui:VisualElement name="LeftPanel" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); flex-shrink: 0; flex-basis: 50%; justify-content: flex-start;">
+            <ui:Label tabindex="-1" text="Easy" display-tooltip-when-elided="true" name="DifficultyLabel" class="HeaderLabel" style="-unity-text-align: middle-left;" />
+            <ui:Label tabindex="-1" text="10 Puzzles" display-tooltip-when-elided="true" name="PuzzleCount" class="NormalLabel" />
+            <ui:Label tabindex="-1" text="1:00" display-tooltip-when-elided="true" name="StartingTime" class="NormalLabel" />
+            <ui:Label tabindex="-1" text="+ :15s per puzzle" display-tooltip-when-elided="true" name="CompletionBonus" class="NormalLabel" style="flex-wrap: nowrap; white-space: normal;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="RIghtPanel" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); flex-shrink: 0; flex-basis: 50%; justify-content: flex-start; align-items: center;">
+            <ui:Label tabindex="-1" text="Best Time" display-tooltip-when-elided="true" name="BestTime" enable-rich-text="true" class="NormalLabel" style="-unity-text-align: upper-center;" />
+            <ui:VisualElement name="AwardContainer" style="background-color: rgba(0, 0, 0, 0.5); border-top-left-radius: 15px; border-bottom-left-radius: 15px; border-top-right-radius: 15px; border-bottom-right-radius: 15px; width: 75%; max-width: 75%; min-width: 75%; height: 75%; max-height: 75%; min-height: 75%; justify-content: center; align-items: center;">
+                <ui:Label tabindex="-1" text="00:00" display-tooltip-when-elided="true" name="BestTime" class="HeaderLabel" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

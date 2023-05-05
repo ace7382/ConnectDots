@@ -32,6 +32,11 @@ public class Test : MonoBehaviour
         }
     }
 
+    private void OnBecameInvisible()
+    {
+        
+    }
+
     private Texture2D MakeStripes(Color col1, Color col2)
     {
         Color[] pixels = texture.GetPixels();

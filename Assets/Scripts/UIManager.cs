@@ -18,6 +18,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private VisualTreeAsset objectiveCard;
     [SerializeField] private VisualTreeAsset coinDisplay;
     [SerializeField] private VisualTreeAsset requirementDisplay;
+    [SerializeField] private VisualTreeAsset timeAttackButtonPrefab;
     [SerializeField] private BackgroundScroll scrollingBG;
     [SerializeField] private Texture2D restrictedTileTexture;
     [SerializeField] private Texture2D trophyTexture;
@@ -57,6 +58,7 @@ public class UIManager : MonoBehaviour
     public VisualTreeAsset ObjectiveCard { get { return objectiveCard; } }
     public VisualTreeAsset CoinDisplay { get { return coinDisplay; } }
     public VisualTreeAsset RequirementDisplay { get { return requirementDisplay; } }
+    public VisualTreeAsset TimeAttackButton { get { return timeAttackButtonPrefab; } }
     public Texture2D RestrictedTile { get { return restrictedTileTexture; } }
     public Texture2D TrophyTexture { get { return trophyTexture; } }
     public int ColorCount { get { return gameColors.Count; } }
@@ -80,6 +82,16 @@ public class UIManager : MonoBehaviour
     public void SetBackground(Texture2D texture, Color color)
     {
         scrollingBG.Set(texture, color);
+    }
+
+    public void SetBackground(Color color)
+    {
+        scrollingBG.Set(color);
+    }
+
+    public Color GetBackgroundColor()
+    {
+        return scrollingBG.Color;
     }
 
     public Color GetColor(int index)

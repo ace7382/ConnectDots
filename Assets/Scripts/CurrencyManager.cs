@@ -79,6 +79,13 @@ public class CurrencyManager : MonoBehaviour
         return ownedColors[index];
     }
 
+    public List<Vector2Int> AwardCoins(List<Tile> levelTiles)
+    {
+        //Return is List<ColorIndex, NumberAwarded>
+
+        return null;
+    }
+
     #endregion
 
     #region Private Functions

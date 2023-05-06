@@ -162,7 +162,6 @@ MonoBehaviour:
   - {fileID: 9197481963319205126, guid: f014d65b84f5a504a956143cfe0b77e6, type: 3}
   - {fileID: 9197481963319205126, guid: b7843884c3dee0a4a9af15f6275f0e94, type: 3}
   - {fileID: 9197481963319205126, guid: e28464476fb99164b8092622975f1e4f, type: 3}
-  - {fileID: 9197481963319205126, guid: 78b391d674e0cc54d8103a3ab6fde2c3, type: 3}
 --- !u!4 &413392889
 Transform:
   m_ObjectHideFlags: 0
@@ -660,7 +659,7 @@ MonoBehaviour:
   m_PanelSettings: {fileID: 11400000, guid: 1b9a01e3f792f214dbcc75a466a99349, type: 2}
   m_ParentUI: {fileID: 0}
   sourceAsset: {fileID: 9197481963319205126, guid: 40c0eca584380f04d90f54b59e898328, type: 3}
-  m_SortingOrder: 0
+  m_SortingOrder: 1000
 --- !u!4 &1911041856
 Transform:
   m_ObjectHideFlags: 0

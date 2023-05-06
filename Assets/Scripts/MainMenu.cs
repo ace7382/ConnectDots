@@ -17,6 +17,8 @@ public class MainMenu : Page
 
     public override void ShowPage(object[] args)
     {
+        DOTween.SetTweensCapacity(1000, 100); //TODO: Find a more appropriate place for this
+
         UIManager.instance.TopBar.ShowTopBar(false);
 
         playButton = uiDoc.rootVisualElement.Q<VisualElement>("PlayButton");

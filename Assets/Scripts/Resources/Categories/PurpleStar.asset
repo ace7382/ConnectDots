@@ -29,5 +29,5 @@ MonoBehaviour:
   - difficulty: Hard
     totalTimeInSeconds: 90
     timeAddedOnCompletePuzzle: 5
-    numberOfPuzzles: 5
+    numberOfPuzzles: 6
   isComplete: 0

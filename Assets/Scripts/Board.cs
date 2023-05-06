@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -272,21 +273,40 @@ public class Board
 
         yield return new WaitForSeconds(animLength / 2f * .55f);
 
-        //Award Coins-----------------
+        Dictionary<int, int> coinsAwarded = SpawnCoinsOnBoardComplete();
 
+        object[] data               = new object[2];
+        data[0]                     = coinsAwarded;
+        data[1]                     = level;
+
+        //TODO - Mark the currently played level as complete. Probably want to do that outside of the board though
+        //CurrentLevel.LevelComplete();
+
+        PageManager.instance.StartCoroutine(PageManager.instance.AddPageToStack<EndOfLevelPopup>(data));
+    }
+
+    //TODO: Pull the TILE_COLORED notifs out of here
+    //TODO: Pool coin VisualElements probably?
+    public Dictionary<int, int> SpawnCoinsOnBoardComplete()
+    {
         float widthbound        = boardVE.worldBound.width / 2f * .7f;
         float heightbound       = boardVE.worldBound.height / 2f * .7f;
         Vector2 destination     = new Vector2(screen.worldBound.width / 2f, screen.worldBound.height / -2f);
 
-        Dictionary<int, int> coinsWon       = new Dictionary<int, int>();
-        Dictionary<int, int> notifications  = new Dictionary<int, int>();
+        Dictionary<int, int> 
+            notifications       = new Dictionary<int, int>();
+
+        List<Tile> temp         = new List<Tile>();
 
         for (int i = 0; i < tiles.Count; i++)
         {
             for (int j = 0; j < tiles[i].Count; j++)
             {
+                //Get tiles for coin awards
                 Tile t = tiles[i][j];
+                temp.Add(t);
 
+                //Handle tile color notifications
                 if (t.State == TileState.BLANK || t.LineCancelled)
                     continue;
 
@@ -304,76 +324,41 @@ public class Board
                     else
                         notifications.Add(0, 1);
                 }
-
-                for (int mult = 1; mult <= t.Multiplier; mult++)
-                {
-                    VisualElement coin = new VisualElement();
-                    coin.style.SetWidth(25f);
-                    coin.style.SetHeight(25f);
-
-                    float animationTime = Random.Range(.75f, 1f);
-
-                    int colorIndex = 0;
-
-                    if (t.Line != null)
-                        colorIndex = t.Line.colorIndex;
-
-                    if (coinsWon.ContainsKey(colorIndex))
-                        coinsWon[colorIndex]++;
-                    else
-                        coinsWon.Add(colorIndex, 1);
-
-                    coin.style.backgroundColor = UIManager.instance.GetColor(colorIndex);
-                    coin.style.SetBorderColor(Color.black);
-                    coin.style.SetBorderWidth(3f);
-                    coin.style.position = Position.Absolute;
-
-                    screen.Add(coin);
-
-                    float delay = Random.Range(0f, animationTime * .9f);
-
-                    coin.transform.position = new Vector3(Random.Range(-widthbound, widthbound),
-                                                Random.Range(-heightbound, heightbound),
-                                                coin.transform.position.z);
-
-                    Tween goToCorner = DOTween.To(() => coin.transform.position,
-                                        x => coin.transform.position = x,
-                                        new Vector3(destination.x, destination.y, coin.transform.position.z),
-                                        animationTime - delay)
-                                        .SetDelay(delay)
-                                        .SetEase(Ease.InBack)
-                                        .Play();
-
-                    Tween scaleDwn = DOTween.To(() => coin.transform.scale,
-                                        x => coin.transform.scale = x,
-                                        new Vector3(0f, 0f, coin.transform.scale.z),
-                                        animationTime - delay)
-                                        .SetDelay(delay)
-                                        .SetEase(Ease.InBack)
-                                        .Play();
-                }
             }
         }
-        //-------------
 
+        Dictionary<int, int> 
+            coinsAwarded            = CurrencyManager.instance.AwardCoins(temp);
+        int maxCoinSpawn            = Mathf.Min(30, coinsAwarded.Sum(x => x.Value));
+        List<int> potentialCoins    = new List<int>();
+        
+        foreach (KeyValuePair<int, int> color in coinsAwarded)
+        {
+            for (int i = 0; i < color.Value; i++)
+                potentialCoins.Add(color.Key);
+        }
+
+        potentialCoins.Shuffle();
+
+        for (int i = 0; i < maxCoinSpawn; i++)
+        {
+            CurrencyManager.instance.SpawnCoin(potentialCoins[i],
+                new Vector2(Random.Range(-widthbound, widthbound)
+                    , Random.Range(-heightbound, heightbound)
+                ), screen, destination);
+        }
+        
         foreach (KeyValuePair<int, int> not in notifications)
         {
-            object[] notifData = new object[3];
-            notifData[0] = level;
-            notifData[1] = not.Key;
-            notifData[2] = not.Value;
+            object[] notifData      = new object[3];
+            notifData[0]            = level;
+            notifData[1]            = not.Key;
+            notifData[2]            = not.Value;
 
             this.PostNotification(Notifications.TILES_COLORED, notifData);
         }
 
-        object[] data = new object[2];
-        data[0] = coinsWon;
-        data[1] = level;
-
-        //TODO - Mark the currently played level as complete. Probably want to do that outside of the board though
-        //CurrentLevel.LevelComplete();
-
-        PageManager.instance.StartCoroutine(PageManager.instance.AddPageToStack<EndOfLevelPopup>(data));
+        return coinsAwarded;
     }
 
     #endregion

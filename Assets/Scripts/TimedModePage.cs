@@ -29,6 +29,8 @@ public class TimedModePage : Page
 
     private double lowTimeThreshold;
 
+    private Dictionary<int, int> coinsWon;
+
     #endregion
 
     #region Public Properties
@@ -51,7 +53,6 @@ public class TimedModePage : Page
                     StopBGFlash();
                 }
             }
-
         }
     }
 
@@ -107,7 +108,9 @@ public class TimedModePage : Page
         int totalminutes = timeRemaining.Hours * 60 + timeRemaining.Minutes;
         timerLabel.text = string.Format("{0}:{1}", totalminutes.ToString("00"), timeRemaining.Seconds.ToString("00"));
 
+        coinsWon = new Dictionary<int, int>();
 
+        //TODO: Remove this
         bool test = true;
         timerLabel.RegisterCallback<PointerDownEvent>((e) =>
         {
@@ -270,6 +273,14 @@ public class TimedModePage : Page
 
     private IEnumerator BoardComplete()
     {
+        foreach(KeyValuePair<int, int> award in currentBoard.SpawnCoinsOnBoardComplete())
+        {
+            if (coinsWon.ContainsKey(award.Key))
+                coinsWon[award.Key] += award.Value;
+            else
+                coinsWon.Add(award.Key, award.Value);
+        }
+
         VisualElement boardVE = uiDoc.rootVisualElement.Q<VisualElement>("Board");
 
         Tween shrinkBoard = DOTween.To(() => boardVE.transform.scale,
@@ -349,11 +360,13 @@ public class TimedModePage : Page
         StopBGFlash();
         PageManager.instance.StopCoroutine(timerCoroutine);
 
-        object[] data = new object[2];
-        data[0] = currentCategory;
-        data[1] = settingsIndex;
+        object[] data = new object[4];
+        data[0] = coinsWon;
+        data[1] = null; //This indicates that it's a post a timed mode round
+        data[2] = currentCategory;
+        data[3] = settingsIndex;
 
-        PageManager.instance.StartCoroutine(PageManager.instance.AddPageToStack<EndOfTimeAttackPopup>(data));
+        PageManager.instance.StartCoroutine(PageManager.instance.AddPageToStack<EndOfLevelPopup>(data));
     }
 
     #endregion

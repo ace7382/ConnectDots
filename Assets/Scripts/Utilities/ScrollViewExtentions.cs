@@ -12,4 +12,27 @@ public static class ScrollViewExtentions
 
         scroll.scrollOffset = new Vector2(resetHorizontalScroll ? 0f : scroll.scrollOffset.x, 0f);
     }
+
+    public static void ShowHideVerticalBoundIndicators(this ScrollView scroll, VisualElement upperBoundIndicator, VisualElement lowerBoundIndicator)
+    {
+        if (scroll.mode == ScrollViewMode.Horizontal)
+            Debug.LogWarning("Using ShowHideVerticalBoundIndicators on a horizontal scroll");
+
+        Debug.Log(scroll.verticalScroller.highValue);
+        Debug.Log(scroll.verticalScroller.lowValue);
+        Debug.Log(scroll.verticalScroller.value);
+
+        lowerBoundIndicator.Show(
+            !(float.IsNaN(scroll.verticalScroller.highValue)
+            || scroll.verticalScroller.value == scroll.verticalScroller.highValue)
+            );
+
+        upperBoundIndicator.Show(scroll.verticalScroller.value != scroll.verticalScroller.lowValue);
+    }
+
+    public static void SetBoundIndicators(this ScrollView scroll, VisualElement indicator1, VisualElement indicator2)
+    {
+        scroll.Q<VisualElement>("unity-content-viewport").Add(indicator1);
+        scroll.Q<VisualElement>("unity-content-viewport").Add(indicator2);
+    }
 }

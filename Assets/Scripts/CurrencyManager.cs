@@ -1,8 +1,10 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class CurrencyManager : MonoBehaviour
 {
@@ -15,6 +17,7 @@ public class CurrencyManager : MonoBehaviour
     #region Private Variables
 
     private Dictionary<int, int> ownedColors;
+    private Vector2 coinFlyDestination; //TODO: Make this the UI element's origin? not sure it matters though
 
     #endregion
 
@@ -79,11 +82,77 @@ public class CurrencyManager : MonoBehaviour
         return ownedColors[index];
     }
 
-    public List<Vector2Int> AwardCoins(List<Tile> levelTiles)
+    public Dictionary<int, int> AwardCoins(List<Tile> tiles)
     {
-        //Return is List<ColorIndex, NumberAwarded>
+        //Return is Dictionary<ColorIndex, NumberAwarded>
 
-        return null;
+        Dictionary<int, int> ret = new Dictionary<int, int>();
+
+        for (int i = 0; i < tiles.Count; i++)
+        {
+            Tile t = tiles[i];
+
+            if (t.State == TileState.BLANK || t.LineCancelled)
+                continue;
+
+            if (t.Line != null)
+            {
+                if (ret.ContainsKey(t.Line.colorIndex))
+                    ret[t.Line.colorIndex] += t.Multiplier;
+                else
+                    ret.Add(t.Line.colorIndex, t.Multiplier);
+            }
+            else
+            {
+                if (ret.ContainsKey(0)) //White Tiles
+                    ret[0] += t.Multiplier;
+                else
+                    ret.Add(0, t.Multiplier);
+            }
+        }
+
+        foreach (KeyValuePair<int,int> award in ret)
+            AddCurrency(award.Key, award.Value);
+
+        return ret;
+    }
+
+    public void SpawnCoin(int colorIndex, Vector3 origin, VisualElement parent, Vector2 destination)
+    {
+        coinFlyDestination = destination; //TODO: Calculate this at app start/screensize change or link to a UI element
+
+        VisualElement coin = new VisualElement();
+        coin.style.SetWidth(25f);
+        coin.style.SetHeight(25f);
+
+        float animationTime = Random.Range(.75f, 1f);
+        float delay = Random.Range(0f, animationTime * .9f);
+
+        coin.SetColor(UIManager.instance.GetColor(colorIndex));
+        coin.SetBorderColor(Color.black);
+        coin.SetBorderWidth(3f);
+        coin.style.position = Position.Absolute;
+
+        parent.Add(coin);
+
+        coin.transform.position = origin;
+
+        Tween goToCorner = DOTween.To(() => coin.transform.position,
+                            x => coin.transform.position = x,
+                            new Vector3(coinFlyDestination.x, coinFlyDestination.y, coin.transform.position.z),
+                            animationTime - delay)
+                            .SetDelay(delay)
+                            .SetEase(Ease.InBack)
+                            .Play();
+
+        Tween scaleDwn = DOTween.To(() => coin.transform.scale,
+                            x => coin.transform.scale = x,
+                            new Vector3(0f, 0f, coin.transform.scale.z),
+                            animationTime - delay)
+                            .SetDelay(delay)
+                            .SetEase(Ease.InBack)
+                            .OnKill(() => coin.RemoveFromHierarchy())
+                            .Play();
     }
 
     #endregion

@@ -43,6 +43,7 @@ public class PageManager : MonoBehaviour
 
         GOPages         = new SimplePool<GameObject>(blankPagePrefab);
         GOPages.OnPush  = (item) => { item.SetActive(false); };
+        GOPages.Populate(3);
     }
 
     private void Start()

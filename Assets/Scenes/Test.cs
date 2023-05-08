@@ -1,67 +1,167 @@
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class Test : MonoBehaviour
 {
-    public bool go;
-    private VisualElement v;
-    [SerializeField] private Texture2D texture;
-    [SerializeField] private Color color1, color2;
+    ////Chose an image
+    ////layout the image with x spacing until the screen is filled +/- 3? cols
+    ////offsetevery other row to make a diagonal pattern
+    ////
 
-    // Start is called before the first frame update
-    void Start()
+    //public bool go = false;
+
+    //[Space]
+
+    //public int bufferX;
+    //public int bufferY;
+
+    //public Texture2D image;
+    //public UIDocument uiDoc;
+    //public float xSpacing;
+    //public float ySpacing;
+    //public float imageSize = 100f;
+
+    //public VisualElement page;
+
+    //public List<VisualElement> bgIcons;
+    //public int iconCount = 0;
+
+    //public Vector2 scrollSpeed;
+
+    //public float    leftBound;
+    //public float    rightBound;
+    //public float    topBound;
+    //public float    bottomBound;
+
+    //public void Update()
+    //{
+    //    if (go)
+    //    {
+    //        CreatePattern();
+
+    //        go = false;
+    //    }
+
+    //    for (int i = 0; i < bgIcons.Count; i++)
+    //    {
+    //        float newX = bgIcons[i].transform.position.x + (Time.deltaTime * scrollSpeed.x);
+
+    //        if (newX < leftBound)
+    //            newX = rightBound - (leftBound - newX);
+    //        else if (newX > rightBound)
+    //            newX = leftBound + (newX - rightBound);
+
+    //        float newY = bgIcons[i].transform.position.y + (Time.deltaTime * scrollSpeed.y);
+
+    //        if (newY < topBound)
+    //            newY = bottomBound - (topBound - newY);
+    //        else if (newY > bottomBound)
+    //            newY = topBound + (newY - bottomBound);
+
+    //        bgIcons[i].transform.position = new Vector3(
+    //            newX//bgIcons[i].transform.position.x + (Time.deltaTime * scrollSpeed.x)
+    //            , newY //bgIcons[i].transform.position.y
+    //            , bgIcons[i].transform.position.z);
+    //    }
+    //}
+
+    //public void Start()
+    //{
+    //    bgIcons = new List<VisualElement>();
+    //    page = uiDoc.rootVisualElement.Q<VisualElement>("Page");
+    //}
+
+    //public void AddIcon(VisualElement i)
+    //{
+    //    bgIcons.Add(i);
+
+    //    iconCount = bgIcons.Count;
+    //}
+
+    //public void CreatePattern()
+    //{
+    //    leftBound = xSpacing * -bufferX;
+    //    rightBound = Screen.width + (xSpacing * bufferX);
+    //    rightBound = rightBound + (xSpacing - (rightBound % xSpacing));
+    //    topBound = ySpacing * -bufferY;
+    //    bottomBound = Screen.height + (ySpacing * bufferY);
+    //    bottomBound = bottomBound + (ySpacing - (bottomBound % ySpacing));
+
+    //    float currentX = leftBound;
+    //    float currentY = topBound;
+
+    //    page.Clear();
+    //    bgIcons.Clear();
+    //    iconCount = 0;
+
+    //    bool alternaterow = false;
+    //    int numOfRows = 0;
+
+    //    while (currentY < bottomBound || numOfRows % 2 != 0)
+    //    {
+    //        numOfRows++;
+
+    //        if (currentY >= bottomBound && numOfRows % 2 == 0)
+    //            topBound = ySpacing * -(bufferY + 1);
+
+    //        while (currentX < rightBound)
+    //        {
+    //            VisualElement instance = new VisualElement();
+    //            instance.AddToClassList("RepeatingBGIcon");
+    //            instance.style.backgroundImage = image;
+
+    //            page.Add(instance);
+
+    //            instance.transform.position = new Vector3(currentX, currentY, page.transform.position.z);
+
+    //            currentX += xSpacing;
+
+    //            AddIcon(instance);
+    //        }
+
+    //        alternaterow = !alternaterow;
+
+    //        currentX = leftBound + (alternaterow ? xSpacing / 2f : 0f);
+    //        currentY += ySpacing;
+    //    }
+    //}
+
+    public bool init, i, c, spin;
+    public Texture2D image;
+    public Color color;
+    public int numToRotate;
+
+    public void Update()
     {
-        UIDocument u = GetComponent<UIDocument>();
-        v = new VisualElement();
-        v.style.SetWidth(150f);
-        v.style.SetHeight(150f);
-
-        u.rootVisualElement.Add(v);
-    }
-
-    private void Update()
-    {
-        if (go)
+        if (init)
         {
-            v.style.backgroundImage = MakeStripes(color1, color2);
+            GetComponent<ScrollingBackground>().Initialize(image);
 
-            go = false;
+            init = false;
         }
-    }
 
-    private void OnBecameInvisible()
-    {
-        
-    }
-
-    private Texture2D MakeStripes(Color col1, Color col2)
-    {
-        Color[] pixels = texture.GetPixels();
-
-        Debug.Log(pixels.Length);
-
-        for (int i = 0; i < pixels.Length; i++)
+        if (i)
         {
-            if (pixels[i].a == 1f)
-            {
-                Debug.Log("Color 1");
-                pixels[i] = col1;
-            }
-            else
-            {
-                Debug.Log("Color 2");
-                pixels[i] = col2;
-            }
+            GetComponent<ScrollingBackground>().SetTexture(image);
+
+            i = false;
         }
 
+        if (c)
+        {
+            GetComponent<ScrollingBackground>().SetColor(color);
+            c = false;
+        }
 
-        Texture2D ret = new Texture2D(texture.width, texture.height);
-        ret.SetPixels(pixels);
-        ret.Apply();
+        if (spin)
+        {
+            GetComponent<ScrollingBackground>().RotateRandom(numToRotate);
 
-        return ret;
+            spin = false;
+        }
     }
 }

@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 1777242733}
   - component: {fileID: 1777242732}
   - component: {fileID: 1777242731}
+  - component: {fileID: 1777242734}
   m_Layer: 5
   m_Name: UIDocument
   m_TagString: Untagged
@@ -153,10 +154,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f3203662b400fe4991fb36b7cf90ff7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  go: 0
-  texture: {fileID: 2800000, guid: 6ef43b2fa630ce04c8e6f83fd6c7ab32, type: 3}
-  color1: {r: 0.149055, g: 1, b: 0, a: 1}
-  color2: {r: 1, g: 0.750427, b: 0.07075471, a: 1}
+  init: 0
+  i: 0
+  c: 0
+  spin: 0
+  image: {fileID: 2800000, guid: 6d2bac581b126ab48b1f9874250354b5, type: 3}
+  color: {r: 0, g: 0, b: 0, a: 0}
+  numToRotate: 0
 --- !u!114 &1777242732
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -188,6 +192,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1777242734
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1777242730}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b0328c1a6fc01340a817e982d18fb40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2140365951
 GameObject:
   m_ObjectHideFlags: 0

@@ -105,8 +105,8 @@ public class TimedModePage : Page
         lowTimeThreshold = settings.totalTimeInSeconds <= 30f ? 10f : 30f;
 
         timerLabel = uiDoc.rootVisualElement.Q<Label>("Timer");
-        int totalminutes = timeRemaining.Hours * 60 + timeRemaining.Minutes;
-        timerLabel.text = string.Format("{0}:{1}", totalminutes.ToString("00"), timeRemaining.Seconds.ToString("00"));
+
+        timerLabel.text = string.Format("{0}:{1}", timeRemaining.TotalMinutes.ToString("00"), timeRemaining.Seconds.ToString("00"));
 
         coinsWon = new Dictionary<int, int>();
 
@@ -234,19 +234,15 @@ public class TimedModePage : Page
             //TODO: Add a cap either directly or just through design. Don't feel like formatting
             //      this for every amount of time
 
-            timeRemaining = timeRemaining.Subtract(TimeSpan.FromSeconds(Time.deltaTime));
+            timeRemaining = timeRemaining.Subtract(TimeSpan.FromSeconds(Time.deltaTime)); 
 
-            int totalminutes = timeRemaining.Hours * 60 + timeRemaining.Minutes; 
-
-            timerLabel.text = string.Format("{0}:{1}", totalminutes.ToString("00"), timeRemaining.Seconds.ToString("00"));
+            timerLabel.text = string.Format("{0}:{1}", timeRemaining.TotalMinutes.ToString("00"), timeRemaining.Seconds.ToString("00"));
 
             LowTime = timeRemaining.TotalSeconds < lowTimeThreshold;
 
             if (bgFlash != null)
             {
                 bgFlash.timeScale = (float)(2d - (timeRemaining.TotalSeconds / lowTimeThreshold));
-
-                Debug.Log(bgFlash.timeScale);
             }
 
             yield return null;
@@ -360,11 +356,14 @@ public class TimedModePage : Page
         StopBGFlash();
         PageManager.instance.StopCoroutine(timerCoroutine);
 
-        object[] data = new object[4];
+        object[] data = new object[7];
         data[0] = coinsWon;
         data[1] = null; //This indicates that it's a post a timed mode round
         data[2] = currentCategory;
         data[3] = settingsIndex;
+        data[4] = won;
+        data[5] = timeRemaining;
+        data[6] = completedLevels.Count;
 
         PageManager.instance.StartCoroutine(PageManager.instance.AddPageToStack<EndOfLevelPopup>(data));
     }

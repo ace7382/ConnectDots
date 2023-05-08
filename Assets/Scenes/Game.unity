@@ -177,6 +177,70 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &461595106
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 461595109}
+  - component: {fileID: 461595108}
+  - component: {fileID: 461595107}
+  m_Layer: 0
+  m_Name: Scrolling Background
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &461595107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 461595106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b0328c1a6fc01340a817e982d18fb40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startingImage: {fileID: 2800000, guid: f540d163eaeb67f42918267b89d1450a, type: 3}
+  scrollSpeed: {x: 0, y: 0}
+  spacing: {x: 0, y: 0}
+--- !u!114 &461595108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 461595106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_PanelSettings: {fileID: 11400000, guid: 1b9a01e3f792f214dbcc75a466a99349, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 9197481963319205126, guid: c9557477dfda84e40a23630472cc6a40, type: 3}
+  m_SortingOrder: -1
+--- !u!4 &461595109
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 461595106}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -397,6 +461,7 @@ MonoBehaviour:
   requirementDisplay: {fileID: 9197481963319205126, guid: d9d05c636a5ac274f9ed086317f8b3e0, type: 3}
   timeAttackButtonPrefab: {fileID: 9197481963319205126, guid: 29e1dd9b70ed75f41bf1d9ea337e3c2a, type: 3}
   scrollingBG: {fileID: 522809990}
+  scrollingBackground: {fileID: 461595107}
   restrictedTileTexture: {fileID: 2800000, guid: 6ef43b2fa630ce04c8e6f83fd6c7ab32, type: 3}
   trophyTexture: {fileID: 2800000, guid: 3243b89739027b64d8528fc403185760, type: 3}
   tilePrefab: {fileID: 9197481963319205126, guid: 34c19e51f2dc32344bb1818bee49950a, type: 3}
@@ -542,7 +607,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1245435756
 MonoBehaviour:
   m_ObjectHideFlags: 0

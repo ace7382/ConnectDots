@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,7 +40,9 @@ public class EndOfLevelPopup : Page
         //args[1]   -   Level                   -   The level that was just completed
         //args[2]   -   LevelCategory           -   The category to play in timed mode
         //args[3]   -   int                     -   The index of the TimeAttackStats in the category
-
+        //args[4]   -   bool                    -   Indicats if Timed Mode was won or not
+        //args[5]   -   TimeSpan                -   The TimeRemaining object from the played timed mode
+        //args[6]   -   int                     -   The number of levels completed in timed mode
 
         Dictionary<int, int> coinsWon = (Dictionary<int, int>)args[0];
 
@@ -47,17 +50,22 @@ public class EndOfLevelPopup : Page
         replayButton    = uiDoc.rootVisualElement.Q<VisualElement>("ReplayButton");
         nextLevelButton = uiDoc.rootVisualElement.Q<VisualElement>("NextLevelButton");
         showButton      = uiDoc.rootVisualElement.Q<VisualElement>("ShowEndScreenButton");
+        Label timeEndHeader = uiDoc.rootVisualElement.Q<Label>("TimeModeLabel");
+        Label timeDispaly   = uiDoc.rootVisualElement.Q<Label>("Time");
 
         ScrollView coinScroll = uiDoc.rootVisualElement.Q<ScrollView>("CoinAwardScroll");
 
-        foreach (KeyValuePair<int, int> award in coinsWon)
-        {
-            VisualElement display = UIManager.instance.CoinDisplay.Instantiate();
-            display.Q<VisualElement>("CoinSquare").SetColor(UIManager.instance.GetColor(award.Key));
-            display.Q<Label>("AmountLabel").text = award.Value.ToString();
+        if (coinsWon.Count == 0)
+            coinScroll.Hide();
+        else
+            foreach (KeyValuePair<int, int> award in coinsWon)
+            {
+                VisualElement display = UIManager.instance.CoinDisplay.Instantiate();
+                display.Q<VisualElement>("CoinSquare").SetColor(UIManager.instance.GetColor(award.Key));
+                display.Q<Label>("AmountLabel").text = award.Value.ToString();
 
-            coinScroll.Add(display);
-        }
+                coinScroll.Add(display);
+            }
 
         if (args[1] != null) //Post normal mode
         {
@@ -77,14 +85,40 @@ public class EndOfLevelPopup : Page
   
             replayButton.RegisterCallback<PointerUpEvent>((evt) => LoadLevel(level, evt));
             nextLevelButton.RegisterCallback<PointerUpEvent>((evt) => LoadLevel(nextLevel, evt));
+
+            timeEndHeader.text = level.LevelCategory.name + ": " + level.LevelNumber.ToLower();
+            timeDispaly.Hide();
         }
         else //Post-Timed Mode
         {
             levelCat = (LevelCategory)args[2];
             difficultyIndex = (int)args[3];
+            bool won = (bool)args[4];
+            TimeSpan remain = (TimeSpan)args[5];
+            int completed = (int)args[6];
 
             nextLevelButton.Hide();
 
+            if (won)
+            {
+                timeEndHeader.text  = "Complete!";
+                timeDispaly.text    = string.Format("{0}:{1}.{2}", 
+                                    remain.TotalMinutes.ToString("00")
+                                    , remain.Seconds.ToString("00")
+                                    , remain.Milliseconds.ToString("000"));
+            }
+            else
+            {
+                timeEndHeader.text = "Out of Time";
+                timeDispaly.RemoveFromClassList("HeaderLabel");
+                timeDispaly.AddToClassList("NormalLabel");
+                timeDispaly.style.unityTextAlign = TextAnchor.MiddleCenter;
+
+                timeDispaly.text = completed.ToString("000") + " / " 
+                                + levelCat.TimeAttacks[difficultyIndex].numberOfPuzzles.ToString("000")
+                                + "\nPuzzles Completed";
+            }
+            
             replayButton.RegisterCallback<PointerUpEvent>(RestartTimedMode);
         }
 

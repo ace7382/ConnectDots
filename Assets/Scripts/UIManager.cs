@@ -20,6 +20,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private VisualTreeAsset requirementDisplay;
     [SerializeField] private VisualTreeAsset timeAttackButtonPrefab;
     [SerializeField] private BackgroundScroll scrollingBG;
+    [SerializeField] private ScrollingBackground scrollingBackground;
     [SerializeField] private Texture2D restrictedTileTexture;
     [SerializeField] private Texture2D trophyTexture;
 
@@ -81,17 +82,24 @@ public class UIManager : MonoBehaviour
 
     public void SetBackground(Texture2D texture, Color color)
     {
-        scrollingBG.Set(texture, color);
+        //scrollingBG.Set(texture, color);
+
+        scrollingBackground.SetColor(color);
+        scrollingBackground.SetTexture(texture);
     }
 
     public void SetBackground(Color color)
     {
-        scrollingBG.Set(color);
+        //scrollingBG.Set(color);
+
+        scrollingBackground.SetColor(color);
     }
 
     public Color GetBackgroundColor()
     {
-        return scrollingBG.Color;
+        //return scrollingBG.Color;
+
+        return scrollingBackground.Color;
     }
 
     public Color GetColor(int index)

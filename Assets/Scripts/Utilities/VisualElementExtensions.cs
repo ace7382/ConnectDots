@@ -25,6 +25,11 @@ public static class VisualElementExtensions
         ve.style.backgroundColor = color;
     }
 
+    public static void SetImage(this VisualElement ve, Texture2D image)
+    {
+        ve.style.backgroundImage = image;
+    }
+
     public static void SetHeight(this VisualElement ve, StyleLength h, bool setMax = true, bool setMin = true)
     {
         ve.style.height = h;

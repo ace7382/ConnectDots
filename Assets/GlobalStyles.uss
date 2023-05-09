@@ -43,13 +43,13 @@
 
 .RepeatingBGIcon {
     position: absolute;
-    width: 100px;
-    height: 100px;
-    max-width: 100px;
-    max-height: 100px;
-    min-width: 100px;
-    min-height: 100px;
+    width: 75px;
+    height: 75px;
+    max-width: 75px;
+    max-height: 75px;
+    min-width: 75px;
+    min-height: 75px;
     -unity-background-scale-mode: scale-to-fit;
     background-image: url('project://database/Assets/Artwork/star_noBorder.png?fileID=2800000&guid=f540d163eaeb67f42918267b89d1450a&type=3#star_noBorder');
-    -unity-background-image-tint-color: rgb(128, 128, 128);
+    -unity-background-image-tint-color: rgb(255, 255, 255);
 }

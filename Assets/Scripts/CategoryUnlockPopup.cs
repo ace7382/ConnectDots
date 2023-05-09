@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+//TODO: After closing the category unlock popup,
+//      the back button doesn't return the player to the main menu
+
 public class CategoryUnlockPopup : Page
 {
     #region Private Variables
@@ -102,7 +105,9 @@ public class CategoryUnlockPopup : Page
             //reqIcon.Add(categoryIcon);
 
             reqIcon.SetBorderRadius(15f);
-            reqIcon.SetColor(cat.REQS_Category[i].Color);
+            //reqIcon.SetColor(cat.REQS_Category[i].Color);
+            reqIcon.SetColor(cat.REQS_Category[i].Colors[0]);
+            if (cat.REQS_Category[i].Colors.Count > 1) reqIcon.SetShiftingBGColor(cat.REQS_Category[i].Colors);
 
             VisualElement icon = new VisualElement();
             icon.style.backgroundImage = cat.REQS_Category[i].LevelSelectImage;

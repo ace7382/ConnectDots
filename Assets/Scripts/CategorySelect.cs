@@ -109,7 +109,11 @@ public class CategorySelect : Page
 
             VisualElement icon = button.Q<VisualElement>("Icon");
             VisualElement bg = button.Q<VisualElement>("LevelSelectButton");
-            bg.SetColor(lCat.Color);
+
+            //bg.SetColor(lCat.Color);
+            bg.SetColor(lCat.Colors[0]);
+            if (lCat.Colors.Count > 1) bg.SetShiftingBGColor(lCat.Colors);
+
             icon.style.backgroundImage = lCat.LevelSelectImage;
 
             VisualElement completedIcon = button.Q<VisualElement>("CompletedIcon");
@@ -234,7 +238,10 @@ public class CategorySelect : Page
             c.Q<VisualElement>("SelectionBorder").RemoveFromHierarchy();
 
             icon.style.backgroundImage      = cat.LevelSelectImage;
-            button.SetColor(cat.Color);
+
+            //button.SetColor(cat.Color);
+            button.SetColor(cat.Colors[0]);
+            if (cat.Colors.Count > 1) button.SetShiftingBGColor(cat.Colors);
 
             button.transform.scale          = new Vector3(2f / 1.5f, 2f / 1.5f, 1f);
             completeIcon.Show(cat.IsComplete);

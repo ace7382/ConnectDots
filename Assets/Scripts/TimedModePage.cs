@@ -23,7 +23,7 @@ public class TimedModePage : Page
     private TimeSpan timeRemaining;
     private IEnumerator timerCoroutine;
 
-    private Color originalColor;
+    //private Color originalColor;
     private Tween bgFlash;
     private Tween timerFlash;
 
@@ -68,7 +68,7 @@ public class TimedModePage : Page
         currentCategory = (LevelCategory)args[0];
         settingsIndex = (int)args[1];
 
-        originalColor = UIManager.instance.GetBackgroundColor();
+        //originalColor = UIManager.instance.GetBackgroundColor();
 
         settings = currentCategory.TimeAttacks[settingsIndex];
 
@@ -106,7 +106,7 @@ public class TimedModePage : Page
 
         timerLabel = uiDoc.rootVisualElement.Q<Label>("Timer");
 
-        timerLabel.text = string.Format("{0}:{1}", timeRemaining.TotalMinutes.ToString("00"), timeRemaining.Seconds.ToString("00"));
+        timerLabel.text = timeRemaining.TotalSeconds > 10d ? timeRemaining.ToString("mm\\:ss") : timeRemaining.ToString("mm\\:ss\\.fff");
 
         coinsWon = new Dictionary<int, int>();
 
@@ -149,7 +149,10 @@ public class TimedModePage : Page
         //set bg to original color
         if (bgFlash != null)
             bgFlash.Kill();
-        UIManager.instance.SetBackground(originalColor);
+
+        //UIManager.instance.SetBackground(originalColor);
+        UIManager.instance.SetBackground(currentCategory.Colors[0]);
+        if (currentCategory.Colors.Count > 1) UIManager.instance.SetBackgroundShift(currentCategory.Colors);
 
         yield return null;
     }
@@ -231,12 +234,9 @@ public class TimedModePage : Page
     {
         while (timeRemaining.Ticks > 0)
         {
-            //TODO: Add a cap either directly or just through design. Don't feel like formatting
-            //      this for every amount of time
+            timeRemaining = timeRemaining.Subtract(TimeSpan.FromSeconds(Time.deltaTime));
 
-            timeRemaining = timeRemaining.Subtract(TimeSpan.FromSeconds(Time.deltaTime)); 
-
-            timerLabel.text = string.Format("{0}:{1}", timeRemaining.TotalMinutes.ToString("00"), timeRemaining.Seconds.ToString("00"));
+            timerLabel.text = timeRemaining.TotalSeconds > 10d ? timeRemaining.ToString("mm\\:ss") : timeRemaining.ToString("mm\\:ss\\.fff"); //string.Format("{0}:{1}", timeRemaining.TotalMinutes.ToString("00"), timeRemaining.Seconds.ToString("00"));
 
             LowTime = timeRemaining.TotalSeconds < lowTimeThreshold;
 
@@ -314,11 +314,19 @@ public class TimedModePage : Page
 
     private void StartBGFlash()
     {
-        bgFlash = DOTween.To(() => UIManager.instance.GetBackgroundColor(),
-            x => UIManager.instance.SetBackground(x),
-            Color.red, .6f).SetEase(Ease.Linear).SetLoops(-1, LoopType.Yoyo)
-            .OnKill(() => UIManager.instance.SetBackground(originalColor))
-            .Play();
+        bgFlash =   DOTween.To(() => UIManager.instance.GetBackgroundColor(),
+                    x => UIManager.instance.SetBackground(x),
+                    Color.red,
+                    .6f)
+                    .SetEase(Ease.Linear)
+                    .SetLoops(-1, LoopType.Yoyo)
+                    .OnKill(() => {
+                        //UIManager.instance.SetBackground(originalColor); 
+                        UIManager.instance.SetBackground(currentCategory.Colors[0]);
+                        if (currentCategory.Colors.Count > 1) UIManager.instance.SetBackgroundShift(currentCategory.Colors);
+                        bgFlash = null; 
+                    })
+                    .Play();
     }
 
     private void StopBGFlash()
@@ -334,7 +342,10 @@ public class TimedModePage : Page
     {
         FlashTimer(timeToAdd > 0f);
 
-        timeRemaining = timeRemaining.Add(TimeSpan.FromSeconds(timeToAdd));
+        if (timeRemaining.TotalSeconds + timeToAdd > 3599)
+            timeRemaining = TimeSpan.FromMilliseconds(3599999d);
+        else
+            timeRemaining = timeRemaining.Add(TimeSpan.FromSeconds(timeToAdd));           
     }
 
     private void FlashTimer(bool timeIncreasing = true)

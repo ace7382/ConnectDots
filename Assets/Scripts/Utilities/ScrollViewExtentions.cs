@@ -18,10 +18,6 @@ public static class ScrollViewExtentions
         if (scroll.mode == ScrollViewMode.Horizontal)
             Debug.LogWarning("Using ShowHideVerticalBoundIndicators on a horizontal scroll");
 
-        Debug.Log(scroll.verticalScroller.highValue);
-        Debug.Log(scroll.verticalScroller.lowValue);
-        Debug.Log(scroll.verticalScroller.value);
-
         lowerBoundIndicator.Show(
             !(float.IsNaN(scroll.verticalScroller.highValue)
             || scroll.verticalScroller.value == scroll.verticalScroller.highValue)

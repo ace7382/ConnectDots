@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,8 @@ using UnityEngine.UIElements;
 
 public static class VisualElementExtensions
 {
+    private static Dictionary<VisualElement, Tween> shifts = new Dictionary<VisualElement, Tween>();
+
     public static void Show(this VisualElement ve, bool show = true)
     {
         ve.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
@@ -22,6 +25,12 @@ public static class VisualElementExtensions
 
     public static void SetColor(this VisualElement ve, Color color)
     {
+        if (shifts.ContainsKey(ve))
+        {
+            shifts[ve].Kill();
+            shifts.Remove(ve);
+        }
+
         ve.style.backgroundColor = color;
     }
 
@@ -67,5 +76,46 @@ public static class VisualElementExtensions
         if(topRight)    value.style.borderTopRightRadius      = r;
         if(bottomLeft)  value.style.borderBottomLeftRadius    = r;
         if(bottomRight) value.style.borderBottomRightRadius   = r;
+    }
+
+    public static void SetShiftingBGColor(this VisualElement ve, List<Color> colors, float shiftTime = 5f)
+    {
+        if (shifts.ContainsKey(ve))
+        {
+            shifts[ve].Kill();
+            shifts.Remove(ve);
+        }
+
+        Color current = ve.style.backgroundColor.value;
+
+        Sequence seq = DOTween.Sequence();
+
+        for (int i = 0; i < colors.Count; i++)
+        {
+            if (i == 0 && current == colors[i])
+                continue;
+
+            int a = i;
+
+            Tween shift = DOTween.To(() => ve.style.backgroundColor.value,
+                x => ve.style.backgroundColor = new StyleColor(x),
+                colors[a]
+                , shiftTime)
+                .SetEase(Ease.InQuart);
+
+            seq.Append(shift);
+        }
+
+        Tween shiftToStart = DOTween.To(() => ve.style.backgroundColor.value,
+            x => ve.style.backgroundColor = new StyleColor(x),
+            current
+            , shiftTime)
+            .SetEase(Ease.Linear);
+
+        seq.Append(shiftToStart)
+        .SetLoops(-1)
+        .Play();
+
+        shifts.Add(ve, seq);
     }
 }

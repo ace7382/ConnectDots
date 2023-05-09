@@ -120,7 +120,9 @@ public class LevelSelect : Page
         objectivesButton.RegisterCallback<PointerUpEvent>(ShowObjectives);
         timeAttackButton.RegisterCallback<PointerUpEvent>(ShowTimeAttacks);
 
-        UIManager.instance.SetBackground(cat.BackgroundImage, cat.Color);
+        //UIManager.instance.SetBackground(cat.LevelSelectImage, cat.Color);
+        UIManager.instance.SetBackground(cat.LevelSelectImage, cat.Colors[0]);
+        if (cat.Colors.Count > 1) UIManager.instance.SetBackgroundShift(cat.Colors);
 
         canClick = true;
 

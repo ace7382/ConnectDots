@@ -29,9 +29,8 @@ public class LevelCategory : ScriptableObject
 
     #region Inspector Variables
 
-    [SerializeField] private Color                  color;
+    [SerializeField] private List<Color>            colors;
     [SerializeField] private Texture2D              levelSelectImage;
-    [SerializeField] private Texture2D              backgroundImage;
     [SerializeField] private string                 filePath;
 
     [SerializeField] private bool                   unlocked;
@@ -48,9 +47,8 @@ public class LevelCategory : ScriptableObject
 
     #region Public Properties
 
-    public Color Color { get { return color; } }
+    public List<Color> Colors { get { return colors; } }
     public Texture2D LevelSelectImage { get { return levelSelectImage; } }
-    public Texture2D BackgroundImage { get { return backgroundImage; } }
     public string FilePath { get { return filePath; } }
     public bool Unlocked { get { return unlocked; } }
     public int REQS_NumberOfObjectives { get { return lock_NumberOfObjectives; } }

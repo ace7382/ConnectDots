@@ -12,12 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00c73155c94de8a46879bbbe340b83a9, type: 3}
   m_Name: PurpleStar
   m_EditorClassIdentifier: 
-  color: {r: 0.8833334, g: 0.45098037, b: 0.9254902, a: 1}
   colors:
   - {r: 0.88235295, g: 0.4509804, b: 0.9254902, a: 1}
   - {r: 0.4528302, g: 0, b: 0.39442343, a: 1}
   levelSelectImage: {fileID: 2800000, guid: f540d163eaeb67f42918267b89d1450a, type: 3}
-  backgroundImage: {fileID: 2800000, guid: 653b7c47ccff6404588a344dedb5909f, type: 3}
   filePath: PurpleStar
   unlocked: 1
   lock_NumberOfObjectives: 0
@@ -29,8 +27,18 @@ MonoBehaviour:
     totalTimeInSeconds: 120
     timeAddedOnCompletePuzzle: 15
     numberOfPuzzles: 3
+    bestTimeInSeconds: 0
+    bronzeTimeInSeconds: 10
+    silverTimeInSeconds: 20
+    goldTimeInSeconds: 45
+    starTimeInSeconds: 85
   - difficulty: Hard
     totalTimeInSeconds: 90
     timeAddedOnCompletePuzzle: 5
     numberOfPuzzles: 6
+    bestTimeInSeconds: 0
+    bronzeTimeInSeconds: 10
+    silverTimeInSeconds: 25
+    goldTimeInSeconds: 45
+    starTimeInSeconds: 75
   isComplete: 0

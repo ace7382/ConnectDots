@@ -60,21 +60,33 @@ public class LevelSelect : Page
             levelScrollContent.Add(button);
         }
 
-        objectiveScroll = uiDoc.rootVisualElement.Q<ScrollView>("ObjectiveScroll");
-        objectiveScroll.contentContainer.style.flexGrow = 1f;
-        VisualElement objectiveScrollContent = objectiveScroll.contentContainer.Q<VisualElement>("ObjectiveScrollContent");
-        List<Objective> objectives = ObjectiveManager.instance.GetObjectivesForCategory(cat);
+        objectiveScroll                         = uiDoc.rootVisualElement.Q<ScrollView>("ObjectiveScroll");
+        objectiveScroll
+            .contentContainer.style.flexGrow    = 1f;
+        VisualElement objectiveScrollContent    = objectiveScroll.contentContainer.Q<VisualElement>("ObjectiveScrollContent");
+        List<Objective> objectives              = ObjectiveManager.instance.GetObjectivesForCategory(cat);
 
         for (int i = 0; i < objectives.Count; i++)
         {
-            VisualElement card = UIManager.instance.ObjectiveCard.Instantiate();
-            card.style.SetWidth(new StyleLength(new Length(100f, LengthUnit.Percent)));
-            card.style.SetMargins(10f, i != 0, false, i != objectives.Count - 1, false);
+            VisualElement card                  = UIManager.instance.ObjectiveCard.Instantiate();
 
-            ObjectiveCard controller = new ObjectiveCard(objectives[i], card);
-            card.userData = controller;
+            card.SetWidth(new StyleLength(new Length(100f, LengthUnit.Percent)));
+            card.SetMargins(10f, i != 0, false, i != objectives.Count - 1, false);
+
+            ObjectiveCard controller            = new ObjectiveCard(objectives[i], card);
+            card.userData                       = controller;
 
             objectiveScrollContent.Add(card);
+
+            if (i != objectives.Count - 1)
+            {
+                VisualElement spacer = new VisualElement();
+                spacer.SetWidth(new StyleLength(new Length(90f, LengthUnit.Percent)));
+                spacer.SetHeight(7f);
+                spacer.SetColor(new Color(.8f, .8f, .8f, 1f));
+
+                objectiveScrollContent.Add(spacer);
+            }
         }
 
         timeAttackScroll = uiDoc.rootVisualElement.Q<ScrollView>("TimeAttackScroll");

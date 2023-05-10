@@ -23,6 +23,12 @@ public class LevelCategory : ScriptableObject
         public float    totalTimeInSeconds;
         public float    timeAddedOnCompletePuzzle;
         public int      numberOfPuzzles;
+
+        public double   bestTimeInSeconds;
+        public double   bronzeTimeInSeconds;
+        public double   silverTimeInSeconds;
+        public double   goldTimeInSeconds;
+        public double   starTimeInSeconds;
     }
 
     #endregion
@@ -47,16 +53,21 @@ public class LevelCategory : ScriptableObject
 
     #region Public Properties
 
-    public List<Color> Colors { get { return colors; } }
-    public Texture2D LevelSelectImage { get { return levelSelectImage; } }
-    public string FilePath { get { return filePath; } }
-    public bool Unlocked { get { return unlocked; } }
-    public int REQS_NumberOfObjectives { get { return lock_NumberOfObjectives; } }
-    public List<PurchaseLock> REQS_Purchase { get { return lock_Purcahse; } }
-    public List<Objective> REQS_Objective { get { return lock_CompletedObjectives; } }
-    public List<LevelCategory> REQS_Category { get { return lock_CompletedLevelCategories; } }
-    public List<TimeAttackStats> TimeAttacks { get { return timeAttackStats; } }
-    public bool IsComplete { get { return isComplete; } set { isComplete = value; } }
+    public List<Color>                              Colors                  { get { return colors; } }
+    public Texture2D                                LevelSelectImage        { get { return levelSelectImage; } }
+    public string                                   FilePath                { get { return filePath; } }
+    public bool                                     Unlocked                { get { return unlocked; } }
+    public int                                      REQS_NumberOfObjectives { get { return lock_NumberOfObjectives; } }
+    public List<PurchaseLock>                       REQS_Purchase           { get { return lock_Purcahse; } }
+    public List<Objective>                          REQS_Objective          { get { return lock_CompletedObjectives; } }
+    public List<LevelCategory>                      REQS_Category           { get { return lock_CompletedLevelCategories; } }
+    public List<TimeAttackStats>                    TimeAttacks             { get { return timeAttackStats; } }
+    public bool                                     IsComplete              { get { return isComplete; } set { isComplete = value; } }
+    public int                                      LevelsComplete          { get { return GetCompletedLevels().Count; } }
+    public int                                      BronzeTimeMedals        { get { return GetTimeMedals(0); } }
+    public int                                      SilverTimeMedals        { get { return GetTimeMedals(1); } }
+    public int                                      GoldTimeMedals          { get { return GetTimeMedals(2); } }
+    public int                                      StarTimeMedals          { get { return GetTimeMedals(3); } }
 
     #endregion
 
@@ -77,6 +88,29 @@ public class LevelCategory : ScriptableObject
         unlocked = true;
 
         this.PostNotification(Notifications.CATEGORY_UNLOCKED);
+    }
+
+    #endregion
+
+    #region Private Functions
+
+    private List<Level> GetCompletedLevels()
+    {
+        return GetLevels().FindAll(x => x.IsComplete);
+    }
+
+    private int GetTimeMedals(int medalColor)
+    {
+        if (medalColor == 0)
+            return TimeAttacks.FindAll(x => x.bestTimeInSeconds >= x.bronzeTimeInSeconds).Count;
+        if (medalColor == 1)
+            return TimeAttacks.FindAll(x => x.bestTimeInSeconds >= x.silverTimeInSeconds).Count;
+        if (medalColor == 2)
+            return TimeAttacks.FindAll(x => x.bestTimeInSeconds >= x.goldTimeInSeconds).Count;
+        if (medalColor == 3)
+            return TimeAttacks.FindAll(x => x.bestTimeInSeconds >= x.starTimeInSeconds).Count;
+
+        return -1;
     }
 
     #endregion

@@ -248,6 +248,9 @@ public class TimedModePage : Page
             yield return null;
         }
 
+        timeRemaining   = TimeSpan.Zero;
+        timerLabel.text = timeRemaining.ToString("mm\\:ss\\.fff");
+
         RoundOver(false);
     }
 

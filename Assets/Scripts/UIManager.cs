@@ -47,21 +47,21 @@ public class UIManager : MonoBehaviour
 
     #region Public Properties
 
-    public VisualTreeAsset TilePrefab { get { return tilePrefab; } }
-    public float BoardPadding { get { return boardPadding; } }
-    public float HardBorderSize { get { return hardBorderSize; } }
-    public float SoftBorderSize { get { return softBorderSize; } }
-    public Color HardBorderColor { get { return hardBorderColor; } }
-    public Color SoftBorderColor { get { return softBorderColor; } }
+    public VisualTreeAsset  TilePrefab { get { return tilePrefab; } }
+    public float            BoardPadding { get { return boardPadding; } }
+    public float            HardBorderSize { get { return hardBorderSize; } }
+    public float            SoftBorderSize { get { return softBorderSize; } }
+    public Color            HardBorderColor { get { return hardBorderColor; } }
+    public Color            SoftBorderColor { get { return softBorderColor; } }
     public TopBarController TopBar { get { return topBarControl; } }
-    public VisualTreeAsset LevelSelectButton { get { return levelSelectButton; } }
-    public VisualTreeAsset ObjectiveCard { get { return objectiveCard; } }
-    public VisualTreeAsset CoinDisplay { get { return coinDisplay; } }
-    public VisualTreeAsset RequirementDisplay { get { return requirementDisplay; } }
-    public VisualTreeAsset TimeAttackButton { get { return timeAttackButtonPrefab; } }
-    public Texture2D RestrictedTile { get { return restrictedTileTexture; } }
-    public Texture2D TrophyTexture { get { return trophyTexture; } }
-    public int ColorCount { get { return gameColors.Count; } }
+    public VisualTreeAsset  LevelSelectButton { get { return levelSelectButton; } }
+    public VisualTreeAsset  ObjectiveCard { get { return objectiveCard; } }
+    public VisualTreeAsset  CoinDisplay { get { return coinDisplay; } }
+    public VisualTreeAsset  RequirementDisplay { get { return requirementDisplay; } }
+    public VisualTreeAsset  TimeAttackButton { get { return timeAttackButtonPrefab; } }
+    public Texture2D        RestrictedTile { get { return restrictedTileTexture; } }
+    public Texture2D        TrophyTexture { get { return trophyTexture; } }
+    public int              ColorCount { get { return gameColors.Count; } }
 
     #endregion
 

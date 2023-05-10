@@ -41,7 +41,15 @@ public class TopBarController : MonoBehaviour
         coinsButton = uiDoc.rootVisualElement.Q<VisualElement>("CoinsButton");
 
         VisualElement bar = uiDoc.rootVisualElement.Q<VisualElement>("TopBar");
-        bar.transform.position = new Vector3(bar.transform.position.x, -100f, bar.transform.position.z);
+        //bar.transform.position = new Vector3(bar.transform.position.x, -100f, bar.transform.position.z);
+        bar.transform.position = new Vector3(bar.transform.position.x,
+                                -(uiDoc.rootVisualElement.style.paddingTop.value.value + 100f), //100 is topbar height
+                                bar.transform.position.z);
+
+        RectOffsetFloat safeMargins = uiDoc.rootVisualElement.panel.GetSafeArea();
+        uiDoc.rootVisualElement.style.paddingTop = safeMargins.Top;
+        uiDoc.rootVisualElement.style.paddingLeft = safeMargins.Left;
+        uiDoc.rootVisualElement.style.paddingRight = safeMargins.Right;
 
         coinDrawerOpen = false;
         CanClick = true;
@@ -59,7 +67,10 @@ public class TopBarController : MonoBehaviour
 
         Tween hideShow = DOTween.To(() => bar.transform.position,
                         x => bar.transform.position = x,
-                        new Vector3(bar.transform.position.x, show ? 0f : -100f, bar.transform.position.z), .15f)
+                        //new Vector3(bar.transform.position.x, show ? 0f : -100f, bar.transform.position.z), .15f)
+                        new Vector3(bar.transform.position.x,
+                            show ? 0f : -(uiDoc.rootVisualElement.style.paddingTop.value.value + 100f), //100 is topbar height
+                            bar.transform.position.z), .15f)
                         .SetEase(Ease.InOutQuad).Play().OnComplete(() => { isShowing = show; });
 
         //uiDoc.rootVisualElement.Show(show);

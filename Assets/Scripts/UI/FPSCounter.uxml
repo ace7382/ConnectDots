@@ -1,0 +1,3 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Label tabindex="-1" text="000.00" display-tooltip-when-elided="true" name="Label" style="align-items: auto; align-self: center; bottom: 15px; position: absolute; -unity-font-definition: initial; -unity-font: url(&apos;project://database/Assets/GUI%20PRO%20Kit%20-%20Simple%20Casual/Fonts/Quicksand-Bold.ttf?fileID=12800000&amp;guid=8a7ef750b018c41e78d4f8f786ae57e5&amp;type=3#Quicksand-Bold&apos;); font-size: 45px;" />
+</ui:UXML>

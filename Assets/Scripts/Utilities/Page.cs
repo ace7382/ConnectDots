@@ -42,5 +42,14 @@ public abstract class Page
         uiDoc = u;
     }
 
+    public void SetSafeAreaMargins()
+    {
+        RectOffsetFloat safeMargins                     = uiDoc.rootVisualElement.panel.GetSafeArea();
+        uiDoc.rootVisualElement.style.paddingBottom     = safeMargins.Bottom;
+        uiDoc.rootVisualElement.style.paddingTop        = safeMargins.Top;
+        uiDoc.rootVisualElement.style.paddingLeft       = safeMargins.Left;
+        uiDoc.rootVisualElement.style.paddingRight      = safeMargins.Right;
+    }
+
     #endregion
 }

@@ -46,10 +46,10 @@ public class EndOfLevelPopup : Page
 
         Dictionary<int, int> coinsWon = (Dictionary<int, int>)args[0];
 
-        homeButton      = uiDoc.rootVisualElement.Q<VisualElement>("HomeButton");
-        replayButton    = uiDoc.rootVisualElement.Q<VisualElement>("ReplayButton");
-        nextLevelButton = uiDoc.rootVisualElement.Q<VisualElement>("NextLevelButton");
-        showButton      = uiDoc.rootVisualElement.Q<VisualElement>("ShowEndScreenButton");
+        homeButton          = uiDoc.rootVisualElement.Q<VisualElement>("HomeButton");
+        replayButton        = uiDoc.rootVisualElement.Q<VisualElement>("ReplayButton");
+        nextLevelButton     = uiDoc.rootVisualElement.Q<VisualElement>("NextLevelButton");
+        showButton          = uiDoc.rootVisualElement.Q<VisualElement>("ShowEndScreenButton");
         Label timeEndHeader = uiDoc.rootVisualElement.Q<Label>("TimeModeLabel");
         Label timeDispaly   = uiDoc.rootVisualElement.Q<Label>("Time");
 
@@ -91,21 +91,24 @@ public class EndOfLevelPopup : Page
         }
         else //Post-Timed Mode
         {
-            levelCat = (LevelCategory)args[2];
-            difficultyIndex = (int)args[3];
-            bool won = (bool)args[4];
-            TimeSpan remain = (TimeSpan)args[5];
-            int completed = (int)args[6];
+            levelCat            = (LevelCategory)args[2];
+            difficultyIndex     = (int)args[3];
+            bool won            = (bool)args[4];
+            TimeSpan remain     = (TimeSpan)args[5];
+            int completed       = (int)args[6];
 
             nextLevelButton.Hide();
 
             if (won)
             {
                 timeEndHeader.text  = "Complete!";
-                timeDispaly.text    = string.Format("{0}:{1}.{2}", 
-                                    remain.TotalMinutes.ToString("00")
-                                    , remain.Seconds.ToString("00")
-                                    , remain.Milliseconds.ToString("000"));
+                timeDispaly.text    = remain.ToString("mm\\:ss\\.fff");
+
+                if (remain.TotalSeconds > levelCat.TimeAttacks[difficultyIndex].bestTimeInSeconds)
+                {
+                    //TODO: Show "Best Time" indicator
+                    levelCat.TimeAttacks[difficultyIndex].bestTimeInSeconds = remain.TotalSeconds;
+                }
             }
             else
             {

@@ -108,6 +108,9 @@ public class PageManager : MonoBehaviour
         pageToAdd.SetSortOrder(stack.Count);
 
         if (executeShowCall) pageToAdd.ShowPage(arfs);
+
+        pageToAdd.SetSafeAreaMargins();
+
         if (animateIn) yield return pageToAdd.AnimateIn();
 
         UIManager.instance.TopBar.CanClick = true;
@@ -133,6 +136,9 @@ public class PageManager : MonoBehaviour
         pageToAdd.SetSortOrder(stack.Count);
 
         if (executeShowCall) pageToAdd.ShowPage(args);
+
+        pageToAdd.SetSafeAreaMargins();
+
         if (animateIn) yield return pageToAdd.AnimateIn();
 
         UIManager.instance.TopBar.CanClick = true;

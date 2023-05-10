@@ -7,10 +7,30 @@ using DG.Tweening;
 
 public class CategorySelect : Page
 {
+    #region Private Consts
+
+    //TODO: Put these in UIManager or a Style Class
+    private Color BUTTONACTIVE = new Color(0.3490196f, 0.8117647f, 0.5490196f, 1f);
+    private Color BUTTONINACTIVE = Color.grey;
+
+    #endregion
+
     #region Private Variables
 
-    private VisualElement bigCategoryIcon, instructionsVE, levelsCompletedPanel, objectivesPanel, playUnlockButton;
-    private Label categoryTitle, levelsCompleted, categoryObjectivesMet;
+    private VisualElement header_Instructions;
+    private VisualElement header_CategoryIcon;
+    private VisualElement header_LeftPanel;
+    private VisualElement header_RightPanel;
+    private VisualElement header_PlayUnlockButton;
+
+    private Label header_CategoryTitle;
+    private Label header_LevelsCompletedLabel;
+    private Label header_ObjectivesCompletedLabel;
+    private Label header_BronzeTTLabel;
+    private Label header_SilverTTLabel;
+    private Label header_GoldTTLabel;
+    private Label header_StarTTLabel;
+
     private VisualElement selectedButton;
     private bool canClick;
 
@@ -30,24 +50,25 @@ public class CategorySelect : Page
             {
                 VisualElement old = selectedButton;
 
-                //old.Q<VisualElement>("LevelSelectButton").style.SetBorderColor(Color.clear);
                 old.Q<VisualElement>("SelectionBorder").Hide();
 
                 Tween scaleDown = DOTween.To(() => old.transform.scale,
                                     x => old.transform.scale = x,
-                                    Vector3.one, .02f).SetEase(Ease.OutQuad).Play();
+                                    Vector3.one
+                                    , .07f)
+                                    .SetEase(Ease.Linear)
+                                    .Play();
             }
 
             selectedButton = value;
 
             if (selectedButton != null)
             {
-                //selectedButton.Q<VisualElement>("LevelSelectButton").style.SetBorderColor(Color.green);
                 selectedButton.Q<VisualElement>("SelectionBorder").Show();
 
                 Tween scaleUp = DOTween.To(() => selectedButton.transform.scale,
                         x => selectedButton.transform.scale = x,
-                        new Vector3(1.15f, 1.15f, 1f), .02f).SetEase(Ease.OutQuad).Play();
+                        new Vector3(1.15f, 1.15f, 1f), .07f).SetEase(Ease.Linear).Play();
             }
 
             ShowCategoryDetails();
@@ -76,16 +97,21 @@ public class CategorySelect : Page
 
         List<LevelCategory> cats                    = Resources.LoadAll<LevelCategory>("Categories").ToList();
 
-        instructionsVE                              = uiDoc.rootVisualElement.Q<VisualElement>("InstructionsLabel");
-        bigCategoryIcon                             = uiDoc.rootVisualElement.Q<VisualElement>("CategoryIcon_Big");
-        categoryTitle                               = uiDoc.rootVisualElement.Q<Label>("CategoryName");
-        levelsCompleted                             = uiDoc.rootVisualElement.Q<Label>("LevelsCompleteCount");
-        levelsCompletedPanel                        = uiDoc.rootVisualElement.Q<VisualElement>("LevelsCompletePanel");
-        categoryObjectivesMet                       = uiDoc.rootVisualElement.Q<Label>("ObjectivesCompleteCount");
-        objectivesPanel                             = uiDoc.rootVisualElement.Q<VisualElement>("ObjectivesCompletePanel");
-        playUnlockButton                            = uiDoc.rootVisualElement.Q<VisualElement>("PlayUnlockButton");
+        header_Instructions                         = uiDoc.rootVisualElement.Q<VisualElement>("InstructionsLabel");
+        header_CategoryIcon                         = uiDoc.rootVisualElement.Q<VisualElement>("CategoryIconBG");
+        header_LeftPanel                            = uiDoc.rootVisualElement.Q<VisualElement>("LeftPanel");
+        header_RightPanel                           = uiDoc.rootVisualElement.Q<VisualElement>("RightPanel");
+        header_PlayUnlockButton                     = uiDoc.rootVisualElement.Q<VisualElement>("PlayUnlockButtonLabel");
 
-        playUnlockButton.RegisterCallback<PointerUpEvent>((evt) =>
+        header_CategoryTitle                        = uiDoc.rootVisualElement.Q<Label>("CategoryName");
+        header_LevelsCompletedLabel                 = uiDoc.rootVisualElement.Q<Label>("LevelsCompleteCount");
+        header_ObjectivesCompletedLabel             = uiDoc.rootVisualElement.Q<Label>("ObjectivesCompleteCount");
+        header_BronzeTTLabel                        = uiDoc.rootVisualElement.Q<VisualElement>("BronzeAwardContainer").Q<Label>("Count");
+        header_SilverTTLabel                        = uiDoc.rootVisualElement.Q<VisualElement>("SilverAwardContainer").Q<Label>("Count");
+        header_GoldTTLabel                          = uiDoc.rootVisualElement.Q<VisualElement>("GoldAwardContainer").Q<Label>("Count");
+        header_StarTTLabel                          = uiDoc.rootVisualElement.Q<VisualElement>("StarAwardContainer").Q<Label>("Count");
+
+        header_PlayUnlockButton.RegisterCallback<PointerUpEvent>((evt) =>
         {
             if (!canClick)
                 return;
@@ -102,25 +128,25 @@ public class CategorySelect : Page
 
         for (int i = 0; i < cats.Count; i++)
         {
-            VisualElement button = UIManager.instance.LevelSelectButton.Instantiate();
-            LevelCategory lCat = cats[i];
+            VisualElement button    = UIManager.instance.LevelSelectButton.Instantiate();
+            LevelCategory lCat      = cats[i];
 
-            button.userData = lCat;
+            button.userData         = lCat;
 
-            VisualElement icon = button.Q<VisualElement>("Icon");
-            VisualElement bg = button.Q<VisualElement>("LevelSelectButton");
+            VisualElement icon      = button.Q<VisualElement>("Icon");
+            VisualElement bg        = button.Q<VisualElement>("LevelSelectButton");
 
-            //bg.SetColor(lCat.Color);
             bg.SetColor(lCat.Colors[0]);
             if (lCat.Colors.Count > 1) bg.SetShiftingBGColor(lCat.Colors);
 
-            icon.style.backgroundImage = lCat.LevelSelectImage;
+            icon.style
+                .backgroundImage    = lCat.LevelSelectImage;
 
             VisualElement completedIcon = button.Q<VisualElement>("CompletedIcon");
             completedIcon.Show(lCat.IsComplete);
             bg.SetBorderColor(lCat.IsComplete ? Color.yellow : Color.clear);
 
-            button.RegisterCallback<PointerDownEvent>((PointerDownEvent evt) =>
+            button.RegisterCallback<PointerUpEvent>((PointerUpEvent evt) =>
             {
                 if (!canClick)
                     return;
@@ -198,91 +224,57 @@ public class CategorySelect : Page
     {
         if (selectedButton == null)
         {
-            instructionsVE.style.Show();
+            header_Instructions.Show();
 
-            bigCategoryIcon.Hide();
-            categoryTitle.Hide();
-            levelsCompletedPanel.Hide();
-            objectivesPanel.Hide();
-            playUnlockButton.Hide();
+            header_LeftPanel.Hide();
+            header_RightPanel.Hide();
+            header_CategoryIcon.Hide();
+            header_CategoryTitle.Hide();
         }
         else
         {
             LevelCategory cat = SelectedCategoryButton.userData as LevelCategory;
 
-            instructionsVE.Hide();
+            header_Instructions.Hide();
 
-            bigCategoryIcon.Clear();
+            header_CategoryIcon.Show();
+            header_CategoryIcon
+                .Q<VisualElement>("CategoryIcon")
+                .style.backgroundImage              = cat.LevelSelectImage;
+            header_CategoryIcon.SetColor(cat.Colors[0]);
+            if (cat.Colors.Count > 1) header_CategoryIcon.SetShiftingBGColor(cat.Colors);
 
-            //VisualElement buttonBG          = new VisualElement();
-            //VisualElement icon              = new VisualElement();
+            header_CategoryTitle.Show();
+            header_CategoryTitle.text               = cat.name;
 
-            //buttonBG.style.alignItems       = Align.Center;
-            //buttonBG.style.justifyContent   = Justify.Center;
-            //buttonBG.style.backgroundColor  = cat.Color;
-            //buttonBG.style.SetHeight(150f);
-            //buttonBG.style.SetWidth(150f);
-            //buttonBG.style.SetBorderRadius(15f);
+            header_LeftPanel.Show();
+            header_RightPanel.Show();
 
-            //icon.style.SetWidth(60f);
-            //icon.style.SetHeight(60f);
-            //icon.style.backgroundImage = cat.LevelSelectImage;
+            List<Objective> catObjectives           = ObjectiveManager.instance.GetObjectivesForCategory(cat);
+            header_ObjectivesCompletedLabel.text    = string.Format("{0} / {1}",
+                                                        catObjectives.FindAll(x => x.IsComplete).Count.ToString("000"),
+                                                        catObjectives.Count.ToString("000"));
 
-            //buttonBG.Add(icon);
-            //bigCategoryIcon.Add(buttonBG);
+            List<Level> catLevels                   = cat.GetLevels();
+            header_LevelsCompletedLabel.text        = string.Format("{0} / {1}",
+                                                        catLevels.FindAll(x => x.IsComplete).Count.ToString("000"),
+                                                        catLevels.Count.ToString("000"));
 
-            VisualElement c                 = UIManager.instance.LevelSelectButton.Instantiate();
-            VisualElement button            = c.Q<VisualElement>("LevelSelectButton");
-            VisualElement icon              = button.Q<VisualElement>("Icon");
-            VisualElement completeIcon      = button.Q<VisualElement>("CompletedIcon");
-            c.Q<VisualElement>("SelectionBorder").RemoveFromHierarchy();
-
-            icon.style.backgroundImage      = cat.LevelSelectImage;
-
-            //button.SetColor(cat.Color);
-            button.SetColor(cat.Colors[0]);
-            if (cat.Colors.Count > 1) button.SetShiftingBGColor(cat.Colors);
-
-            button.transform.scale          = new Vector3(2f / 1.5f, 2f / 1.5f, 1f);
-            completeIcon.Show(cat.IsComplete);
-            button.SetBorderColor(cat.IsComplete ? Color.yellow : Color.clear);
-
-            bigCategoryIcon.Add(button);
-            bigCategoryIcon.SetHeight(150f, false, false);
-            bigCategoryIcon.SetWidth(150f);
-
-            bigCategoryIcon.Show();
-
-            categoryTitle.text = cat.name;
-            categoryTitle.Show();
-
-            List<Objective> catObjectives = ObjectiveManager.instance.GetObjectivesForCategory(cat);
-
-            categoryObjectivesMet.text = string.Format("{0} / {1}",
-                                        catObjectives.FindAll(x => x.IsComplete).Count.ToString("000"),
-                                        catObjectives.Count.ToString("000"));
-
-            List<Level> catLevels = cat.GetLevels();
-
-            levelsCompleted.text = string.Format("{0} / {1}",
-                                    catLevels.FindAll(x => x.IsComplete).Count.ToString("000"),
-                                    catLevels.Count.ToString("000"));
-                                            
-            levelsCompletedPanel.Show();
-            objectivesPanel.Show();
+            header_BronzeTTLabel.text               = "x " + cat.BronzeTimeMedals.ToString("000");
+            header_SilverTTLabel.text               = "x " + cat.SilverTimeMedals.ToString("000");
+            header_GoldTTLabel.text                 = "x " + cat.GoldTimeMedals.ToString("000");
+            header_StarTTLabel.text                 = "x " + cat.StarTimeMedals.ToString("000");
 
             if (cat.Unlocked)
             {
-                playUnlockButton.Q<Label>().text = "Play         ";
-                playUnlockButton.SetColor(Color.green);
+                ((Label)header_PlayUnlockButton).text = "Play";
+                header_PlayUnlockButton.SetColor(BUTTONACTIVE);
             }
             else
             {
-                playUnlockButton.Q<Label>().text = "Unlock Category";
-                playUnlockButton.SetColor(Color.grey);
+                ((Label)header_PlayUnlockButton).text = "Unlock Category";
+                header_PlayUnlockButton.SetColor(BUTTONINACTIVE);
             }
-
-            playUnlockButton.Show();
         }
     }
 

@@ -32,15 +32,6 @@
     -unity-text-outline-color: rgb(0, 0, 0);
 }
 
-.PageSize {
-    position: absolute;
-    top: 100px;
-    bottom: 0;
-    width: 100%;
-    max-width: 100%;
-    min-width: 100%;
-}
-
 .RepeatingBGIcon {
     position: absolute;
     width: 75px;
@@ -52,4 +43,13 @@
     -unity-background-scale-mode: scale-to-fit;
     background-image: url('project://database/Assets/Artwork/star_noBorder.png?fileID=2800000&guid=f540d163eaeb67f42918267b89d1450a&type=3#star_noBorder');
     -unity-background-image-tint-color: rgb(255, 255, 255);
+}
+
+.PageSizeNew {
+    width: 100%;
+    max-width: 100%;
+    min-width: 100%;
+    padding-top: 100px;
+    flex-grow: 1;
+    flex-shrink: 0;
 }

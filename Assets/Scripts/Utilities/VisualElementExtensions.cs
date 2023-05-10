@@ -54,6 +54,14 @@ public static class VisualElementExtensions
         if (setMin) ve.style.minWidth = w;
     }
 
+    public static void SetMargins(this VisualElement ve, float marginSize, bool top = true, bool right = true, bool bottom = true, bool left = true)
+    {
+        if (top)    ve.style.marginTop = marginSize;
+        if (right)  ve.style.marginRight = marginSize;
+        if (left)   ve.style.marginLeft = marginSize;
+        if (bottom) ve.style.marginBottom = marginSize;
+    }
+
     public static void SetBorderWidth(this VisualElement value, float borderWidth, bool top = true, bool right = true, bool bottom = true, bool left = true)
     {
         if(top)     value.style.borderTopWidth        = borderWidth;

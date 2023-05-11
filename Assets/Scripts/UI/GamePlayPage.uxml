@@ -3,4 +3,5 @@
     <ui:VisualElement name="Screen" class="PageSizeNew" style="justify-content: center; align-items: center;">
         <ui:VisualElement name="Board" style="flex-grow: 0; flex-direction: row; width: 400px; height: auto; max-width: 400px; min-width: 400px; flex-wrap: wrap;" />
     </ui:VisualElement>
+    <ui:ScrollView style="position: absolute; bottom: 0; height: 250px; width: 100%; max-width: 100%; max-height: 250px; min-width: 100%; min-height: 250px; background-color: rgb(255, 255, 255);" />
 </ui:UXML>

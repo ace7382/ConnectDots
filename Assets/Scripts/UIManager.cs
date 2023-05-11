@@ -43,6 +43,13 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Sprite lineSprite;
     [SerializeField] private Sprite cornerSprite;
 
+    [Space]
+
+    [SerializeField] private Texture2D bronzeMedal;
+    [SerializeField] private Texture2D silverMedal;
+    [SerializeField] private Texture2D goldMedal;
+    [SerializeField] private Texture2D starMedal;
+
     #endregion
 
     #region Public Properties
@@ -61,6 +68,10 @@ public class UIManager : MonoBehaviour
     public VisualTreeAsset  TimeAttackButton { get { return timeAttackButtonPrefab; } }
     public Texture2D        RestrictedTile { get { return restrictedTileTexture; } }
     public Texture2D        TrophyTexture { get { return trophyTexture; } }
+    public Texture2D        BronzeMedal { get { return bronzeMedal; } }
+    public Texture2D        SilverMedal { get { return silverMedal; } }
+    public Texture2D        GoldMedal { get { return goldMedal; } }
+    public Texture2D        StarMedal { get { return starMedal; } }
     public int              ColorCount { get { return gameColors.Count; } }
 
     #endregion

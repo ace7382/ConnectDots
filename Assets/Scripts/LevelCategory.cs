@@ -29,6 +29,20 @@ public class LevelCategory : ScriptableObject
         public double   silverTimeInSeconds;
         public double   goldTimeInSeconds;
         public double   starTimeInSeconds;
+
+        public Texture2D GetHighestMedal()
+        {
+            if (bestTimeInSeconds >= starTimeInSeconds)
+                return UIManager.instance.StarMedal;
+            else if (bestTimeInSeconds >= goldTimeInSeconds)
+                return UIManager.instance.GoldMedal;
+            else if (bestTimeInSeconds >= silverTimeInSeconds)
+                return UIManager.instance.SilverMedal;
+            else if (bestTimeInSeconds >= bronzeTimeInSeconds)
+                return UIManager.instance.BronzeMedal;
+
+            return null;
+        }
     }
 
     #endregion

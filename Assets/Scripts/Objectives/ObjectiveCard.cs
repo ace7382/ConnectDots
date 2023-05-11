@@ -44,21 +44,6 @@ public class ObjectiveCard
         progressBarFill.SetColor(objective.ProgressBarColor);
         progressBarWidth.SetWidth(new StyleLength(new Length(objective.GetProgressAsPercentage(), LengthUnit.Percent)));
         progressBarLabel.text                   = string.Format(objective.GetProgressAsString());
-
-        //ProgressBar progressBar                 = card.Q<ProgressBar>();
-        //progressBar.title                       = objective.GetProgressAsString();
-        //progressBar.value                       = objective.GetProgressAsPercentage();
-
-        //VisualElement barBG                     = progressBar.Children().ElementAt(0).Children().ElementAt(0);
-        //VisualElement fillBar                   = barBG.Children().ElementAt(0);
-        //Label progressBarTitle                  = barBG.Q<Label>();
-
-        //barBG.parent                            .SetHeight(new StyleLength(StyleKeyword.Auto));
-        //barBG                                   .SetBorderRadius(10f);
-        //barBG                                   .SetColor(Color.black);
-        //fillBar                                 .SetBorderRadius(10f);
-        //fillBar                                 .SetColor(objective.ProgressBarColor);
-        //progressBarTitle                        .AddToClassList("ProgressBarFont");
     }
 
     #endregion

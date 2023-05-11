@@ -95,33 +95,40 @@ public class LevelSelect : Page
         
         for (int i = 0; i < cat.TimeAttacks.Count; i++)
         {
-            VisualElement card = UIManager.instance.TimeAttackButton.Instantiate();
+            VisualElement card                  = UIManager.instance.TimeAttackButton.Instantiate();
             card.style.SetWidth(new StyleLength(new Length(100f, LengthUnit.Percent)));
             card.style.SetMargins(10f, i != 0, false, i != objectives.Count - 1, false);
 
-            //TODO: Make a card controller probably
-            card.Q<Label>("DifficultyLabel").text = cat.TimeAttacks[i].difficulty;
-            card.Q<Label>("PuzzleCount").text = cat.TimeAttacks[i].numberOfPuzzles.ToString() + " Puzzles";
-            card.Q<Label>("StartingTime").text = cat.TimeAttacks[i].totalTimeInSeconds.ToString(); //TODO: time format
-            card.Q<Label>("CompletionBonus").text = "+" + cat.TimeAttacks[i].timeAddedOnCompletePuzzle.ToString() + "s per completion";
+            TimedModeCard controller            = new TimedModeCard(cat.TimeAttacks[i], card);
+            card.userData                       = controller;
 
-            int index = i;
+            int index                           = i;
 
             card.RegisterCallback<PointerUpEvent>((evt) =>
             {
                 if (!canClick)
                     return;
 
-                canClick = false;
+                canClick                        = false;
 
-                object[] data = new object[2];
-                data[0] = cat;
-                data[1] = index;
+                object[] data                   = new object[2];
+                data[0]                         = cat;
+                data[1]                         = index;
 
                 PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<TimedModePage>(data));
             });
 
             timeAttackScrollContent.Add(card);
+
+            if (i != cat.TimeAttacks.Count - 1)
+            {
+                VisualElement spacer            = new VisualElement();
+                spacer.SetWidth(new StyleLength(new Length(90f, LengthUnit.Percent)));
+                spacer.SetHeight(7f);
+                spacer.SetColor(new Color(.8f, .8f, .8f, 1f));
+
+                timeAttackScrollContent.Add(spacer);
+            }
         }
 
         levelsButton = uiDoc.rootVisualElement.Q<VisualElement>("LevelsButton");

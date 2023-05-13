@@ -10,23 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a89a4ad53e408f748947467a89173cc8, type: 3}
-  m_Name: 2Lines
+  m_Name: omnitest
   m_EditorClassIdentifier: 
   levelCategory: {fileID: 11400000, guid: 06c4a1a0614cd7d42afb84a183b6e82c, type: 2}
-  levelNum: 2
+  levelNum: OMN1
   rows: 8
   cols: 8
   lines:
   - end1position: {x: 0, y: 0}
-    end1rotation: 1
+    end1rotation: 4
     end2position: {x: 7, y: 0}
-    end2rotation: 0
+    end2rotation: 4
     colorIndex: 4
     solutionPath: []
   - end1position: {x: 2, y: 2}
-    end1rotation: 0
+    end1rotation: 4
     end2position: {x: 5, y: 5}
-    end2rotation: 0
+    end2rotation: 4
     colorIndex: 2
     solutionPath: []
   specialTiles: []

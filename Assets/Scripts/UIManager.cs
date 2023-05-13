@@ -39,7 +39,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private List<Color> gameColors;
 
     [Space]
-    [SerializeField] private Sprite dotSprite;
+    [SerializeField] private Sprite directionalEndSprite;
+    [SerializeField] private Sprite omnidirectionalEndSprite;
     [SerializeField] private Sprite lineSprite;
     [SerializeField] private Sprite cornerSprite;
 
@@ -58,25 +59,25 @@ public class UIManager : MonoBehaviour
 
     #region Public Properties
 
-    public VisualTreeAsset TilePrefab { get { return tilePrefab; } }
-    public float BoardPadding { get { return boardPadding; } }
-    public float HardBorderSize { get { return hardBorderSize; } }
-    public float SoftBorderSize { get { return softBorderSize; } }
-    public Color HardBorderColor { get { return hardBorderColor; } }
-    public Color SoftBorderColor { get { return softBorderColor; } }
-    public TopBarController TopBar { get { return topBarControl; } }
-    public VisualTreeAsset LevelSelectButton { get { return levelSelectButton; } }
-    public VisualTreeAsset ObjectiveCard { get { return objectiveCard; } }
-    public VisualTreeAsset CoinDisplay { get { return coinDisplay; } }
-    public VisualTreeAsset RequirementDisplay { get { return requirementDisplay; } }
-    public VisualTreeAsset TimeAttackButton { get { return timeAttackButtonPrefab; } }
-    public Texture2D RestrictedTile { get { return restrictedTileTexture; } }
-    public Texture2D TrophyTexture { get { return trophyTexture; } }
-    public Texture2D BronzeMedal { get { return bronzeMedal; } }
-    public Texture2D SilverMedal { get { return silverMedal; } }
-    public Texture2D GoldMedal { get { return goldMedal; } }
-    public Texture2D StarMedal { get { return starMedal; } }
-    public int ColorCount { get { return gameColors.Count; } }
+    public VisualTreeAsset      TilePrefab          { get { return tilePrefab; } }
+    public float                BoardPadding        { get { return boardPadding; } }
+    public float                HardBorderSize      { get { return hardBorderSize; } }
+    public float                SoftBorderSize      { get { return softBorderSize; } }
+    public Color                HardBorderColor     { get { return hardBorderColor; } }
+    public Color                SoftBorderColor     { get { return softBorderColor; } }
+    public TopBarController     TopBar              { get { return topBarControl; } }
+    public VisualTreeAsset      LevelSelectButton   { get { return levelSelectButton; } }
+    public VisualTreeAsset      ObjectiveCard       { get { return objectiveCard; } }
+    public VisualTreeAsset      CoinDisplay         { get { return coinDisplay; } }
+    public VisualTreeAsset      RequirementDisplay  { get { return requirementDisplay; } }
+    public VisualTreeAsset      TimeAttackButton    { get { return timeAttackButtonPrefab; } }
+    public Texture2D            RestrictedTile      { get { return restrictedTileTexture; } }
+    public Texture2D            TrophyTexture       { get { return trophyTexture; } }
+    public Texture2D            BronzeMedal         { get { return bronzeMedal; } }
+    public Texture2D            SilverMedal         { get { return silverMedal; } }
+    public Texture2D            GoldMedal           { get { return goldMedal; } }
+    public Texture2D            StarMedal           { get { return starMedal; } }
+    public int                  ColorCount          { get { return gameColors.Count; } }
 
     #endregion
 
@@ -126,11 +127,14 @@ public class UIManager : MonoBehaviour
         return gameColors[index];
     }
 
-    public Sprite GetTileStateTexture(TileState state)
+    public Sprite GetTileStateTexture(TileState state, EndTileRotation endPieceRotation)
     {
         if (state == TileState.END)
         {
-            return dotSprite;
+            if (endPieceRotation == EndTileRotation.OPEN)
+                return omnidirectionalEndSprite;
+
+            return directionalEndSprite;
         }
         else if (state == TileState.LINE)
         {
@@ -142,7 +146,7 @@ public class UIManager : MonoBehaviour
         }
         else if (state == TileState.HEAD)
         {
-            return dotSprite;
+            return directionalEndSprite;
         }
 
         return null;

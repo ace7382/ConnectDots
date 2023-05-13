@@ -19,10 +19,11 @@ public enum EndTileRotation
     LEFT,
     RIGHT,
     TOP,
-    BOTTOM
+    BOTTOM,
+    OPEN
 }
 
-[System.Serializable] //TODO: remove serialization. It's jsut for debugging
+[System.Serializable] //TODO: remove serialization. It's just for debugging
 public class Tile
 {
     #region Pathfinding
@@ -66,6 +67,7 @@ public class Tile
     public bool             LineCancelled       { get { return lineCancel; } }
     public int[]            RestrictedColors    { get { return restrictedColors; } }
     public bool             HasColorRestriction { get { return !(restrictedColors == null); } }
+    public bool             IsOmniDirectEnd     { get { return endPieceRotation == EndTileRotation.OPEN; } }
     
     public Line             Line            
     { 
@@ -97,7 +99,7 @@ public class Tile
                 container.style.backgroundColor = s;
             }
             else
-                image.style.backgroundImage = new StyleBackground(UIManager.instance.GetTileStateTexture(value));
+                image.style.backgroundImage = new StyleBackground(UIManager.instance.GetTileStateTexture(value, endPieceRotation));
 
             state = value;
         }
@@ -132,14 +134,6 @@ public class Tile
             this.left               = left;
 
             SetBorders();
-            //topBorderVE.style.backgroundColor = top ? UIManager.instance.HardBorderColor : UIManager.instance.SoftBorderColor;
-            //topBorderVE.style.SetHeight(new StyleLength(top ? UIManager.instance.HardBorderSize : UIManager.instance.SoftBorderSize));
-            //rightBorderVE.style.backgroundColor = right ? UIManager.instance.HardBorderColor : UIManager.instance.SoftBorderColor;
-            //rightBorderVE.style.SetWidth(new StyleLength(right ? UIManager.instance.HardBorderSize : UIManager.instance.SoftBorderSize));
-            //bottomBorderVE.style.backgroundColor = bottom ? UIManager.instance.HardBorderColor : UIManager.instance.SoftBorderColor;
-            //bottomBorderVE.style.SetHeight(new StyleLength(bottom ? UIManager.instance.HardBorderSize : UIManager.instance.SoftBorderSize));
-            //leftBorderVE.style.backgroundColor = left ? UIManager.instance.HardBorderColor : UIManager.instance.SoftBorderColor;
-            //leftBorderVE.style.SetWidth(new StyleLength(left ? UIManager.instance.HardBorderSize : UIManager.instance.SoftBorderSize));
 
             if (top)                container.Add(topBorderVE);
             if (right)              container.Add(rightBorderVE);
@@ -164,6 +158,13 @@ public class Tile
     {
         switch (endPieceRotation)
         {
+            case EndTileRotation.OPEN:
+                {
+                    if (Line.Tiles.Count == 1)
+                        return true;
+                    else
+                        return tileToEnter.Line == Line;
+                }
             case EndTileRotation.LEFT:
                 return tileToEnter.X == X - 1 && tileToEnter.Y == Y;
             case EndTileRotation.RIGHT:
@@ -196,6 +197,8 @@ public class Tile
         {
             switch (tileToEnter.endPieceRotation)
             {
+                case EndTileRotation.OPEN:
+                    return tileToEnter.Line == Line;
                 case EndTileRotation.LEFT:
                     return tileToEnter.X == X + 1 && tileToEnter.Y == Y;
                 case EndTileRotation.RIGHT:
@@ -230,6 +233,15 @@ public class Tile
         }
 
         return false;
+    }
+
+    public void ReturnToOmnidirectionalEnd()
+    {
+        if (State != TileState.END || endPieceRotation != EndTileRotation.OPEN)
+            return;
+
+        Image.style.backgroundImage = new StyleBackground(UIManager.instance.GetTileStateTexture(state, endPieceRotation));
+        Image.style.rotate          = new StyleRotate(new Rotate(0f));
     }
 
     public void SetMultiplier(int mult)
@@ -300,8 +312,8 @@ public class Tile
     public void SetAsStartEnd(Line l, EndTileRotation rotation)
     {
         Line                = l;
-        State               = TileState.END;
         endPieceRotation    = rotation;
+        State               = TileState.END;
 
         if (rotation == EndTileRotation.LEFT)
         {
@@ -311,7 +323,7 @@ public class Tile
         {
             Image.style.rotate = new StyleRotate(new Rotate(90f));
         }
-        else if (rotation == EndTileRotation.TOP)
+        else if (rotation == EndTileRotation.TOP || rotation == EndTileRotation.OPEN)
         {
             Image.style.rotate = new StyleRotate(new Rotate(0f));
         }
@@ -323,9 +335,63 @@ public class Tile
 
     public void SetState(Line l, Tile previous, Tile next)
     {
-        if (state == TileState.END) //Start and end pts should never change state
-            return;
+        if (state == TileState.END) 
+        {
+            if (endPieceRotation == EndTileRotation.OPEN) //Directional end pts should never change state
+            {
+                //omni directional end tiles keep end state, but their image needs to change
+                //If it's omni directional and next == null, set to normal "dot" state
+                if (next == null && previous == null)
+                {
+                    ReturnToOmnidirectionalEnd();
+                }
+                else if (next == null && previous != null)
+                {
+                    image.style.backgroundImage = new StyleBackground(UIManager.instance.GetTileStateTexture(state, EndTileRotation.TOP));
 
+                    if (previous.X == X - 1)
+                    {
+                        Image.style.rotate = new StyleRotate(new Rotate(270f));
+                    }
+                    else if (previous.X == X + 1)
+                    {
+                        Image.style.rotate = new StyleRotate(new Rotate(90f));
+                    }
+                    else if (previous.Y == Y - 1)
+                    {
+                        Image.style.rotate = new StyleRotate(new Rotate(0f));
+                    }
+                    else
+                    {
+                        Image.style.rotate = new StyleRotate(new Rotate(180f));
+                    }
+                }
+                else //if next is to a side, set it to a sideways shape
+                {
+                    image.style.backgroundImage = new StyleBackground(UIManager.instance.GetTileStateTexture(state, EndTileRotation.TOP));
+
+                    if (next.X == X - 1)
+                    {
+                        Image.style.rotate = new StyleRotate(new Rotate(270f));
+                    }
+                    else if (next.X == X + 1)
+                    {
+                        Image.style.rotate = new StyleRotate(new Rotate(90f));
+                    }
+                    else if (next.Y == Y - 1)
+                    {
+                        Image.style.rotate = new StyleRotate(new Rotate(0f));
+                    }
+                    else
+                    {
+                        Image.style.rotate = new StyleRotate(new Rotate(180f));
+                    }
+                }
+            }
+
+            return;
+        }
+            
         Line = l;
 
         if (next == null)
@@ -392,6 +458,8 @@ public class Tile
 
     public void ClearLine()
     {
+        ReturnToOmnidirectionalEnd();
+        
         if (Line == null || State == TileState.END || State == TileState.BLANK)
             return;
 

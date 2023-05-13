@@ -73,16 +73,22 @@ public class Line
         int back2       = lineTiles.Count - 3;
         int previous    = lineTiles.Count - 2;
 
-        if (lineTiles.Count == 2)
-        {
-            tileToAdd.SetState(this, lineTiles[previous], null);
-        }
-        else if (lineTiles.Count > 2)
-        {
-            tileToAdd.SetState(this, lineTiles[previous], null);
+        //if (lineTiles.Count == 2)
+        //{
+        //    tileToAdd.SetState(this, lineTiles[previous], null);
+        //}
+        //else if (lineTiles.Count > 2)
+        //{
+        //    tileToAdd.SetState(this, lineTiles[previous], null);
 
-            lineTiles[previous].SetState(this, lineTiles[back2], tileToAdd);
-        }
+        //    lineTiles[previous].SetState(this, lineTiles[back2], tileToAdd);
+        //}
+
+        if (lineTiles.Count < 2)
+            return;
+
+        tileToAdd.SetState(this, lineTiles[previous], null);
+        lineTiles[previous].SetState(this, lineTiles.Count > 2 ? lineTiles[back2] : null, tileToAdd);
     }
 
     public bool ContainsTile(Tile t)

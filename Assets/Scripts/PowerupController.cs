@@ -102,7 +102,7 @@ public class PowerupController
     private void PowerupButtonClicked(PointerUpEvent evt, PowerupType type)
     {
         //If the player doesnt own any
-        //Show store popup
+        //TODO: Show store popup
         //else
         //No powerup is being used
         //A powerup is being used, and it's the same one (cancel)
@@ -131,18 +131,6 @@ public class PowerupController
 
     private void UseHint()
     {
-        //Each line will need a solution path
-        //board needs a way to draw the line
-        //      if another line is on the solution path, remove the full other line
-        //      if it's not possible to draw the line, needs a "hint failed"/powerup needed response
-        //          (for instance, if a "fill gap" powerup is needed to allow the line to be drawn)
-        //Powerup controller will need to track which lines have been solutioned
-        //Will need to check end of level after use
-
-        //CheckCompletedLine ->
-        //      this "hears" LINE_COMPLETE and removes the line from the linesAvailableForHint
-        //      this "hears" LINE_INCOMPLETE and adds it back to the linesAvailbleForHints
-
         List<Level.LineDefinitions> possible = linesAvaiableForHint
                                                 .Where(x => x.Value)
                                                 .Select(x => x.Key)

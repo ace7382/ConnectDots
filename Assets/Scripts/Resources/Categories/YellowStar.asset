@@ -30,5 +30,23 @@ MonoBehaviour:
     amount: 10
   - colorIndex: 3
     amount: 10
-  timeAttackStats: []
+  timeAttackStats:
+  - difficulty: Easy
+    totalTimeInSeconds: 120
+    timeAddedOnCompletePuzzle: 15
+    numberOfPuzzles: 3
+    bestTimeInSeconds: 131.14700317382812
+    bronzeTimeInSeconds: 10
+    silverTimeInSeconds: 20
+    goldTimeInSeconds: 45
+    starTimeInSeconds: 85
+  - difficulty: Hard
+    totalTimeInSeconds: 90
+    timeAddedOnCompletePuzzle: 5
+    numberOfPuzzles: 6
+    bestTimeInSeconds: 0
+    bronzeTimeInSeconds: 10
+    silverTimeInSeconds: 25
+    goldTimeInSeconds: 45
+    starTimeInSeconds: 75
   isComplete: 1

@@ -13,22 +13,25 @@ public class Board
 
     #region Private Variables
 
-    private List<List<Tile>> tiles;
-    private List<Line> lines;
-    private Level level;
-    private VisualElement boardVE;
-    private VisualElement screen;
+    private List<List<Tile>>    tiles;
+    private List<Line>          lines;
+    private Level               level;
+    private VisualElement       boardVE;
+    private VisualElement       screen;
 
-    private Line draggingLine;
-    private bool canClick;
+    private Line                draggingLine;
+    private bool                canClick;
+
+    private PowerupType         usingPowerup;
 
     #endregion
 
     #region Public Properties
 
-    public List<List<Tile>> Tiles { get { return tiles; } }
-    public List<Line> Lines { get { return lines; } }
-    public bool CanClick { get { return canClick; } }
+    public List<List<Tile>>             Tiles           { get { return tiles; } }
+    public List<Level.LineDefinitions>  LevelsLineDefs  { get { return level.Lines; }}
+    public bool                         CanClick        { get { return canClick; } }
+    public PowerupType                  UsingPowerup    { get { return usingPowerup; } set { usingPowerup = value; } }
 
     #endregion
 
@@ -140,6 +143,12 @@ public class Board
 
     public void CheckLevelDone(object sender, object info)
     {
+        //sender    -   Line    -   the Line which was checked for completion
+        //info      -   bool    -   whether the line was completed or not
+
+        if (!(bool)info)
+            return;
+
         for (int i = 0; i < lines.Count; i++)
             if (!lines[i].isCompleted)
                 return;
@@ -367,6 +376,134 @@ public class Board
 
     #region Private Functions
 
+    #region Powerups
+
+    private void RemoveSpecialTiles(Tile t)
+    {
+        //Multiplier
+        //Line cancel
+        //Restricted colors
+
+        if (t.Multiplier == 1 && !t.LineCancelled && !t.HasColorRestriction)
+        {
+            Debug.Log("Not a special Tile");
+            return;
+        }
+
+        t.RemoveMultiplier();
+        t.RemoveLineCancel();
+        t.RemoveRestrictedColors();
+
+        CurrencyManager.instance.SpendCurrency(PowerupType.REMOVE_SPECIAL_TILE, 1);
+    }
+
+    private void FillEmptyTile(Tile t)
+    {
+        if (t.State != TileState.BLANK)
+            return;
+
+        Tile above = null;
+        Tile toRight = null;
+        Tile below = null;
+        Tile toLeft = null;
+
+        if (t.Y != 0)
+        {
+            List<Tile> row = Tiles.Find(r => r[0].Y == t.Y - 1);
+
+            above = row.Find(abv => abv.X == t.X);
+        }
+
+        if (t.X != level.Cols - 1)
+        {
+            //x + 1 && y = y
+            List<Tile> row = Tiles.Find(r => r[0].Y == t.Y);
+
+            toRight = row.Find(rig => rig.X == t.X + 1);
+        }
+
+        if (t.Y != level.Rows - 1)
+        {
+            List<Tile> row = Tiles.Find(r => r[0].Y == t.Y + 1);
+
+            below = row.Find(abv => abv.X == t.X);
+        }
+
+        if (t.X != 0)
+        {
+            List<Tile> row = Tiles.Find(r => r[0].Y == t.Y);
+
+            toLeft = row.Find(rig => rig.X == t.X - 1);
+        }
+
+        if (above != null && above.State != TileState.BLANK)        above.RemoveBorders(false, false, true, false);
+        if (toRight != null && toRight.State != TileState.BLANK)    toRight.RemoveBorders(false, false, false, true);
+        if (below != null && below.State != TileState.BLANK)        below.RemoveBorders(true, false, false, false);
+        if (toLeft != null && toLeft.State != TileState.BLANK)      toLeft.RemoveBorders(false, true, false, false);
+
+        t.ConvertFromBlankToEmpty(
+            !(above != null && above.State != TileState.BLANK)         //Top
+            , !(toRight != null && toRight.State != TileState.BLANK)   //Right
+            , !(below != null && below.State != TileState.BLANK)      //Bottom
+            , !(toLeft != null && toLeft.State != TileState.BLANK)     //Left
+        );
+
+        CurrencyManager.instance.SpendCurrency(PowerupType.FILL_EMPTY, 1);
+    }
+
+    public bool DrawHintLine(Level.LineDefinitions lineToDraw)
+    {
+        List<Tile> tilesToDraw = new List<Tile>();
+
+        for(int i = 0; i < lineToDraw.solutionPath.Count; i++)
+        {
+            Tile tileToCheck = tiles[lineToDraw.solutionPath[i].y][lineToDraw.solutionPath[i].x];
+
+            if (tileToCheck.State == TileState.BLANK || 
+                (tileToCheck.HasColorRestriction && !tileToCheck.RestrictedColors.Contains(lineToDraw.colorIndex)))
+            {
+                break;
+            }
+
+            tilesToDraw.Add(tileToCheck);
+        }
+
+        if (tilesToDraw.Count == lineToDraw.solutionPath.Count)
+        {
+            //Draw line
+
+            Line l = tilesToDraw[0].Line;
+            l.ClearTilesAndAdd(tilesToDraw[0]);
+
+            for (int i = 1; i < tilesToDraw.Count; i++)
+            {
+                Tile currentTile = tilesToDraw[i];
+
+                if (currentTile.Line != null && currentTile.Line.colorIndex != lineToDraw.colorIndex)
+                {
+                    Tile first = currentTile.Line.FirstTile;
+                    currentTile.Line.ClearTilesAndAdd(first);
+                    first.Line.CheckCompletedLine();
+                }
+
+                l.AddTile(currentTile);
+            }
+
+            CurrencyManager.instance.SpendCurrency(PowerupType.HINT, 1);
+
+            l.CheckCompletedLine();
+
+            return true;
+        }
+        else
+        {
+            //Tell user to use powerups to make an available path
+            return false;
+        }
+    }
+
+    #endregion
+
     #region Interactions
 
     private void RegisterScreenLevelInteraction()
@@ -421,6 +558,17 @@ public class Board
         Tile tile = ve.userData as Tile;
 
         Debug.Log(ve.name + " clicked");
+
+        if (usingPowerup == PowerupType.REMOVE_SPECIAL_TILE)
+        {
+            RemoveSpecialTiles(tile);
+            return;
+        }
+        else if (usingPowerup == PowerupType.FILL_EMPTY)
+        {
+            FillEmptyTile(tile);
+            return;
+        }
 
         if (draggingLine == null)
         {

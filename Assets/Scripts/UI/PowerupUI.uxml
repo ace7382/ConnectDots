@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Template name="PowerUpButton" src="project://database/Assets/Scripts/UI/PowerupButton.uxml?fileID=9197481963319205126&amp;guid=c8a183875e698c249833e40f9fcd0be6&amp;type=3#PowerupButton" />
+    <ui:VisualElement name="PowerupContainer" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); width: 100%; height: 250px; max-width: 100%; max-height: 250px; min-width: 100%; min-height: 250px; position: absolute; bottom: 0; flex-direction: row; justify-content: center; align-self: center;">
+        <ui:Instance template="PowerUpButton" name="HintButton" />
+        <ui:Instance template="PowerUpButton" name="RemoveSpecialTileButton" />
+        <ui:Instance template="PowerUpButton" name="FillEmptyButton" />
+        <ui:Label tabindex="-1" text="Select a Special Tile to Remove bewodewjiodjeiwo" display-tooltip-when-elided="true" name="Instructions" style="position: absolute; top: -150px; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; -unity-font-definition: initial; -unity-font: url(&apos;project://database/Assets/GUI%20PRO%20Kit%20-%20Simple%20Casual/Fonts/Quicksand-SemiBold.ttf?fileID=12800000&amp;guid=e110c919ea5e84fea8cbc2f0556ecfef&amp;type=3#Quicksand-SemiBold&apos;); font-size: 55px; width: 90%; white-space: normal; -unity-text-align: upper-center;" />
+    </ui:VisualElement>
+</ui:UXML>

@@ -23,7 +23,6 @@ public class TimedModePage : Page
     private TimeSpan timeRemaining;
     private IEnumerator timerCoroutine;
 
-    //private Color originalColor;
     private Tween bgFlash;
     private Tween timerFlash;
 
@@ -31,13 +30,14 @@ public class TimedModePage : Page
 
     private Dictionary<int, int> coinsWon;
 
+    private PowerupController powerups;
+
     #endregion
 
     #region Public Properties
 
     public bool LowTime
     { 
-        //get { return lowTime; }
         get { return timeRemaining.TotalSeconds < lowTimeThreshold; }
         private set
         {
@@ -67,8 +67,6 @@ public class TimedModePage : Page
 
         currentCategory = (LevelCategory)args[0];
         settingsIndex = (int)args[1];
-
-        //originalColor = UIManager.instance.GetBackgroundColor();
 
         settings = currentCategory.TimeAttacks[settingsIndex];
 
@@ -110,6 +108,8 @@ public class TimedModePage : Page
 
         coinsWon = new Dictionary<int, int>();
 
+        powerups = new PowerupController(uiDoc.rootVisualElement.Q<VisualElement>("PowerupUI"), true, currentBoard);
+
         //TODO: Remove this
         bool test = true;
         timerLabel.RegisterCallback<PointerDownEvent>((e) =>
@@ -123,6 +123,7 @@ public class TimedModePage : Page
     public override void HidePage()
     {
         this.RemoveObserver(BoardComplete, Notifications.BOARD_COMPLETE, currentBoard);
+        powerups.Unregister();
     }
 
     public override IEnumerator AnimateIn()
@@ -263,6 +264,8 @@ public class TimedModePage : Page
         this.AddObserver(BoardComplete, Notifications.BOARD_COMPLETE, currentBoard);
 
         currentBoard.BoardInWithoutAnimation();
+
+        powerups.SetBoard(currentBoard);
     }
 
     private void BoardComplete(object sender, object info)

@@ -9,12 +9,12 @@ public class Line
     [SerializeField] public int             colorIndex;
     [SerializeField] public bool            isCompleted;
 
-    public List<Tile> Tiles { get { return lineTiles; } }
-    public Tile LineHead { get { return GetLeadTile(); } }
-    public Tile PreLineHead { get { return GetPreLeadTile(); } }
-    public Tile FirstTile { get { return GetFirstTile(); } }
-    public bool LineCancelled { get { return lineTiles.FindIndex(x => x.LineCancelled) >= 0; } }
-    public Color Color { get { return UIManager.instance.GetColor(colorIndex); } }
+    public List<Tile>       Tiles           { get { return lineTiles; } }
+    public Tile             LineHead        { get { return GetLeadTile(); } }
+    public Tile             PreLineHead     { get { return GetPreLeadTile(); } }
+    public Tile             FirstTile       { get { return GetFirstTile(); } }
+    public bool             LineCancelled   { get { return lineTiles.FindIndex(x => x.LineCancelled) >= 0; } }
+    public Color            Color           { get { return UIManager.instance.GetColor(colorIndex); } }
 
     public Line(int colorIndex)
     {
@@ -32,9 +32,8 @@ public class Line
     public void CheckCompletedLine()
     {
         isCompleted = ContainsTwoEndTiles();
-
-        if (isCompleted)
-            this.PostNotification(Notifications.LINE_COMPLETED);
+        
+        this.PostNotification(Notifications.LINE_COMPLETED, isCompleted);
     }
 
     public bool ContainsTwoEndTiles()

@@ -18,6 +18,7 @@ public class CurrencyManager : MonoBehaviour
 
     private Dictionary<int, int> ownedColors;
     private Vector2 coinFlyDestination; //TODO: Make this the UI element's origin? not sure it matters though
+    private Dictionary<PowerupType, int> ownedPowerups;
 
     #endregion
 
@@ -37,6 +38,11 @@ public class CurrencyManager : MonoBehaviour
             Destroy(gameObject);
 
         ownedColors = new Dictionary<int, int>();
+        ownedPowerups = new Dictionary<PowerupType, int>();
+
+        CurrencyManager.instance.AddCurrency(PowerupType.HINT, 20);
+        CurrencyManager.instance.AddCurrency(PowerupType.REMOVE_SPECIAL_TILE, 20);
+        CurrencyManager.instance.AddCurrency(PowerupType.FILL_EMPTY, 20);
     }
 
     #endregion
@@ -53,6 +59,11 @@ public class CurrencyManager : MonoBehaviour
 
     public void SpendCurrency(int colorIndex, int amount)
     {
+        if (!ownedColors.ContainsKey(colorIndex))
+        {
+            Debug.Log("Trying to spend a currency that you do not have");
+        }
+
         if (amount > ownedColors[colorIndex])
         {
             Debug.Log(string.Format("Trying to spend {0} of color {1}. Only have {2} though"
@@ -155,6 +166,42 @@ public class CurrencyManager : MonoBehaviour
                             .Play();
     }
 
+    public int GetPowerupsOwned(PowerupType type)
+    {
+        if (ownedPowerups.ContainsKey(type))
+            return ownedPowerups[type];
+
+        return 0;
+    }
+
+    public void AddCurrency(PowerupType type, int amount)
+    {
+        if (!ownedPowerups.ContainsKey(type))
+            ownedPowerups.Add(type, 0);
+
+        ownedPowerups[type] += amount;
+    }
+
+    public void SpendCurrency(PowerupType type, int amount)
+    {
+        if (!ownedPowerups.ContainsKey(type))
+        {
+            Debug.Log("Trying to spend a powerup that you do not have");
+        }
+
+        if (amount > ownedPowerups[type])
+        {
+            Debug.Log(string.Format("Trying to use {0} of powerup {1}. Only have {2} though"
+                , amount.ToString(), type.ToString(), ownedPowerups[type].ToString()));
+
+            return;
+        }
+
+        ownedPowerups[type] -= amount;
+
+        this.PostNotification(Notifications.POWERUP_USED, type);
+    }
+
     #endregion
 
     #region Private Functions
@@ -165,7 +212,7 @@ public class CurrencyManager : MonoBehaviour
     #region Dev Help Functions
 
     [MenuItem("Dev Commands/Give 1000 of Each Color")]
-    public static void LinkObjectivesToObjectiveManager()
+    public static void Give1000Coins()
     {
         if (!Application.isPlaying)
         {
@@ -176,6 +223,21 @@ public class CurrencyManager : MonoBehaviour
         for (int i = 0; i < UIManager.instance.ColorCount; i++)
             CurrencyManager.instance.AddCurrency(i, 1000);
     }
+
+    [MenuItem("Dev Commands/Give 20 of Each Powerup")]
+    public static void Give20Powerups()
+    {
+        if (!Application.isPlaying)
+        {
+            Debug.LogWarning("Editor is not in Playmode. This function cannot be used");
+            return;
+        }
+
+        CurrencyManager.instance.AddCurrency(PowerupType.HINT, 20);
+        CurrencyManager.instance.AddCurrency(PowerupType.REMOVE_SPECIAL_TILE, 20);
+        CurrencyManager.instance.AddCurrency(PowerupType.FILL_EMPTY, 20);
+    }
+
 
     #endregion
 #endif

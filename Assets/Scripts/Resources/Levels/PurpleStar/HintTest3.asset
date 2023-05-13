@@ -1,0 +1,173 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a89a4ad53e408f748947467a89173cc8, type: 3}
+  m_Name: HintTest3
+  m_EditorClassIdentifier: 
+  levelCategory: {fileID: 11400000, guid: 06c4a1a0614cd7d42afb84a183b6e82c, type: 2}
+  levelNum: HIN3
+  rows: 5
+  cols: 5
+  lines:
+  - end1position: {x: 0, y: 0}
+    end1rotation: 3
+    end2position: {x: 0, y: 2}
+    end2rotation: 2
+    colorIndex: 1
+    solutionPath:
+    - {x: 0, y: 0}
+    - {x: 0, y: 1}
+    - {x: 0, y: 2}
+  - end1position: {x: 1, y: 1}
+    end1rotation: 2
+    end2position: {x: 3, y: 1}
+    end2rotation: 2
+    colorIndex: 2
+    solutionPath:
+    - {x: 1, y: 1}
+    - {x: 1, y: 0}
+    - {x: 2, y: 0}
+    - {x: 3, y: 0}
+    - {x: 3, y: 1}
+  - end1position: {x: 1, y: 2}
+    end1rotation: 1
+    end2position: {x: 3, y: 2}
+    end2rotation: 0
+    colorIndex: 3
+    solutionPath:
+    - {x: 1, y: 2}
+    - {x: 2, y: 2}
+    - {x: 3, y: 2}
+  - end1position: {x: 0, y: 3}
+    end1rotation: 3
+    end2position: {x: 4, y: 3}
+    end2rotation: 3
+    colorIndex: 4
+    solutionPath:
+    - {x: 0, y: 3}
+    - {x: 0, y: 4}
+    - {x: 1, y: 4}
+    - {x: 2, y: 4}
+    - {x: 3, y: 4}
+    - {x: 4, y: 4}
+    - {x: 4, y: 3}
+  specialTiles:
+  - tilePosition: {x: 2, y: 1}
+    blank: 1
+    topBorder: 0
+    rightBorder: 0
+    bottomBorder: 0
+    leftBorder: 0
+    multiplier: 0
+    lineCancel: 0
+    restrictedColor1: 0
+    restrictedColor2: 0
+  - tilePosition: {x: 2, y: 2}
+    blank: 0
+    topBorder: 0
+    rightBorder: 0
+    bottomBorder: 0
+    leftBorder: 0
+    multiplier: 0
+    lineCancel: 0
+    restrictedColor1: 6
+    restrictedColor2: 8
+  - tilePosition: {x: 2, y: 3}
+    blank: 1
+    topBorder: 0
+    rightBorder: 0
+    bottomBorder: 0
+    leftBorder: 0
+    multiplier: 0
+    lineCancel: 0
+    restrictedColor1: 0
+    restrictedColor2: 0
+  - tilePosition: {x: 1, y: 1}
+    blank: 0
+    topBorder: 0
+    rightBorder: 1
+    bottomBorder: 0
+    leftBorder: 0
+    multiplier: 0
+    lineCancel: 0
+    restrictedColor1: 0
+    restrictedColor2: 0
+  - tilePosition: {x: 1, y: 2}
+    blank: 0
+    topBorder: 0
+    rightBorder: 1
+    bottomBorder: 0
+    leftBorder: 0
+    multiplier: 0
+    lineCancel: 0
+    restrictedColor1: 0
+    restrictedColor2: 0
+  - tilePosition: {x: 1, y: 3}
+    blank: 0
+    topBorder: 0
+    rightBorder: 1
+    bottomBorder: 0
+    leftBorder: 0
+    multiplier: 0
+    lineCancel: 0
+    restrictedColor1: 0
+    restrictedColor2: 0
+  - tilePosition: {x: 3, y: 1}
+    blank: 0
+    topBorder: 0
+    rightBorder: 0
+    bottomBorder: 0
+    leftBorder: 1
+    multiplier: 0
+    lineCancel: 0
+    restrictedColor1: 0
+    restrictedColor2: 0
+  - tilePosition: {x: 3, y: 2}
+    blank: 0
+    topBorder: 0
+    rightBorder: 0
+    bottomBorder: 0
+    leftBorder: 1
+    multiplier: 0
+    lineCancel: 0
+    restrictedColor1: 0
+    restrictedColor2: 0
+  - tilePosition: {x: 3, y: 3}
+    blank: 0
+    topBorder: 0
+    rightBorder: 0
+    bottomBorder: 0
+    leftBorder: 1
+    multiplier: 0
+    lineCancel: 0
+    restrictedColor1: 0
+    restrictedColor2: 0
+  - tilePosition: {x: 2, y: 0}
+    blank: 0
+    topBorder: 1
+    rightBorder: 0
+    bottomBorder: 1
+    leftBorder: 0
+    multiplier: 0
+    lineCancel: 0
+    restrictedColor1: 0
+    restrictedColor2: 0
+  - tilePosition: {x: 2, y: 4}
+    blank: 0
+    topBorder: 1
+    rightBorder: 0
+    bottomBorder: 1
+    leftBorder: 0
+    multiplier: 0
+    lineCancel: 0
+    restrictedColor1: 0
+    restrictedColor2: 0
+  isComplete: 0

@@ -64,6 +64,8 @@ public class Tile
     public VisualElement    Image               { get { return image; } }
     public int              Multiplier          { get { return multiplier; } }
     public bool             LineCancelled       { get { return lineCancel; } }
+    public int[]            RestrictedColors    { get { return restrictedColors; } }
+    public bool             HasColorRestriction { get { return !(restrictedColors == null); } }
     
     public Line             Line            
     { 
@@ -129,14 +131,15 @@ public class Tile
             this.bottom             = bottom;
             this.left               = left;
 
-            topBorderVE.style.backgroundColor = top ? UIManager.instance.HardBorderColor : UIManager.instance.SoftBorderColor;
-            topBorderVE.style.SetHeight(new StyleLength(top ? UIManager.instance.HardBorderSize : UIManager.instance.SoftBorderSize));
-            rightBorderVE.style.backgroundColor = right ? UIManager.instance.HardBorderColor : UIManager.instance.SoftBorderColor;
-            rightBorderVE.style.SetWidth(new StyleLength(right ? UIManager.instance.HardBorderSize : UIManager.instance.SoftBorderSize));
-            bottomBorderVE.style.backgroundColor = bottom ? UIManager.instance.HardBorderColor : UIManager.instance.SoftBorderColor;
-            bottomBorderVE.style.SetHeight(new StyleLength(bottom ? UIManager.instance.HardBorderSize : UIManager.instance.SoftBorderSize));
-            leftBorderVE.style.backgroundColor = left ? UIManager.instance.HardBorderColor : UIManager.instance.SoftBorderColor;
-            leftBorderVE.style.SetWidth(new StyleLength(left ? UIManager.instance.HardBorderSize : UIManager.instance.SoftBorderSize));
+            SetBorders();
+            //topBorderVE.style.backgroundColor = top ? UIManager.instance.HardBorderColor : UIManager.instance.SoftBorderColor;
+            //topBorderVE.style.SetHeight(new StyleLength(top ? UIManager.instance.HardBorderSize : UIManager.instance.SoftBorderSize));
+            //rightBorderVE.style.backgroundColor = right ? UIManager.instance.HardBorderColor : UIManager.instance.SoftBorderColor;
+            //rightBorderVE.style.SetWidth(new StyleLength(right ? UIManager.instance.HardBorderSize : UIManager.instance.SoftBorderSize));
+            //bottomBorderVE.style.backgroundColor = bottom ? UIManager.instance.HardBorderColor : UIManager.instance.SoftBorderColor;
+            //bottomBorderVE.style.SetHeight(new StyleLength(bottom ? UIManager.instance.HardBorderSize : UIManager.instance.SoftBorderSize));
+            //leftBorderVE.style.backgroundColor = left ? UIManager.instance.HardBorderColor : UIManager.instance.SoftBorderColor;
+            //leftBorderVE.style.SetWidth(new StyleLength(left ? UIManager.instance.HardBorderSize : UIManager.instance.SoftBorderSize));
 
             if (top)                container.Add(topBorderVE);
             if (right)              container.Add(rightBorderVE);
@@ -238,6 +241,12 @@ public class Tile
         lab.style.Show();
     }
 
+    public void RemoveMultiplier()
+    {
+        multiplier = 1;
+        container.Q<Label>("Multiplier").Hide();
+    }
+
     public void SetLineCancel()
     {
         lineCancel = true;
@@ -248,6 +257,14 @@ public class Tile
             Label lab = container.Q<Label>("LineCancel" + i.ToString());
             lab.Show();
         }
+    }
+
+    public void RemoveLineCancel()
+    {
+        lineCancel = false;
+
+        for (int i = 1; i <= 4; i++)
+            container.Q<Label>("LineCancel" + i.ToString()).Hide();
     }
 
     public void SetRestrictedColors(int colorIndex0, int colorIndex1)
@@ -271,6 +288,13 @@ public class Tile
 
         Container.style.backgroundImage = final;
         Container.style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, .5f);
+    }
+
+    public void RemoveRestrictedColors()
+    {
+        restrictedColors = null;
+
+        Container.style.backgroundImage = null;
     }
 
     public void SetAsStartEnd(Line l, EndTileRotation rotation)
@@ -406,6 +430,46 @@ public class Tile
                         new Vector3(0f, 0f, 360f), duration).SetEase(Ease.InOutBounce).SetLoops(1);
         
         shake.Play();
+    }
+
+    public void ConvertFromBlankToEmpty(bool top, bool right, bool bottom, bool left)
+    {
+        this.State  = TileState.EMPTY;
+
+        container.SetColor(Color.white);
+        
+        this.top    = top;
+        this.right  = right;
+        this.bottom = bottom;
+        this.left   = left;
+
+        SetBorders();
+    }
+
+    public void RemoveBorders(bool removeTop, bool removeRight, bool removeBottom, bool removeLeft)
+    {
+        if (removeTop)      top     = false;
+        if (removeRight)    right   = false;
+        if (removeBottom)   bottom  = false;
+        if (removeLeft)     left    = false;
+
+        SetBorders();
+    }
+
+    #endregion
+
+    #region Private Functions
+
+    private void SetBorders()
+    {
+        topBorderVE.style.backgroundColor = top ? UIManager.instance.HardBorderColor : UIManager.instance.SoftBorderColor;
+        topBorderVE.style.SetHeight(new StyleLength(top ? UIManager.instance.HardBorderSize : UIManager.instance.SoftBorderSize));
+        rightBorderVE.style.backgroundColor = right ? UIManager.instance.HardBorderColor : UIManager.instance.SoftBorderColor;
+        rightBorderVE.style.SetWidth(new StyleLength(right ? UIManager.instance.HardBorderSize : UIManager.instance.SoftBorderSize));
+        bottomBorderVE.style.backgroundColor = bottom ? UIManager.instance.HardBorderColor : UIManager.instance.SoftBorderColor;
+        bottomBorderVE.style.SetHeight(new StyleLength(bottom ? UIManager.instance.HardBorderSize : UIManager.instance.SoftBorderSize));
+        leftBorderVE.style.backgroundColor = left ? UIManager.instance.HardBorderColor : UIManager.instance.SoftBorderColor;
+        leftBorderVE.style.SetWidth(new StyleLength(left ? UIManager.instance.HardBorderSize : UIManager.instance.SoftBorderSize));
     }
 
     #endregion

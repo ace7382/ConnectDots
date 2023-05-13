@@ -411,6 +411,10 @@ MonoBehaviour:
   silverMedal: {fileID: 2800000, guid: 086e140a14a0044fc8c046e36892c472, type: 3}
   goldMedal: {fileID: 2800000, guid: 817e572d8239f4a75a84952defabc914, type: 3}
   starMedal: {fileID: 2800000, guid: 2c124838dc6984d8c94966ac4438b189, type: 3}
+  powerupIcons:
+  - {fileID: 2800000, guid: aa5e772edd10145928ca3f62991c298a, type: 3}
+  - {fileID: 2800000, guid: 6618835e7f01f47939c40be0a3cdc1a3, type: 3}
+  - {fileID: 2800000, guid: 1c0341ef64ea14e42a7a3dfc7ffe5f73, type: 3}
 --- !u!4 &685428500
 Transform:
   m_ObjectHideFlags: 0

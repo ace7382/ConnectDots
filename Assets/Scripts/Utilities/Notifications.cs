@@ -4,5 +4,6 @@ public enum Notifications
     LEVEL_COMPLETE,
     CATEGORY_UNLOCKED,
     LINE_COMPLETED,
-    BOARD_COMPLETE
+    BOARD_COMPLETE,
+    POWERUP_USED,
 }

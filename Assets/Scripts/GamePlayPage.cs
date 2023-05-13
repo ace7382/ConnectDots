@@ -9,6 +9,7 @@ public class GamePlayPage : Page
 
     private Level currentLevel;
     private Board currentBoard;
+    private PowerupController powerups;
 
     #endregion
 
@@ -34,6 +35,8 @@ public class GamePlayPage : Page
 
         UIManager.instance.TopBar.UpdateBackButtonOnClick(backbuttonAction);
 
+        powerups = new PowerupController(uiDoc.rootVisualElement.Q<VisualElement>("PowerupUI"), false, currentBoard);
+
         this.AddObserver(BoardComplete, Notifications.BOARD_COMPLETE, currentBoard);
     }
 
@@ -41,6 +44,7 @@ public class GamePlayPage : Page
     {
         currentBoard.UnregisterListeners();
         this.RemoveObserver(BoardComplete, Notifications.BOARD_COMPLETE, currentBoard);
+        powerups.Unregister();
     }
 
     public override IEnumerator AnimateIn()

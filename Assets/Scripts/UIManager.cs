@@ -50,29 +50,33 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Texture2D goldMedal;
     [SerializeField] private Texture2D starMedal;
 
+    [Space]
+
+    [SerializeField] private List<Texture2D> powerupIcons;
+
     #endregion
 
     #region Public Properties
 
-    public VisualTreeAsset  TilePrefab { get { return tilePrefab; } }
-    public float            BoardPadding { get { return boardPadding; } }
-    public float            HardBorderSize { get { return hardBorderSize; } }
-    public float            SoftBorderSize { get { return softBorderSize; } }
-    public Color            HardBorderColor { get { return hardBorderColor; } }
-    public Color            SoftBorderColor { get { return softBorderColor; } }
+    public VisualTreeAsset TilePrefab { get { return tilePrefab; } }
+    public float BoardPadding { get { return boardPadding; } }
+    public float HardBorderSize { get { return hardBorderSize; } }
+    public float SoftBorderSize { get { return softBorderSize; } }
+    public Color HardBorderColor { get { return hardBorderColor; } }
+    public Color SoftBorderColor { get { return softBorderColor; } }
     public TopBarController TopBar { get { return topBarControl; } }
-    public VisualTreeAsset  LevelSelectButton { get { return levelSelectButton; } }
-    public VisualTreeAsset  ObjectiveCard { get { return objectiveCard; } }
-    public VisualTreeAsset  CoinDisplay { get { return coinDisplay; } }
-    public VisualTreeAsset  RequirementDisplay { get { return requirementDisplay; } }
-    public VisualTreeAsset  TimeAttackButton { get { return timeAttackButtonPrefab; } }
-    public Texture2D        RestrictedTile { get { return restrictedTileTexture; } }
-    public Texture2D        TrophyTexture { get { return trophyTexture; } }
-    public Texture2D        BronzeMedal { get { return bronzeMedal; } }
-    public Texture2D        SilverMedal { get { return silverMedal; } }
-    public Texture2D        GoldMedal { get { return goldMedal; } }
-    public Texture2D        StarMedal { get { return starMedal; } }
-    public int              ColorCount { get { return gameColors.Count; } }
+    public VisualTreeAsset LevelSelectButton { get { return levelSelectButton; } }
+    public VisualTreeAsset ObjectiveCard { get { return objectiveCard; } }
+    public VisualTreeAsset CoinDisplay { get { return coinDisplay; } }
+    public VisualTreeAsset RequirementDisplay { get { return requirementDisplay; } }
+    public VisualTreeAsset TimeAttackButton { get { return timeAttackButtonPrefab; } }
+    public Texture2D RestrictedTile { get { return restrictedTileTexture; } }
+    public Texture2D TrophyTexture { get { return trophyTexture; } }
+    public Texture2D BronzeMedal { get { return bronzeMedal; } }
+    public Texture2D SilverMedal { get { return silverMedal; } }
+    public Texture2D GoldMedal { get { return goldMedal; } }
+    public Texture2D StarMedal { get { return starMedal; } }
+    public int ColorCount { get { return gameColors.Count; } }
 
     #endregion
 
@@ -144,5 +148,21 @@ public class UIManager : MonoBehaviour
         return null;
     }
 
+    public Texture2D GetPowerupIcon(PowerupType type)
+    {
+        switch (type)
+        {
+            case PowerupType.HINT:
+                return powerupIcons[0];
+            case PowerupType.REMOVE_SPECIAL_TILE:
+                return powerupIcons[1];
+            case PowerupType.FILL_EMPTY:
+                return powerupIcons[2];
+        }
+
+        Debug.LogError("Can't find powerup Icon");
+
+        return null;
+    }
     #endregion
 }

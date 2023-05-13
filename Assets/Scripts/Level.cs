@@ -16,6 +16,8 @@ public class Level : ScriptableObject
         public Vector2Int       end2position;
         public EndTileRotation  end2rotation;
         public int              colorIndex;
+
+        public List<Vector2Int> solutionPath;
     }
 
     [System.Serializable]

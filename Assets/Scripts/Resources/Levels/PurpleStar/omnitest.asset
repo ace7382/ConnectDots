@@ -22,12 +22,27 @@ MonoBehaviour:
     end2position: {x: 7, y: 0}
     end2rotation: 4
     colorIndex: 4
-    solutionPath: []
+    solutionPath:
+    - {x: 0, y: 0}
+    - {x: 1, y: 0}
+    - {x: 2, y: 0}
+    - {x: 3, y: 0}
+    - {x: 4, y: 0}
+    - {x: 5, y: 0}
+    - {x: 6, y: 0}
+    - {x: 7, y: 0}
   - end1position: {x: 2, y: 2}
     end1rotation: 4
     end2position: {x: 5, y: 5}
     end2rotation: 4
     colorIndex: 2
-    solutionPath: []
+    solutionPath:
+    - {x: 2, y: 2}
+    - {x: 3, y: 2}
+    - {x: 4, y: 2}
+    - {x: 5, y: 2}
+    - {x: 5, y: 3}
+    - {x: 5, y: 4}
+    - {x: 5, y: 5}
   specialTiles: []
   isComplete: 0

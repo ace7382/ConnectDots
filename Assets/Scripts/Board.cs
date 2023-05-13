@@ -738,7 +738,7 @@ public class Board
             for (int j = 0; j < tiles[i].Count; j++)
             {
                 if (tiles[i][j].Line == startTile.Line)
-                    tiles[i][j].gCost = 0;
+                    tiles[i][j].gCost = 0 + tiles[i][j].State == TileState.END ? 10 : 0;
                 else
                     tiles[i][j].gCost = 50000;//int.MaxValue;
 

@@ -135,7 +135,8 @@ public class TimedModePage : Page
 
         boardCounter.Show();
         timerLabel.Show();
-        currentBoard.BoardInWithoutAnimation();
+        
+        yield return currentBoard.BoardInWithoutAnimation();
 
         timerCoroutine = UpdateTimer();
         PageManager.instance.StartCoroutine(timerCoroutine);
@@ -255,7 +256,7 @@ public class TimedModePage : Page
         RoundOver(false);
     }
 
-    private void SetupNewBoard()
+    private IEnumerator SetupNewBoard()
     {
         this.RemoveObserver(BoardComplete, Notifications.BOARD_COMPLETE, currentBoard);
 
@@ -263,7 +264,7 @@ public class TimedModePage : Page
 
         this.AddObserver(BoardComplete, Notifications.BOARD_COMPLETE, currentBoard);
 
-        currentBoard.BoardInWithoutAnimation();
+        yield return currentBoard.BoardInWithoutAnimation();
 
         powerups.SetBoard(currentBoard);
     }
@@ -283,13 +284,7 @@ public class TimedModePage : Page
                 coinsWon.Add(award.Key, award.Value);
         }
 
-        VisualElement boardVE = uiDoc.rootVisualElement.Q<VisualElement>("Board");
-
-        Tween shrinkBoard = DOTween.To(() => boardVE.transform.scale,
-            x => boardVE.transform.scale = x,
-            Vector3.zero, .3f).SetEase(Ease.InQuad);
-
-        yield return shrinkBoard.WaitForCompletion();
+        yield return currentBoard.TimeBoardComplete();
 
         completedLevels.Add(levelsRemaining[levelsRemaining.Count - 1]);
         levelsRemaining.RemoveAt(levelsRemaining.Count - 1);
@@ -300,11 +295,9 @@ public class TimedModePage : Page
 
             AddTime(settings.timeAddedOnCompletePuzzle);
 
-            boardVE.Clear();
-            boardVE.transform.scale = Vector3.one;
             currentBoard.UnregisterListeners();
 
-            SetupNewBoard();
+            yield return SetupNewBoard();
         }
         else
         {

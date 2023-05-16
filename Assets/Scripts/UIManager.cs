@@ -33,6 +33,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private float softBorderSize;
     [SerializeField] private Color softBorderColor;
 
+    [SerializeField] private VisualTreeAsset newTilePrefab;
+    [SerializeField] private VisualTreeAsset newRowPrefab;
+
     [Space]
 
     [Header("Colors")]
@@ -78,6 +81,9 @@ public class UIManager : MonoBehaviour
     public Texture2D            GoldMedal           { get { return goldMedal; } }
     public Texture2D            StarMedal           { get { return starMedal; } }
     public int                  ColorCount          { get { return gameColors.Count; } }
+
+    public VisualTreeAsset      TilePrefab_New      { get { return newTilePrefab; } }
+    public VisualTreeAsset      RowPrefab_New       { get { return newRowPrefab; } }
 
     #endregion
 

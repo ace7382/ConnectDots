@@ -41,20 +41,16 @@ public class Tile
     #endregion
 
     private VisualElement                       container;
-    private VisualElement                       image;
-    private VisualElement                       leftBorderVE;
-    private VisualElement                       rightBorderVE;
-    private VisualElement                       topBorderVE;
-    private VisualElement                       bottomBorderVE;
+
     private bool                                top, right, bottom, left;
     private Line                                line;
     [SerializeField] private Vector2Int         position;
     [SerializeField] private TileState          state;
     [SerializeField] private EndTileRotation    endPieceRotation;
 
-    private int multiplier = 1;
-    private bool lineCancel = false;
-    private int[] restrictedColors;
+    private int                                 multiplier                  = 1;
+    private bool                                lineCancel                  = false;
+    private int[]                               restrictedColors;
 
     #region Public Properties
 
@@ -62,12 +58,11 @@ public class Tile
     public int              X                   { get { return position.x; } }
     public int              Y                   { get { return position.y; } }
     public VisualElement    Container           { get { return container; } }
-    public VisualElement    Image               { get { return image; } }
     public int              Multiplier          { get { return multiplier; } }
     public bool             LineCancelled       { get { return lineCancel; } }
     public int[]            RestrictedColors    { get { return restrictedColors; } }
     public bool             HasColorRestriction { get { return !(restrictedColors == null); } }
-    public bool             IsOmniDirectEnd     { get { return endPieceRotation == EndTileRotation.OPEN; } }
+    public EndTileRotation  EndPieceRotation    { get { return endPieceRotation; } }
     
     public Line             Line            
     { 
@@ -78,8 +73,6 @@ public class Tile
                 return;
 
             line = value;
-
-            SetColor(line == null ? UIManager.instance.GetColor(0) : line.Color); ;
         }
     }
 
@@ -93,13 +86,7 @@ public class Tile
                 return;
 
             if (value == TileState.BLANK)
-            {
-                StyleColor s                    = new StyleColor(Color.clear); 
-                image.style.backgroundColor     = s;
-                container.style.backgroundColor = s;
-            }
-            else
-                image.style.backgroundImage = new StyleBackground(UIManager.instance.GetTileStateTexture(value, endPieceRotation));
+                container.SetColor(Color.clear);
 
             state = value;
         }
@@ -109,43 +96,11 @@ public class Tile
 
     #region Constructor
 
-    public Tile(Vector2Int pos, VisualElement visualElement, bool blank = false,
-                bool top = false, bool right = false, bool bottom = false, bool left = false)
+    public Tile(Vector2Int pos, VisualElement visualElement, bool blank = false)
     {
         container                   = visualElement;
 
-        image                       = visualElement.Q<VisualElement>("Image");
-        leftBorderVE                = visualElement.Q<VisualElement>("Left");
-        rightBorderVE               = visualElement.Q<VisualElement>("Right");
-        topBorderVE                 = visualElement.Q<VisualElement>("Top");
-        bottomBorderVE              = visualElement.Q<VisualElement>("Bottom");
-
-        image.pickingMode           = PickingMode.Ignore;
-        leftBorderVE.pickingMode    = PickingMode.Ignore;
-        rightBorderVE.pickingMode   = PickingMode.Ignore;
-        topBorderVE.pickingMode     = PickingMode.Ignore;
-        bottomBorderVE.pickingMode  = PickingMode.Ignore;
-
-        if(!blank)
-        { 
-            this.top                = top;
-            this.right              = right;
-            this.bottom             = bottom;
-            this.left               = left;
-
-            SetBorders();
-
-            if (top)                container.Add(topBorderVE);
-            if (right)              container.Add(rightBorderVE);
-            if (bottom)             container.Add(bottomBorderVE);
-            if (left)               container.Add(leftBorderVE);
-
-            State                   = TileState.EMPTY;
-        }
-        else
-        {
-            State = TileState.BLANK;
-        }
+        State                       = blank ? TileState.BLANK : TileState.EMPTY;
 
         position                    = pos; 
     }
@@ -153,6 +108,11 @@ public class Tile
     #endregion
 
     #region Public Functions
+
+    public void SetBorders_Top(bool top)        { this.top    = top; }
+    public void SetBorders_Right(bool right)    { this.right  = right; }
+    public void SetBorders_Bottom(bool bottom)  { this.bottom = bottom; }
+    public void SetBorders_Left(bool left)      { this.left   = left; }
 
     public bool CanExitEndPiece(Tile tileToEnter)
     {
@@ -235,15 +195,6 @@ public class Tile
         return false;
     }
 
-    public void ReturnToOmnidirectionalEnd()
-    {
-        if (State != TileState.END || endPieceRotation != EndTileRotation.OPEN)
-            return;
-
-        Image.style.backgroundImage = new StyleBackground(UIManager.instance.GetTileStateTexture(state, endPieceRotation));
-        Image.style.rotate          = new StyleRotate(new Rotate(0f));
-    }
-
     public void SetMultiplier(int mult)
     {
         multiplier = mult;
@@ -315,111 +266,32 @@ public class Tile
         endPieceRotation    = rotation;
         State               = TileState.END;
 
-        if (rotation == EndTileRotation.LEFT)
-        {
-            Image.style.rotate = new StyleRotate(new Rotate(270f));
-        }
-        else if (rotation == EndTileRotation.RIGHT)
-        {
-            Image.style.rotate = new StyleRotate(new Rotate(90f));
-        }
-        else if (rotation == EndTileRotation.TOP || rotation == EndTileRotation.OPEN)
-        {
-            Image.style.rotate = new StyleRotate(new Rotate(0f));
-        }
-        else
-        {
-            Image.style.rotate = new StyleRotate(new Rotate(180f));
-        }
+        LineManager.instance.DrawEndPoint(this);
     }
 
     public void SetState(Line l, Tile previous, Tile next)
     {
-        if (state == TileState.END) 
-        {
-            if (endPieceRotation == EndTileRotation.OPEN) //Directional end pts should never change state
-            {
-                //omni directional end tiles keep end state, but their image needs to change
-                //If it's omni directional and next == null, set to normal "dot" state
-                if (next == null && previous == null)
-                {
-                    ReturnToOmnidirectionalEnd();
-                }
-                else if (next == null && previous != null)
-                {
-                    image.style.backgroundImage = new StyleBackground(UIManager.instance.GetTileStateTexture(state, EndTileRotation.TOP));
+        //TODO: Probably don't need most of this. It was largely here
+        //      to choose the correct image and rotation. Cant fully
+        //      remove rn though becase a lot of the line drawing logic
+        //      relies on the states
 
-                    if (previous.X == X - 1)
-                    {
-                        Image.style.rotate = new StyleRotate(new Rotate(270f));
-                    }
-                    else if (previous.X == X + 1)
-                    {
-                        Image.style.rotate = new StyleRotate(new Rotate(90f));
-                    }
-                    else if (previous.Y == Y - 1)
-                    {
-                        Image.style.rotate = new StyleRotate(new Rotate(0f));
-                    }
-                    else
-                    {
-                        Image.style.rotate = new StyleRotate(new Rotate(180f));
-                    }
-                }
-                else //if next is to a side, set it to a sideways shape
-                {
-                    image.style.backgroundImage = new StyleBackground(UIManager.instance.GetTileStateTexture(state, EndTileRotation.TOP));
-
-                    if (next.X == X - 1)
-                    {
-                        Image.style.rotate = new StyleRotate(new Rotate(270f));
-                    }
-                    else if (next.X == X + 1)
-                    {
-                        Image.style.rotate = new StyleRotate(new Rotate(90f));
-                    }
-                    else if (next.Y == Y - 1)
-                    {
-                        Image.style.rotate = new StyleRotate(new Rotate(0f));
-                    }
-                    else
-                    {
-                        Image.style.rotate = new StyleRotate(new Rotate(180f));
-                    }
-                }
-            }
-
+        if (state == TileState.END) //End state doesn't change
             return;
-        }
             
         Line = l;
 
         if (next == null)
         {
             State = TileState.HEAD;
-
-            if (previous == null)
-                return;
-            else if (previous.X == X - 1) //Coming in from left
-                Image.style.rotate = new StyleRotate(new Rotate(270f));
-            else if (previous.X == X + 1) //Coming in from right
-                Image.style.rotate = new StyleRotate(new Rotate(90f));
-            else if (previous.Y == Y - 1) //Coming in from top
-                Image.style.rotate = new StyleRotate(new Rotate(0f));
-            else //Bottom
-                Image.style.rotate = new StyleRotate(new Rotate(180f));
         }
         else if (previous.X == X && next.X == X) //horizontal line
         {
             State = TileState.LINE;
-
-            Image.style.rotate = new StyleRotate(new Rotate(0f));
         }
         else if (previous.Y == Y && next.Y == Y) //vertical line
         {
             State = TileState.LINE;
-
-            Image.style.rotate = new StyleRotate(new Rotate(90f));
         }
         //B L corner
         else if (
@@ -427,39 +299,29 @@ public class Tile
             (previous.X == X - 1 && previous.Y == Y && next.X == X && next.Y == Y + 1))
         {
             State = TileState.CORNER;
-
-            Image.style.rotate = new StyleRotate(new Rotate(90f));
         }
         //B R corner
         else if ((previous.X == X && previous.Y == Y + 1 && next.X == X + 1 && next.Y == Y) ||
                 (previous.X == X + 1 && previous.Y == Y && next.X == X && next.Y == Y + 1))
         {
             State = TileState.CORNER;
-
-            Image.style.rotate = new StyleRotate(new Rotate(0f));
         }
         //T L Corner
         else if ((previous.X == X && previous.Y == Y - 1 && next.X == X - 1 && next.Y == Y) ||
             (previous.X == X - 1 && previous.Y == Y && next.X == X && next.Y == Y - 1))
         {
             State = TileState.CORNER;
-
-            Image.style.rotate = new StyleRotate(new Rotate(180f));
         }
         //T R Corner
         else if ((previous.X == X + 1 && previous.Y == Y && next.X == X && next.Y == Y - 1) ||
             (previous.X == X && previous.Y == Y - 1 && next.X == X + 1 && next.Y == Y))
         {
             State = TileState.CORNER;
-
-            Image.style.rotate = new StyleRotate(new Rotate(270f));
         }
     }
 
     public void ClearLine()
     {
-        ReturnToOmnidirectionalEnd();
-        
         if (Line == null || State == TileState.END || State == TileState.BLANK)
             return;
 
@@ -467,12 +329,7 @@ public class Tile
         State = TileState.EMPTY;
     }
 
-    public void SetColor(Color c)
-    {
-        Image.style.unityBackgroundImageTintColor = c;
-    }
-
-    public void PuzzleComplete(float duration)
+    public void SetTileColorOnPuzzleComplete()
     {
         if (line != null)
         {
@@ -480,24 +337,31 @@ public class Tile
                 SetLineCancel();
             else
             {
-                Color bgColor = new Color(Line.Color.r, Line.Color.g, Line.Color.b, Line.Color.a / 2f);
+                //Color bgColor = new Color(Line.Color.r, Line.Color.g, Line.Color.b, Line.Color.a / 2f);
+                //Container.style.backgroundColor = Color.white;
 
-                Container.style.backgroundColor = Color.white;
-                image.style.backgroundColor     = bgColor;
+                Color bgColor = new Color(Line.Color.r, Line.Color.g, Line.Color.b, 1f);
+                Container.SetColor(bgColor);
             }
         }
 
-        if (!top)       topBorderVE.style.Hide();
-        if (!right)     rightBorderVE.style.Hide();
-        if (!bottom)    bottomBorderVE.style.Hide();
-        if (!left)      leftBorderVE.style.Hide();
-
-        Tween shake = DOTween.To(
-                        () => container.worldTransform.rotation.eulerAngles,
-                        x => container.transform.rotation = Quaternion.Euler(x),
-                        new Vector3(0f, 0f, 360f), duration).SetEase(Ease.InOutBounce).SetLoops(1);
+        //Tween shake = DOTween.To(
+        //                () => container.worldTransform.rotation.eulerAngles,
+        //                x => container.transform.rotation = Quaternion.Euler(x),
+        //                new Vector3(0f, 0f, 360f), duration).SetEase(Ease.InOutBounce).SetLoops(1);
         
-        shake.Play();
+        //shake.Play();
+    }
+
+    public void SpinTile(float duration)
+    {
+        Tween spin = DOTween.To(
+                () => container.worldTransform.rotation.eulerAngles,
+                x => container.transform.rotation = Quaternion.Euler(x),
+                new Vector3(0f, 0f, 360f), duration)
+                .SetEase(Ease.InOutBounce)
+                .SetLoops(1)
+                .Play();
     }
 
     public void ConvertFromBlankToEmpty(bool top, bool right, bool bottom, bool left)
@@ -511,7 +375,7 @@ public class Tile
         this.bottom = bottom;
         this.left   = left;
 
-        SetBorders();
+        //TODO: Rework changing blank to emptys
     }
 
     public void RemoveBorders(bool removeTop, bool removeRight, bool removeBottom, bool removeLeft)
@@ -521,23 +385,7 @@ public class Tile
         if (removeBottom)   bottom  = false;
         if (removeLeft)     left    = false;
 
-        SetBorders();
-    }
-
-    #endregion
-
-    #region Private Functions
-
-    private void SetBorders()
-    {
-        topBorderVE.style.backgroundColor = top ? UIManager.instance.HardBorderColor : UIManager.instance.SoftBorderColor;
-        topBorderVE.style.SetHeight(new StyleLength(top ? UIManager.instance.HardBorderSize : UIManager.instance.SoftBorderSize));
-        rightBorderVE.style.backgroundColor = right ? UIManager.instance.HardBorderColor : UIManager.instance.SoftBorderColor;
-        rightBorderVE.style.SetWidth(new StyleLength(right ? UIManager.instance.HardBorderSize : UIManager.instance.SoftBorderSize));
-        bottomBorderVE.style.backgroundColor = bottom ? UIManager.instance.HardBorderColor : UIManager.instance.SoftBorderColor;
-        bottomBorderVE.style.SetHeight(new StyleLength(bottom ? UIManager.instance.HardBorderSize : UIManager.instance.SoftBorderSize));
-        leftBorderVE.style.backgroundColor = left ? UIManager.instance.HardBorderColor : UIManager.instance.SoftBorderColor;
-        leftBorderVE.style.SetWidth(new StyleLength(left ? UIManager.instance.HardBorderSize : UIManager.instance.SoftBorderSize));
+        //TODO: Rework changing blank to emptys
     }
 
     #endregion

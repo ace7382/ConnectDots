@@ -18,9 +18,9 @@ public class Line
 
     public Line(int colorIndex)
     {
-        this.colorIndex = colorIndex;
-        lineTiles = new List<Tile>();
-        isCompleted = false;
+        this.colorIndex     = colorIndex;
+        lineTiles           = new List<Tile>();
+        isCompleted         = false;
     }
 
     public void SetStartEndTiles(Tile start, Tile end, EndTileRotation startRot, EndTileRotation endRot)
@@ -32,6 +32,14 @@ public class Line
     public void CheckCompletedLine()
     {
         isCompleted = ContainsTwoEndTiles();
+
+        //TODO: Since moving to drawing lines vs images,
+        //      there's been a bug where a level doesn't complete
+        //      when all lines are connected. If you re-trigger the line
+        //      completion, it will eventually register it as complete (usually right on the next check)
+        //      Cant get it to reliably repro though.
+
+        Debug.Log(isCompleted); 
         
         this.PostNotification(Notifications.LINE_COMPLETED, isCompleted);
     }
@@ -73,22 +81,13 @@ public class Line
         int back2       = lineTiles.Count - 3;
         int previous    = lineTiles.Count - 2;
 
-        //if (lineTiles.Count == 2)
-        //{
-        //    tileToAdd.SetState(this, lineTiles[previous], null);
-        //}
-        //else if (lineTiles.Count > 2)
-        //{
-        //    tileToAdd.SetState(this, lineTiles[previous], null);
-
-        //    lineTiles[previous].SetState(this, lineTiles[back2], tileToAdd);
-        //}
-
         if (lineTiles.Count < 2)
             return;
 
         tileToAdd.SetState(this, lineTiles[previous], null);
         lineTiles[previous].SetState(this, lineTiles.Count > 2 ? lineTiles[back2] : null, tileToAdd);
+
+        LineManager.instance.UpdateLine(this, lineTiles);
     }
 
     public bool ContainsTile(Tile t)
@@ -129,6 +128,8 @@ public class Line
 
         //There will always be 2 tiles if this function is called
         lineTiles[indexOfTile].SetState(this, lineTiles[indexOfTile - 1], null);
+
+        LineManager.instance.UpdateLine(this, lineTiles);
     }
 
     public void RemoveHeadTile()

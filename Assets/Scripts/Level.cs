@@ -35,6 +35,12 @@ public class Level : ScriptableObject
         public int              restrictedColor2 = 0;
     }
 
+    [System.Serializable]
+    public class BorderDefinition
+    {
+        public Vector2Int       leftUpTile;
+        public Vector2Int       rightDownTile;
+    }
     #endregion
 
     #region Inspector Variables
@@ -45,6 +51,7 @@ public class Level : ScriptableObject
     [SerializeField] private int cols;
     [SerializeField] private List<LineDefinitions> lines;
     [SerializeField] private List<SpecialTileDefinitions> specialTiles;
+    [SerializeField] private List<BorderDefinition> borders;
 
     [SerializeField] private bool isComplete;
 
@@ -59,6 +66,7 @@ public class Level : ScriptableObject
     public List<LineDefinitions>        Lines               { get { return lines;} }
     public List<SpecialTileDefinitions> SpecialTiles        { get { return specialTiles; } }
     public bool                         IsComplete          { get { return isComplete; } private set { isComplete = value; } }
+    public List<BorderDefinition>       Borders             { get { return borders; } }
 
     #endregion
 

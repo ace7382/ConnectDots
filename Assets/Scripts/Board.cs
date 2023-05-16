@@ -7,13 +7,10 @@ using UnityEngine.UIElements;
 
 public class Board
 {
-    //Stores info about the board and tiles
-    //Handles input and pathfinding
-    //tells the gamemanager that the round is done etc
-
     #region Private Variables
 
     private List<List<Tile>>    tiles;
+    private List<TileBorder>    tileBorders;
     private List<Line>          lines;
     private Level               level;
     private VisualElement       boardVE;
@@ -40,53 +37,127 @@ public class Board
     public Board(Level level, VisualElement root)
     {
         this.level      = level;
-        boardVE         = root.Q<VisualElement>("Board");
-        screen          = root.Q<VisualElement>("Screen");
         draggingLine    = null;
+
+        screen          = root.Q<VisualElement>("Screen");
+        boardVE         = root.Q<VisualElement>("NewBoard");
+        boardVE.Show();
     }
 
     #endregion
 
     #region Public Functions
 
-    public void CreateBoard()
+    public void CreateBoardNew()
     {
-        canClick = false;
-
         RegisterScreenLevelInteraction();
 
-        float tileSize = Mathf.Floor((screen.worldBound.width - (2f * UIManager.instance.BoardPadding)) / (float)level.Cols);
+        boardVE.Clear();
+        boardVE.transform.scale     = Vector3.one;
 
-        boardVE.SetWidth(new StyleLength(tileSize * level.Cols));
+        canClick                    = false;
 
-        tiles = new List<List<Tile>>();
+        float borderThickness       = 5f;
+        float borderSizePercent     = .75f;
+
+        float tileSize              = Mathf.Floor(
+                                        (screen.worldBound.width
+                                            - (2f * UIManager.instance.BoardPadding)
+                                            - ((level.Cols - 1) * borderThickness)) 
+                                        / (float)level.Cols);
+
+        boardVE.SetWidth(new StyleLength(tileSize * level.Cols + borderThickness * (level.Cols - 1)));
+
+        tiles                       = new List<List<Tile>>();
+        tileBorders                 = new List<TileBorder>();
 
         for (int i = 0; i < level.Rows; i++)
             tiles.Add(new List<Tile>());
 
-        List<Vector2Int> startEndPoints = new List<Vector2Int>();
-
-        StyleFloat opacity0 = new StyleFloat(0f);
-
         for (int row = 0; row < level.Rows; row++)
         {
+            VisualElement rowParent = UIManager.instance.RowPrefab_New.Instantiate();
+            VisualElement rowVE     = rowParent.Q<VisualElement>("Row");
+
+            boardVE.Add(rowVE);
+            rowParent.RemoveFromHierarchy();
+
+            VisualElement horizontalBorders = null;
+
+            if (row != level.Rows - 1)
+            {
+                VisualElement hBoarderParent        = UIManager.instance.RowPrefab_New.Instantiate();
+                horizontalBorders                   = hBoarderParent.Q<VisualElement>("Row");
+                
+                boardVE.Add(horizontalBorders);
+
+                hBoarderParent.RemoveFromHierarchy();
+            }
+
             for (int col = 0; col < level.Cols; col++)
             {
-                VisualElement pref = UIManager.instance.TilePrefab.Instantiate();
-                VisualElement tile = pref.Q<VisualElement>("Tile");
-
-                tile.RemoveFromClassList("Tile");
-                tile.style.backgroundColor = new StyleColor(Color.white);
-                tile.SetWidth(new StyleLength(tileSize));
+                VisualElement tileParent            = UIManager.instance.TilePrefab_New.Instantiate();
+                VisualElement tile                  = tileParent.Q<VisualElement>("Tile_New");
+                
+                tile.SetWidth(tileSize * .9f);
                 tile.SetHeight(tile.style.width);
+                tile.SetMargins(tileSize * .05f);
+                tile.SetOpacity(0f);
 
-                Level.SpecialTileDefinitions rules = level.GetSpecialTileDef(col, row);
-                Tile t;
+                rowVE.Add(tile);
+                tileParent.RemoveFromHierarchy();
+
+                Level.SpecialTileDefinitions rules  = level.GetSpecialTileDef(col, row);
+                Tile t                              = new Tile(new Vector2Int(col, row)
+                                                        , tile, rules == null ? false : rules.blank);
+
+                if (horizontalBorders != null)
+                {
+                    VisualElement hBorder           = new VisualElement();
+
+                    float wid                       = borderSizePercent * tile.style.width.value.value;
+
+                    hBorder.SetWidth(new StyleLength(wid));
+                    hBorder.SetMargins((tileSize - wid) / 2f, false, true, false, true);
+                    hBorder.SetHeight(borderThickness);
+                    hBorder.SetBorderRadius(borderThickness / 2f);
+                    hBorder.SetColor(Color.black);
+
+                    horizontalBorders.Add(hBorder);
+
+                    TileBorder b                    = new TileBorder(hBorder, false, t);
+                    hBorder.userData                = b;
+                    tileBorders.Add(b);
+                }
+                
+                if (col != level.Cols - 1)
+                {
+                    VisualElement vBorder           = new VisualElement();
+
+                    vBorder.SetWidth(borderThickness);
+                    vBorder.SetHeight(new StyleLength(borderSizePercent * tile.style.width.value.value));
+                    vBorder.SetBorderRadius(borderThickness / 2f);
+                    vBorder.SetColor(Color.black);
+
+                    rowVE.Add(vBorder);
+
+                    TileBorder b                    = new TileBorder(vBorder, true, t);
+                    vBorder.userData                = b;
+                    tileBorders.Add(b);
+
+                    if (horizontalBorders != null)
+                    {
+                        VisualElement spacer        = new VisualElement();
+
+                        spacer.SetWidth(borderThickness);
+                        spacer.SetHeight(spacer.style.width);
+
+                        horizontalBorders.Add(spacer);
+                    }
+                }
 
                 if (rules != null)
                 {
-                    t = new Tile(new Vector2Int(col, row), tile, rules.blank, rules.topBorder, rules.rightBorder, rules.bottomBorder, rules.leftBorder);
-
                     if (rules.multiplier > 1)
                         t.SetMultiplier(rules.multiplier);
                     else if (rules.lineCancel)
@@ -97,28 +168,31 @@ public class Board
                         t.SetRestrictedColors(rules.restrictedColor1, rules.restrictedColor2);
                     }
                 }
-                else
-                {
-                    t = new Tile(new Vector2Int(col, row), tile, false, row == 0, col == level.Cols - 1
-                                        , row == level.Rows - 1, col == 0);
-                }
 
-                tile.name = "Tile (" + t.X.ToString() + ", " + t.Y.ToString() + ")";
-                tile.AddToClassList("Tile");
-                tile.userData = t;
-
-                boardVE.Add(tile);
+                tile.name       = "Tile (" + t.X.ToString() + ", " + t.Y.ToString() + ")";
+                tile.userData   = t;
 
                 RegisterTileInteraction(tile);
 
                 tiles[row].Add(t);
-
-                startEndPoints.Add(new Vector2Int(col, row));
-
-                tile.style.opacity = opacity0;
             }
         }
 
+        for (int i = 0; i < tileBorders.Count; i++)
+        {
+            TileBorder b = tileBorders[i];
+
+            b.SetRightDownTile(b.TilesToLeftAndRight ?
+                tiles[b.LeftUpTile.Y][b.LeftUpTile.X + 1] :
+                tiles[b.LeftUpTile.Y + 1][b.LeftUpTile.X]
+                );
+
+            b.SetActive(level.Borders.FindIndex(x => x.leftUpTile == b.LeftUpTile.Position && x.rightDownTile == b.RightDownTile.Position) > -1);
+        }
+    }
+
+    public void SetupLines()
+    {
         lines = new List<Line>();
 
         for (int i = 0; i < level.Lines.Count; i++)
@@ -164,7 +238,11 @@ public class Board
 
         yield return null; //This is needed because the width of the screen/board are not calculated on the same frame in which they're initialized
 
-        CreateBoard();
+        CreateBoardNew();
+
+        yield return null; //This is needed for the line manager to get tiles' positions
+
+        SetupLines();
 
         List<Tween> intweens = new List<Tween>();
 
@@ -196,9 +274,13 @@ public class Board
         canClick = true;
     }
 
-    public void BoardInWithoutAnimation()
+    public IEnumerator BoardInWithoutAnimation()
     {
-        CreateBoard();
+        CreateBoardNew();
+
+        yield return null;
+
+        SetupLines();
 
         for (int i = 0; i < tiles.Count; i++)
         {
@@ -245,8 +327,25 @@ public class Board
             yield return null;
     }
 
+    public IEnumerator TimeBoardComplete()
+    {
+        LineManager.instance.Clear();
+
+        for (int i = 0; i < tiles.Count; i++)
+            for (int j = 0; j < tiles[i].Count; j++)
+                tiles[i][j].SetTileColorOnPuzzleComplete();
+
+        Tween shrinkBoard = DOTween.To(() => boardVE.transform.scale,
+            x => boardVE.transform.scale = x,
+            Vector3.zero, .3f).SetEase(Ease.InQuad);
+
+        yield return shrinkBoard.WaitForCompletion();
+    }
+
     public IEnumerator LevelCompleteAnimation()
     {
+        LineManager.instance.Clear();
+
         canClick                = false;
         UIManager.instance
             .TopBar.CanClick    = false;
@@ -268,7 +367,9 @@ public class Board
 
             for (int j = 0; j < count; j++)
             {
-                tiles[Mathf.Min(level.Rows, i) - j - 1][startCol + j].PuzzleComplete(spinDur);
+                int r = Mathf.Min(level.Rows, i) - j - 1;
+                tiles[r][startCol + j].SetTileColorOnPuzzleComplete();
+                tiles[r][startCol + j].SpinTile(spinDur);
             }
 
             if (i != diags) yield return waitDur;
@@ -597,6 +698,8 @@ public class Board
 
         VisualElement ve = evt.target as VisualElement;
         Tile tile = ve.userData as Tile;
+
+        Debug.Log("Dragged into " + tile);
 
         if (tile.Line == draggingLine)
         {

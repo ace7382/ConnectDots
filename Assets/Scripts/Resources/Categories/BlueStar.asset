@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00c73155c94de8a46879bbbe340b83a9, type: 3}
+  m_Name: BlueStar
+  m_EditorClassIdentifier: 
+  colors:
+  - {r: 0.03901863, g: 0, b: 1, a: 1}
+  - {r: 0, g: 0.781579, b: 1, a: 1}
+  levelSelectImage: {fileID: 2800000, guid: f540d163eaeb67f42918267b89d1450a, type: 3}
+  filePath: BlueStar
+  unlocked: 1
+  lock_NumberOfObjectives: 0
+  lock_CompletedObjectives: []
+  lock_CompletedLevelCategories: []
+  lock_Purcahse: []
+  timeAttackStats:
+  - difficulty: Easy
+    totalTimeInSeconds: 120
+    timeAddedOnCompletePuzzle: 15
+    numberOfPuzzles: 3
+    bestTimeInSeconds: 0
+    bronzeTimeInSeconds: 10
+    silverTimeInSeconds: 20
+    goldTimeInSeconds: 45
+    starTimeInSeconds: 85
+  - difficulty: Hard
+    totalTimeInSeconds: 90
+    timeAddedOnCompletePuzzle: 5
+    numberOfPuzzles: 6
+    bestTimeInSeconds: 0
+    bronzeTimeInSeconds: 10
+    silverTimeInSeconds: 25
+    goldTimeInSeconds: 45
+    starTimeInSeconds: 75
+  isComplete: 0

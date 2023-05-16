@@ -34,6 +34,11 @@ public static class VisualElementExtensions
         ve.style.backgroundColor = color;
     }
 
+    public static void SetOpacity(this VisualElement ve, float opacity0to100)
+    {
+        ve.style.opacity = new StyleFloat(opacity0to100);
+    }
+
     public static void SetImage(this VisualElement ve, Texture2D image)
     {
         ve.style.backgroundImage = image;

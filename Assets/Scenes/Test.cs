@@ -7,161 +7,75 @@ using UnityEngine.UIElements;
 
 public class Test : MonoBehaviour
 {
-    ////Chose an image
-    ////layout the image with x spacing until the screen is filled +/- 3? cols
-    ////offsetevery other row to make a diagonal pattern
-    ////
+    public UIDocument uiDoc;
+    public Vector2Int drawBetween;
+    public bool go;
 
-    //public bool go = false;
+    List<VisualElement> tiles;
+    UIToolkitLine line;
 
-    //[Space]
+    public List<Vector2> points;
 
-    //public int bufferX;
-    //public int bufferY;
+    public VisualElement lineContainer;
 
-    //public Texture2D image;
-    //public UIDocument uiDoc;
-    //public float xSpacing;
-    //public float ySpacing;
-    //public float imageSize = 100f;
+    public void Start()
+    {
+        //tiles = uiDoc.rootVisualElement.Query<VisualElement>("Tile").ToList();
+        lineContainer = uiDoc.rootVisualElement.Q<VisualElement>("LineContainer");
 
-    //public VisualElement page;
+        //for (int i = 0; i < tiles.Count; i++)
+        //{
+        //    tiles[i].name = "Tile " + i.ToString();
+        //    tiles[i].RegisterCallback<PointerUpEvent>(DrawHere);
+        //}
 
-    //public List<VisualElement> bgIcons;
-    //public int iconCount = 0;
+        //line = new UITookitLine(points, 30f);
 
-    //public Vector2 scrollSpeed;
+        UIToolkitCircle a = new UIToolkitCircle(new Vector2(400f, 400f), 80f, Color.red);
 
-    //public float    leftBound;
-    //public float    rightBound;
-    //public float    topBound;
-    //public float    bottomBound;
+        lineContainer.Add(a);
 
-    //public void Update()
-    //{
-    //    if (go)
-    //    {
-    //        CreatePattern();
+        List<Vector2> points = new List<Vector2>()
+        {
+            new Vector2(100, 100),
+            new Vector2(200, 100),
+            new Vector2(200, 200),
+            new Vector2(300, 200)
+        };
 
-    //        go = false;
-    //    }
+        //UITookitLine k = new UITookitLine(points, 30f);
 
-    //    for (int i = 0; i < bgIcons.Count; i++)
-    //    {
-    //        float newX = bgIcons[i].transform.position.x + (Time.deltaTime * scrollSpeed.x);
-
-    //        if (newX < leftBound)
-    //            newX = rightBound - (leftBound - newX);
-    //        else if (newX > rightBound)
-    //            newX = leftBound + (newX - rightBound);
-
-    //        float newY = bgIcons[i].transform.position.y + (Time.deltaTime * scrollSpeed.y);
-
-    //        if (newY < topBound)
-    //            newY = bottomBound - (topBound - newY);
-    //        else if (newY > bottomBound)
-    //            newY = topBound + (newY - bottomBound);
-
-    //        bgIcons[i].transform.position = new Vector3(
-    //            newX//bgIcons[i].transform.position.x + (Time.deltaTime * scrollSpeed.x)
-    //            , newY //bgIcons[i].transform.position.y
-    //            , bgIcons[i].transform.position.z);
-    //    }
-    //}
-
-    //public void Start()
-    //{
-    //    bgIcons = new List<VisualElement>();
-    //    page = uiDoc.rootVisualElement.Q<VisualElement>("Page");
-    //}
-
-    //public void AddIcon(VisualElement i)
-    //{
-    //    bgIcons.Add(i);
-
-    //    iconCount = bgIcons.Count;
-    //}
-
-    //public void CreatePattern()
-    //{
-    //    leftBound = xSpacing * -bufferX;
-    //    rightBound = Screen.width + (xSpacing * bufferX);
-    //    rightBound = rightBound + (xSpacing - (rightBound % xSpacing));
-    //    topBound = ySpacing * -bufferY;
-    //    bottomBound = Screen.height + (ySpacing * bufferY);
-    //    bottomBound = bottomBound + (ySpacing - (bottomBound % ySpacing));
-
-    //    float currentX = leftBound;
-    //    float currentY = topBound;
-
-    //    page.Clear();
-    //    bgIcons.Clear();
-    //    iconCount = 0;
-
-    //    bool alternaterow = false;
-    //    int numOfRows = 0;
-
-    //    while (currentY < bottomBound || numOfRows % 2 != 0)
-    //    {
-    //        numOfRows++;
-
-    //        if (currentY >= bottomBound && numOfRows % 2 == 0)
-    //            topBound = ySpacing * -(bufferY + 1);
-
-    //        while (currentX < rightBound)
-    //        {
-    //            VisualElement instance = new VisualElement();
-    //            instance.AddToClassList("RepeatingBGIcon");
-    //            instance.style.backgroundImage = image;
-
-    //            page.Add(instance);
-
-    //            instance.transform.position = new Vector3(currentX, currentY, page.transform.position.z);
-
-    //            currentX += xSpacing;
-
-    //            AddIcon(instance);
-    //        }
-
-    //        alternaterow = !alternaterow;
-
-    //        currentX = leftBound + (alternaterow ? xSpacing / 2f : 0f);
-    //        currentY += ySpacing;
-    //    }
-    //}
-
-    public bool init, i, c, spin;
-    public Texture2D image;
-    public Color color;
-    public int numToRotate;
+        //lineContainer.Add(k);
+    }
 
     public void Update()
     {
-        if (init)
-        {
-            GetComponent<ScrollingBackground>().Initialize(image);
+        //line.SetPoints(points);
 
-            init = false;
-        }
+        //if (go)
+        //{
+        //    //VisualElement t1 = tiles[0];
+        //    //VisualElement t2 = tiles[1];
 
-        if (i)
-        {
-            GetComponent<ScrollingBackground>().SetTexture(image);
+        //    //Vector2 pt1 = t1.worldBound.center;
+        //    //Vector2 pt2 = t2.worldBound.center;
 
-            i = false;
-        }
+        //    //LineDrawer l = new LineDrawer(pt1, pt2, 20);
+        //    if (line != null)
+        //        lineContainer.Remove(line);
 
-        if (c)
-        {
-            GetComponent<ScrollingBackground>().SetColor(color);
-            c = false;
-        }
+        //    line = new UITookitLine(poits, 15f);
 
-        if (spin)
-        {
-            GetComponent<ScrollingBackground>().RotateRandom(numToRotate);
+        //    lineContainer.Add(line);
 
-            spin = false;
-        }
+        //    go = false;
+        //}
+    }
+
+    public void DrawHere(PointerUpEvent evt)
+    {
+        VisualElement tar = evt.target as VisualElement;
+
+        points.Add(tar.worldBound.center);
     }
 }

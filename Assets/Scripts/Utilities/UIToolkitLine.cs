@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,6 +29,9 @@ public class UIToolkitLine : VisualElement
 
     private void OnGenerateVisualContent(MeshGenerationContext mgc)
     {
+        if (points.Count == 0)
+            return;
+
         Painter2D painter       = mgc.painter2D;
 
         painter.strokeColor     = color;
@@ -43,5 +47,107 @@ public class UIToolkitLine : VisualElement
             painter.LineTo(points[i]);
 
         painter.Stroke();
+    }
+
+    public IEnumerator ShrinkLine(bool bothDirections, bool forward, float duration)
+    {
+        if (points.Count < 2)
+            yield return null;
+
+        Tween movePt        = null;
+
+        int start           = forward ? 0 : points.Count - 1;
+        int destination     = forward ? 1 : points.Count - 2;
+
+        duration            = duration / (points.Count - 1);
+
+        while (points.Count > 1)
+        {
+            if (movePt == null)
+            {
+                if (bothDirections)
+                {
+                    movePt = DOTween.Sequence();
+                    Tween front = null;
+                    Tween back = null;
+
+                    if (points.Count == 2)
+                    {
+                        Vector2 mid = Vector2.Lerp(points[0], points[1], .5f);
+
+                        front = DOTween.To(() => points[0],
+                            x => points[0] = x,
+                            mid,
+                            duration / 2f)
+                            .SetEase(Ease.Linear);
+
+                        back = DOTween.To(() => points[1],
+                            x => points[1] = x,
+                            mid,
+                            duration / 2f)
+                            .SetEase(Ease.Linear);
+                    }
+                    else
+                    {
+                        front = DOTween.To(() => points[0],
+                            x => points[0] = x,
+                            points[1],
+                            duration)
+                            .SetEase(Ease.Linear);
+
+                        back = DOTween.To(() => points[points.Count - 1],
+                            x => points[points.Count - 1] = x,
+                            points[points.Count - 2],
+                            duration)
+                            .SetEase(Ease.Linear);
+                    }
+
+                    (movePt as Sequence).Append(front);
+                    (movePt as Sequence).Join(back);
+                    movePt
+                        .OnUpdate(() => this.MarkDirtyRepaint())
+                        .OnComplete(() =>
+                            {
+                                movePt = null;
+                                points.RemoveAt(points.Count - 1);
+                                points.RemoveAt(0);
+                            })
+                        .Play();
+                }
+                else
+                {
+                    movePt = DOTween.To(() => points[start],
+                        x => points[start] = x,
+                        points[destination],
+                        duration)
+                        .OnUpdate(() => this.MarkDirtyRepaint())
+                        .SetEase(Ease.Linear)
+                        .OnComplete(() =>
+                        {
+                            points.RemoveAt(start);
+                            start = forward ? 0 : points.Count - 1;
+                            destination = forward ? 1 : points.Count - 2;
+                            movePt = null;
+                        })
+                        .Play();
+                }
+            }
+
+            yield return null;
+        }
+    }
+
+    private IEnumerator ShrinkTowardPoint(bool forward, float duration)
+    {
+        Vector2 start       = forward ? points[0] : points[points.Count - 1];
+        Vector2 destination = forward ? points[1] : points[points.Count - 2];
+
+        Tween movePt = DOTween.To(() => start,
+            x => destination = x,
+            points[1], duration)
+            .OnUpdate(() => this.MarkDirtyRepaint())
+            .OnComplete(() => points.RemoveAt(forward ? 0 : points.Count - 1));
+
+        yield return movePt.WaitForCompletion();
     }
 }

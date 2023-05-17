@@ -337,20 +337,10 @@ public class Tile
                 SetLineCancel();
             else
             {
-                //Color bgColor = new Color(Line.Color.r, Line.Color.g, Line.Color.b, Line.Color.a / 2f);
-                //Container.style.backgroundColor = Color.white;
-
                 Color bgColor = new Color(Line.Color.r, Line.Color.g, Line.Color.b, 1f);
                 Container.SetColor(bgColor);
             }
         }
-
-        //Tween shake = DOTween.To(
-        //                () => container.worldTransform.rotation.eulerAngles,
-        //                x => container.transform.rotation = Quaternion.Euler(x),
-        //                new Vector3(0f, 0f, 360f), duration).SetEase(Ease.InOutBounce).SetLoops(1);
-        
-        //shake.Play();
     }
 
     public void SpinTile(float duration)

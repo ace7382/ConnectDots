@@ -38,9 +38,22 @@ public class Line
         //      when all lines are connected. If you re-trigger the line
         //      completion, it will eventually register it as complete (usually right on the next check)
         //      Cant get it to reliably repro though.
+        //      ** I think this is fixed now **
+        //      issue was that AddTile didn't update the line manager if there were fewer than 2
+        //      total tiles in the line.
 
-        Debug.Log(isCompleted); 
-        
+        if (!isCompleted)
+        {
+            string t = "Line with color index " + colorIndex.ToString() + "not complete";
+
+            for (int i = 0; i < Tiles.Count; i++)
+            {
+                t += "\n" + Tiles[i].ToString();
+            }
+
+            Debug.Log(t);
+        }
+
         this.PostNotification(Notifications.LINE_COMPLETED, isCompleted);
     }
 
@@ -61,19 +74,6 @@ public class Line
         AddTile(tileToAdd);
     }
 
-    public bool IsAdjacentToHead(Tile checkTile)
-    {
-        Tile head = LineHead;
-
-        if (head.X == checkTile.X && (head.Y - 1 == checkTile.Y || head.Y + 1 == checkTile.Y))
-            return true;
-
-        if (head.Y == checkTile.Y && (head.X - 1 == checkTile.X || head.X + 1 == checkTile.X))
-            return true;
-
-        return false;
-    }
-
     public void AddTile(Tile tileToAdd)
     {
         lineTiles.Add(tileToAdd);
@@ -82,7 +82,10 @@ public class Line
         int previous    = lineTiles.Count - 2;
 
         if (lineTiles.Count < 2)
+        {
+            LineManager.instance.UpdateLine(this, lineTiles);
             return;
+        }
 
         tileToAdd.SetState(this, lineTiles[previous], null);
         lineTiles[previous].SetState(this, lineTiles.Count > 2 ? lineTiles[back2] : null, tileToAdd);
@@ -132,9 +135,8 @@ public class Line
         LineManager.instance.UpdateLine(this, lineTiles);
     }
 
-    public void RemoveHeadTile()
+    public override string ToString()
     {
-        LineHead.ClearLine();
-        lineTiles.Remove(LineHead);
+        return "Line " + colorIndex.ToString() + ": Tile Count - " + Tiles.Count.ToString() + " Lead Tile - " + LineHead.Position.ToString();
     }
 }

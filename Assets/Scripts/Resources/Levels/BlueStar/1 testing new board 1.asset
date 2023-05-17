@@ -28,6 +28,15 @@ MonoBehaviour:
     - {x: 1, y: 1}
     - {x: 2, y: 1}
     - {x: 2, y: 2}
+  - end1position: {x: 3, y: 0}
+    end1rotation: 4
+    end2position: {x: 3, y: 2}
+    end2rotation: 4
+    colorIndex: 1
+    solutionPath:
+    - {x: 3, y: 0}
+    - {x: 3, y: 1}
+    - {x: 3, y: 2}
   specialTiles:
   - tilePosition: {x: 4, y: 4}
     blank: 1

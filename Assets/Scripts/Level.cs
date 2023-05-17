@@ -25,10 +25,6 @@ public class Level : ScriptableObject
     {
         public Vector2Int       tilePosition;
         public bool             blank;
-        public bool             topBorder;
-        public bool             rightBorder;
-        public bool             bottomBorder;
-        public bool             leftBorder;
         public int              multiplier;
         public bool             lineCancel;
         public int              restrictedColor1 = 0;

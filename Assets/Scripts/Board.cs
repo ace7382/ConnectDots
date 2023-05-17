@@ -296,28 +296,43 @@ public class Board
 
     public IEnumerator AnimateBoardOut()
     {
-        canClick = false;
+        canClick                = false;
 
-        List<Tween> outtweens = new List<Tween>();
+        float tileDuration      = .15f;
+        float waitDuration      = .01f;
+        float lineDuration      = (tiles.Sum(x => x.Count) * waitDuration) + (tileDuration - waitDuration);
+        List<Tween> outtweens   = new List<Tween>();
+        WaitForSeconds w        = new WaitForSeconds(waitDuration);
 
-        WaitForSeconds w = new WaitForSeconds(.01f);
+
+        Tween fadeLines = DOTween.To(() => LineManager.instance.LineContainer.style.opacity.value
+                                    , x => LineManager.instance.LineContainer.SetOpacity(x)
+                                    , 0f
+                                    , lineDuration)
+                                    .SetEase(Ease.Linear)
+                                    .OnComplete(() => LineManager.instance.Clear());
+
+        fadeLines.OnKill(() => outtweens.Remove(fadeLines));
+        outtweens.Add(fadeLines);
+        fadeLines.Play();
 
         for (int i = tiles.Count - 1; i >= 0; i--)
         {
             for (int j = tiles[i].Count - 1; j >= 0; j--)
             {
-                Tile t = tiles[i][j];
-                t.Container.style.opacity = new StyleFloat(1f);
+                Tile t          = tiles[i][j];
+                t.Container.SetOpacity(1f);
 
-                Tween fadeout = DOTween.To(() => t.Container.style.opacity.value,
-                    x => t.Container.style.opacity = new StyleFloat(x),
-                    0f, .15f);
+                Tween fadeout   = DOTween.To(() => t.Container.style.opacity.value
+                                    , x => t.Container.SetOpacity(x)
+                                    , 0f
+                                    , tileDuration);
 
                 outtweens.Add(fadeout);
 
                 fadeout.Play();
 
-                fadeout.onKill += () => outtweens.Remove(fadeout);
+                fadeout.onKill  += () => outtweens.Remove(fadeout);
 
                 yield return w;
             }
@@ -344,8 +359,6 @@ public class Board
 
     public IEnumerator LevelCompleteAnimation()
     {
-        LineManager.instance.Clear();
-
         canClick                = false;
         UIManager.instance
             .TopBar.CanClick    = false;
@@ -355,9 +368,41 @@ public class Board
         float spinDur           = animLength / (float)(diags / 2);
         WaitForSeconds waitDur  = new WaitForSeconds((animLength / (float)diags));
 
-        Tween scaleUp           = DOTween.To(() => boardVE.transform.scale,
-                                    x => boardVE.transform.scale = x, new Vector3(1.2f, 1.2f, 1f), animLength / 2f)
-                                    .SetEase(Ease.InOutQuart).SetAutoKill(false);
+        Tween boardReturn = DOTween.To(() => boardVE.transform.scale,
+                                    x => boardVE.transform.scale = x
+                                    , Vector3.one
+                                    , animLength / 2f)
+                                    .SetEase(Ease.OutBounce)
+                                    .Pause();
+
+        Tween lineReturn = DOTween.To(() => LineManager.instance.LineContainer.transform.scale,
+                                    x => LineManager.instance.LineContainer.transform.scale = x
+                                    , Vector3.one
+                                    , animLength / 2f)
+                                    .SetEase(Ease.OutBounce)
+                                    .Pause();
+
+        Tween scaleUp = DOTween.To(() => boardVE.transform.scale,
+                                    x => boardVE.transform.scale = x
+                                    , new Vector3(1.2f, 1.2f, 1f)
+                                    , animLength / 2f)
+                                    .SetEase(Ease.InOutQuart)
+                                    .Pause();
+
+        Tween lineScaleup = DOTween.To(() => LineManager.instance.LineContainer.transform.scale,
+                                    x => LineManager.instance.LineContainer.transform.scale = x
+                                    , new Vector3(1.2f, 1.2f, 1f)
+                                    , animLength / 2f)
+                                    .SetEase(Ease.InOutQuart)
+                                    .Pause();
+
+        Sequence seq            = DOTween.Sequence();
+        seq.SetAutoKill(false); //without this a warning is thrown by Dotween in the yield .WaitForCompleteion *shrug*
+
+        seq.Append(scaleUp);
+        seq.Join(lineScaleup);
+        seq.Append(boardReturn);
+        seq.Join(lineReturn);
 
         //Algo from https://www.geeksforgeeks.org/zigzag-or-diagonal-traversal-of-matrix/#
         for (int i = 1; i <= diags; i++)
@@ -375,13 +420,14 @@ public class Board
             if (i != diags) yield return waitDur;
         }
 
-        yield return scaleUp.Play().WaitForCompletion();
+        yield return seq.WaitForCompletion();
 
-        Tween s                 = DOTween.To(() => boardVE.transform.scale,
-                                    x => boardVE.transform.scale = x, new Vector3(1f, 1f, 1f), animLength / 2f)
-                                    .SetEase(Ease.OutBounce).Play();
 
-        yield return new WaitForSeconds(animLength / 2f * .55f);
+        //Tween s                 = DOTween.To(() => boardVE.transform.scale,
+        //                            x => boardVE.transform.scale = x, new Vector3(1f, 1f, 1f), animLength / 2f)
+        //                            .SetEase(Ease.OutBounce).Play();
+
+        //yield return new WaitForSeconds(animLength / 2f * .55f);
 
         Dictionary<int, int> coinsAwarded = SpawnCoinsOnBoardComplete();
 
@@ -698,8 +744,6 @@ public class Board
 
         VisualElement ve = evt.target as VisualElement;
         Tile tile = ve.userData as Tile;
-
-        Debug.Log("Dragged into " + tile);
 
         if (tile.Line == draggingLine)
         {

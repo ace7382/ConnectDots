@@ -30,6 +30,12 @@ public class PageManager : MonoBehaviour
 
     #endregion
 
+    #region Public Properties
+
+    public int                                      HighestSortOrder    { get { return stack.Count; } }
+
+    #endregion
+
     #region Unity Functions
 
     private void Awake()

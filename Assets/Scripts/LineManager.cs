@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
+using DG.Tweening;
 
 public class LineManager : MonoBehaviour
 {
@@ -26,6 +27,12 @@ public class LineManager : MonoBehaviour
     private List<UIToolkitCircle>   endPoints;
 
     private Dictionary<Line, UIToolkitLine> lines;
+
+    #endregion
+
+    #region Public Properties
+
+    public VisualElement            LineContainer { get { return lineContainer; } }
 
     #endregion
 
@@ -55,6 +62,11 @@ public class LineManager : MonoBehaviour
 
     public void DrawEndPoint(Tile t)
     {
+        //TODO: Might be a better place to put this
+        //      but this is called during gameplay start which
+        //      will keep the lines on the same sorting order as the game board
+        uiDoc.sortingOrder = PageManager.instance.HighestSortOrder + .5f;
+
         if (t.State != TileState.END)
             return;
 
@@ -113,10 +125,24 @@ public class LineManager : MonoBehaviour
         uiLine.SetPoints(tileCenters);
     }
 
+    public IEnumerator ShrinkAllLines(float duration)
+    {
+        foreach (KeyValuePair<Line, UIToolkitLine> line in lines)
+        {
+            StartCoroutine(line.Value.ShrinkLine(true, true, duration));
+        }
+
+        yield return new WaitForSeconds(duration);
+
+        Clear();
+    }
+
     public void Clear()
     {
+        lineContainer.SetOpacity(1f);
         lineContainer.Clear();
         lines.Clear();
+        uiDoc.sortingOrder = 999;
     }
 
     #endregion

@@ -1,0 +1,104 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a89a4ad53e408f748947467a89173cc8, type: 3}
+  m_Name: Restricted Colors
+  m_EditorClassIdentifier: 
+  levelCategory: {fileID: 11400000, guid: d71d96ba09f04314e8ffad1cb70b7662, type: 2}
+  levelNum: RES
+  rows: 6
+  cols: 6
+  lines:
+  - end1position: {x: 0, y: 0}
+    end1rotation: 4
+    end2position: {x: 2, y: 2}
+    end2rotation: 4
+    colorIndex: 1
+    solutionPath:
+    - {x: 0, y: 0}
+    - {x: 1, y: 0}
+    - {x: 2, y: 0}
+    - {x: 2, y: 1}
+    - {x: 2, y: 2}
+  - end1position: {x: 3, y: 0}
+    end1rotation: 4
+    end2position: {x: 3, y: 3}
+    end2rotation: 4
+    colorIndex: 2
+    solutionPath:
+    - {x: 3, y: 0}
+    - {x: 3, y: 1}
+    - {x: 3, y: 2}
+    - {x: 3, y: 3}
+  - end1position: {x: 0, y: 5}
+    end1rotation: 4
+    end2position: {x: 2, y: 5}
+    end2rotation: 4
+    colorIndex: 5
+    solutionPath:
+    - {x: 0, y: 5}
+    - {x: 0, y: 4}
+    - {x: 0, y: 3}
+    - {x: 1, y: 3}
+    - {x: 2, y: 3}
+    - {x: 2, y: 4}
+    - {x: 2, y: 5}
+  specialTiles:
+  - tilePosition: {x: 1, y: 4}
+    blank: 0
+    multiplier: 0
+    lineCancel: 0
+    restrictedColor1: 1
+    restrictedColor2: 2
+  - tilePosition: {x: 1, y: 5}
+    blank: 0
+    multiplier: 0
+    lineCancel: 0
+    restrictedColor1: 1
+    restrictedColor2: 2
+  - tilePosition: {x: 3, y: 4}
+    blank: 0
+    multiplier: 0
+    lineCancel: 0
+    restrictedColor1: 5
+    restrictedColor2: 0
+  - tilePosition: {x: 3, y: 5}
+    blank: 0
+    multiplier: 0
+    lineCancel: 0
+    restrictedColor1: 5
+    restrictedColor2: 0
+  - tilePosition: {x: 4, y: 4}
+    blank: 0
+    multiplier: 0
+    lineCancel: 0
+    restrictedColor1: 5
+    restrictedColor2: 0
+  - tilePosition: {x: 4, y: 5}
+    blank: 0
+    multiplier: 0
+    lineCancel: 0
+    restrictedColor1: 5
+    restrictedColor2: 0
+  - tilePosition: {x: 5, y: 4}
+    blank: 0
+    multiplier: 0
+    lineCancel: 0
+    restrictedColor1: 5
+    restrictedColor2: 0
+  - tilePosition: {x: 5, y: 5}
+    blank: 0
+    multiplier: 0
+    lineCancel: 0
+    restrictedColor1: 5
+    restrictedColor2: 0
+  borders: []
+  isComplete: 0

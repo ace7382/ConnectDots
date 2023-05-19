@@ -44,9 +44,9 @@ public class Tile
 
     private bool                                top, right, bottom, left;
     private Line                                line;
-    [SerializeField] private Vector2Int         position;
-    [SerializeField] private TileState          state;
-    [SerializeField] private EndTileRotation    endPieceRotation;
+    private Vector2Int                          position;
+    private TileState                           state;
+    private EndTileRotation                     endPieceRotation;
 
     private int                                 multiplier                  = 1;
     private bool                                lineCancel                  = false;
@@ -197,16 +197,15 @@ public class Tile
 
     public void SetMultiplier(int mult)
     {
-        multiplier = mult;
-
-        Label lab = container.Q<Label>("Multiplier");
-        lab.text = "x" + multiplier.ToString();
-        lab.style.Show();
+        multiplier  = mult;
+        Label lab   = container.Q<Label>("Multiplier");
+        lab.text    = "x" + multiplier.ToString();
+        lab.Show();
     }
 
     public void RemoveMultiplier()
     {
-        multiplier = 1;
+        multiplier  = 1;
         container.Q<Label>("Multiplier").Hide();
     }
 
@@ -214,20 +213,13 @@ public class Tile
     {
         lineCancel = true;
         container.Q<Label>("Multiplier").Show(false); //Hide the multiplier incase the tile is marked canceled at the end of the level
-
-        for (int i = 1; i <= 4; i++)
-        {
-            Label lab = container.Q<Label>("LineCancel" + i.ToString());
-            lab.Show();
-        }
+        container.Q<VisualElement>("LineCancelIcon").Show();
     }
 
     public void RemoveLineCancel()
     {
         lineCancel = false;
-
-        for (int i = 1; i <= 4; i++)
-            container.Q<Label>("LineCancel" + i.ToString()).Hide();
+        container.Q<VisualElement>("LineCancelIcon").Hide();
     }
 
     public void SetRestrictedColors(int colorIndex0, int colorIndex1)
@@ -329,7 +321,7 @@ public class Tile
         State = TileState.EMPTY;
     }
 
-    public void SetTileColorOnPuzzleComplete()
+    public void SetTileColorOnPuzzleComplete(Level levelCompleted)
     {
         if (line != null)
         {
@@ -341,6 +333,18 @@ public class Tile
                 Container.SetColor(bgColor);
             }
         }
+
+        if (!lineCancel)
+        {
+            object[] data   = new object[3];
+            data[0]         = levelCompleted;
+            data[1]         = line == null ? 0 : line.colorIndex;
+            data[2]         = 1;
+
+            this.PostNotification(Notifications.TILES_COLORED, data);
+        }
+
+        Container.style.backgroundImage = null; //Remove color restriction images so it's clear that it's a "white" tile
     }
 
     public void SpinTile(float duration)

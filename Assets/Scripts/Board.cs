@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,8 @@ public class Board
     private bool                canClick;
 
     private PowerupType         usingPowerup;
+
+    private long                timeStart, timeEnd;
 
     #endregion
 
@@ -48,7 +51,7 @@ public class Board
 
     #region Public Functions
 
-    public void CreateBoardNew()
+    public void CreateBoard()
     {
         RegisterScreenLevelInteraction();
 
@@ -57,7 +60,7 @@ public class Board
 
         canClick                    = false;
 
-        float borderThickness       = 5f;
+        float borderThickness       = 8f;
         float borderSizePercent     = .75f;
 
         float tileSize              = Mathf.Floor(
@@ -96,9 +99,9 @@ public class Board
 
             for (int col = 0; col < level.Cols; col++)
             {
-                VisualElement tileParent            = UIManager.instance.TilePrefab_New.Instantiate();
-                VisualElement tile                  = tileParent.Q<VisualElement>("Tile_New");
-                
+                VisualElement tileParent = UIManager.instance.TilePrefab_New.Instantiate();
+                VisualElement tile = tileParent.Q<VisualElement>("Tile_New");
+
                 tile.SetWidth(tileSize * .9f);
                 tile.SetHeight(tile.style.width);
                 tile.SetMargins(tileSize * .05f);
@@ -107,9 +110,19 @@ public class Board
                 rowVE.Add(tile);
                 tileParent.RemoveFromHierarchy();
 
-                Level.SpecialTileDefinitions rules  = level.GetSpecialTileDef(col, row);
-                Tile t                              = new Tile(new Vector2Int(col, row)
+                Level.SpecialTileDefinitions rules = level.GetSpecialTileDef(col, row);
+                Tile t = new Tile(new Vector2Int(col, row)
                                                         , tile, rules == null ? false : rules.blank);
+                if (rules != null)
+                {
+                    if (rules.multiplier > 1)   t.SetMultiplier(rules.multiplier);
+                    if (rules.lineCancel)       t.SetLineCancel();
+
+                    if (rules.restrictedColor1 != 0)
+                    {
+                        t.SetRestrictedColors(rules.restrictedColor1, rules.restrictedColor2);
+                    }
+                }
 
                 if (horizontalBorders != null)
                 {
@@ -122,6 +135,7 @@ public class Board
                     hBorder.SetHeight(borderThickness);
                     hBorder.SetBorderRadius(borderThickness / 2f);
                     hBorder.SetColor(Color.black);
+                    hBorder.pickingMode             = PickingMode.Ignore;
 
                     horizontalBorders.Add(hBorder);
 
@@ -138,6 +152,7 @@ public class Board
                     vBorder.SetHeight(new StyleLength(borderSizePercent * tile.style.width.value.value));
                     vBorder.SetBorderRadius(borderThickness / 2f);
                     vBorder.SetColor(Color.black);
+                    vBorder.pickingMode             = PickingMode.Ignore;
 
                     rowVE.Add(vBorder);
 
@@ -151,21 +166,9 @@ public class Board
 
                         spacer.SetWidth(borderThickness);
                         spacer.SetHeight(spacer.style.width);
+                        spacer.pickingMode          = PickingMode.Ignore;
 
                         horizontalBorders.Add(spacer);
-                    }
-                }
-
-                if (rules != null)
-                {
-                    if (rules.multiplier > 1)
-                        t.SetMultiplier(rules.multiplier);
-                    else if (rules.lineCancel)
-                        t.SetLineCancel();
-
-                    if (rules.restrictedColor1 != 0)
-                    {
-                        t.SetRestrictedColors(rules.restrictedColor1, rules.restrictedColor2);
                     }
                 }
 
@@ -188,6 +191,7 @@ public class Board
                 );
 
             b.SetActive(level.Borders.FindIndex(x => x.leftUpTile == b.LeftUpTile.Position && x.rightDownTile == b.RightDownTile.Position) > -1);
+            b.VisualElement.SetOpacity(0f);
         }
     }
 
@@ -209,6 +213,8 @@ public class Board
 
     public void UnregisterListeners()
     {
+        LineManager.instance.Clear();
+
         this.RemoveObserver(CheckLevelDone, Notifications.LINE_COMPLETED);
 
         UnregisterScreenLevelInteraction();
@@ -227,6 +233,8 @@ public class Board
             if (!lines[i].isCompleted)
                 return;
 
+        timeEnd = DateTime.Now.Ticks;
+
         this.PostNotification(Notifications.BOARD_COMPLETE);
     }
 
@@ -238,7 +246,7 @@ public class Board
 
         yield return null; //This is needed because the width of the screen/board are not calculated on the same frame in which they're initialized
 
-        CreateBoardNew();
+        CreateBoard();
 
         yield return null; //This is needed for the line manager to get tiles' positions
 
@@ -268,19 +276,47 @@ public class Board
             }
         }
 
+        for (int i = 0; i < tileBorders.Count; i++)
+        {
+            if (!tileBorders[i].Active)
+                continue;
+
+            VisualElement ve = tileBorders[i].VisualElement;
+
+            Tween fadein = DOTween.To(
+                            () => ve.style.opacity.value
+                            , x => ve.style.opacity = new StyleFloat(x)
+                            , 1f
+                            , .1f);
+
+            intweens.Add(fadein);
+            fadein.Play();
+            fadein.onKill += () => intweens.Remove(fadein);
+
+            yield return w;
+        }
+
         while (intweens.Count > 0)
             yield return null;
+
+        timeStart = DateTime.Now.Ticks;
 
         canClick = true;
     }
 
     public IEnumerator BoardInWithoutAnimation()
     {
-        CreateBoardNew();
+        CreateBoard();
 
         yield return null;
 
         SetupLines();
+
+        for (int i = 0; i < tileBorders.Count; i++)
+        {
+            if (tileBorders[i].Active)
+                tileBorders[i].VisualElement.SetOpacity(100f);
+        }
 
         for (int i = 0; i < tiles.Count; i++)
         {
@@ -316,6 +352,18 @@ public class Board
         outtweens.Add(fadeLines);
         fadeLines.Play();
 
+        for (int i = 0; i < tileBorders.Count; i++)
+        {
+            VisualElement ve = tileBorders[i].VisualElement;
+
+            Tween fadein = DOTween.To(
+                            () => ve.style.opacity.value
+                            , x => ve.style.opacity = new StyleFloat(x)
+                            , 0f
+                            , .10f)
+                            .Play();
+        }
+
         for (int i = tiles.Count - 1; i >= 0; i--)
         {
             for (int j = tiles[i].Count - 1; j >= 0; j--)
@@ -348,7 +396,7 @@ public class Board
 
         for (int i = 0; i < tiles.Count; i++)
             for (int j = 0; j < tiles[i].Count; j++)
-                tiles[i][j].SetTileColorOnPuzzleComplete();
+                tiles[i][j].SetTileColorOnPuzzleComplete(level);
 
         Tween shrinkBoard = DOTween.To(() => boardVE.transform.scale,
             x => boardVE.transform.scale = x,
@@ -413,7 +461,7 @@ public class Board
             for (int j = 0; j < count; j++)
             {
                 int r = Mathf.Min(level.Rows, i) - j - 1;
-                tiles[r][startCol + j].SetTileColorOnPuzzleComplete();
+                tiles[r][startCol + j].SetTileColorOnPuzzleComplete(level);
                 tiles[r][startCol + j].SpinTile(spinDur);
             }
 
@@ -422,18 +470,14 @@ public class Board
 
         yield return seq.WaitForCompletion();
 
-
-        //Tween s                 = DOTween.To(() => boardVE.transform.scale,
-        //                            x => boardVE.transform.scale = x, new Vector3(1f, 1f, 1f), animLength / 2f)
-        //                            .SetEase(Ease.OutBounce).Play();
-
-        //yield return new WaitForSeconds(animLength / 2f * .55f);
-
         Dictionary<int, int> coinsAwarded = SpawnCoinsOnBoardComplete();
 
-        object[] data               = new object[2];
+        yield return new WaitForSeconds(.75f);
+
+        object[] data               = new object[3];
         data[0]                     = coinsAwarded;
         data[1]                     = level;
+        data[2]                     = TimeSpan.FromTicks(timeEnd - timeStart);
 
         //TODO - Mark the currently played level as complete. Probably want to do that outside of the board though
         //CurrentLevel.LevelComplete();
@@ -441,80 +485,34 @@ public class Board
         PageManager.instance.StartCoroutine(PageManager.instance.AddPageToStack<EndOfLevelPopup>(data));
     }
 
-    //TODO: Pull the TILE_COLORED notifs out of here
-    //TODO: Pool coin VisualElements probably?
     public Dictionary<int, int> SpawnCoinsOnBoardComplete()
     {
-        float widthbound        = boardVE.worldBound.width / 2f * .7f;
-        float heightbound       = boardVE.worldBound.height / 2f * .7f;
-        Vector2 destination     = new Vector2(screen.worldBound.width / 2f, screen.worldBound.height / -2f);
-
-        Dictionary<int, int> 
-            notifications       = new Dictionary<int, int>();
-
-        List<Tile> temp         = new List<Tile>();
+        Dictionary<int, int> ret = new Dictionary<int, int>();
 
         for (int i = 0; i < tiles.Count; i++)
         {
             for (int j = 0; j < tiles[i].Count; j++)
             {
-                //Get tiles for coin awards
-                Tile t = tiles[i][j];
-                temp.Add(t);
+                int awardedCoins = CurrencyManager.instance.AwardCoins(tiles[i][j]);
 
-                //Handle tile color notifications
-                if (t.State == TileState.BLANK || t.LineCancelled)
-                    continue;
+                if (awardedCoins != 0)
+                {
+                    int colIndex = tiles[i][j].Line == null ? 0 : tiles[i][j].Line.colorIndex;
+                    
+                    for (int am = 0; am < awardedCoins; am++)
+                    {
+                        CurrencyManager.instance.SpawnCoin_Newt(colIndex, tiles[i][j].Container.worldBound.center);
+                    }
 
-                if (t.Line != null)
-                {
-                    if (notifications.ContainsKey(t.Line.colorIndex))
-                        notifications[t.Line.colorIndex]++;
+                    if (ret.ContainsKey(colIndex))
+                        ret[colIndex] += awardedCoins;
                     else
-                        notifications.Add(t.Line.colorIndex, 1);
-                }
-                else
-                {
-                    if (notifications.ContainsKey(0))
-                        notifications[0]++;
-                    else
-                        notifications.Add(0, 1);
+                        ret.Add(colIndex, awardedCoins);
                 }
             }
         }
 
-        Dictionary<int, int> 
-            coinsAwarded            = CurrencyManager.instance.AwardCoins(temp);
-        int maxCoinSpawn            = Mathf.Min(30, coinsAwarded.Sum(x => x.Value));
-        List<int> potentialCoins    = new List<int>();
-        
-        foreach (KeyValuePair<int, int> color in coinsAwarded)
-        {
-            for (int i = 0; i < color.Value; i++)
-                potentialCoins.Add(color.Key);
-        }
-
-        potentialCoins.Shuffle();
-
-        for (int i = 0; i < maxCoinSpawn; i++)
-        {
-            CurrencyManager.instance.SpawnCoin(potentialCoins[i],
-                new Vector2(Random.Range(-widthbound, widthbound)
-                    , Random.Range(-heightbound, heightbound)
-                ), screen, destination);
-        }
-        
-        foreach (KeyValuePair<int, int> not in notifications)
-        {
-            object[] notifData      = new object[3];
-            notifData[0]            = level;
-            notifData[1]            = not.Key;
-            notifData[2]            = not.Value;
-
-            this.PostNotification(Notifications.TILES_COLORED, notifData);
-        }
-
-        return coinsAwarded;
+        return ret;
     }
 
     #endregion

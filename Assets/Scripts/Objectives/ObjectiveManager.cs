@@ -132,10 +132,10 @@ public class ObjectiveManager : MonoBehaviour
         //info[1]   -   int         -   The ColorIndex of the tiles colored
         //info[2]   -   int         -   The number of tiles colored
 
-        object[] data = (object[])info;
-        Level level = (Level)data[0];
-        int colorIndex = (int)data[1];
-        int amount = (int)data[2];
+        object[] data       = (object[])info;
+        Level level         = (Level)data[0];
+        int colorIndex      = (int)data[1];
+        int amount          = (int)data[2];
 
         for (int i = 0; i < objectives.Count; i++)
         {

@@ -10,27 +10,30 @@ public class TimedModePage : Page
 {
     #region Private Variables
 
-    private LevelCategory currentCategory;
-    private int settingsIndex;
-    private LevelCategory.TimeAttackStats settings;
+    private bool                            canClick;
+    private object                          pauseOwner = null;
 
-    private Board currentBoard;
-    private List<Level> levelsRemaining;
-    private List<Level> completedLevels;
+    private LevelCategory                   currentCategory;
+    private int                             settingsIndex;
+    private LevelCategory.TimeAttackStats   settings;
 
-    private Label boardCounter;
-    private Label timerLabel;
-    private TimeSpan timeRemaining;
-    private IEnumerator timerCoroutine;
+    private Board                           currentBoard;
+    private List<Level>                     levelsRemaining;
+    private List<Level>                     completedLevels;
 
-    private Tween bgFlash;
-    private Tween timerFlash;
+    private Label                           boardCounter;
+    private Label                           timerLabel;
+    private TimeSpan                        timeRemaining;
+    private IEnumerator                     timerCoroutine;
 
-    private double lowTimeThreshold;
+    private Tween                           bgFlash;
+    private Tween                           timerFlash;
 
-    private Dictionary<int, int> coinsWon;
+    private double                          lowTimeThreshold;
 
-    private PowerupController powerups;
+    private Dictionary<int, int>            coinsWon;
+
+    private PowerupController               powerups;
 
     #endregion
 
@@ -84,14 +87,12 @@ public class TimedModePage : Page
 
         EventCallback<PointerDownEvent> backbuttonAction = (evt) =>
         {
-            //TODO: Pause screen
-
-            if (!currentBoard.CanClick)
+            if (!currentBoard.CanClick || !canClick)
                 return;
 
             object[] data = new object[1] { currentCategory };
 
-            PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<LevelSelect>(data));
+            PageManager.instance.StartCoroutine(PageManager.instance.AddPageToStack<PauseScreen>(data));
         };
 
         UIManager.instance.TopBar.UpdateBackButtonOnClick(backbuttonAction);
@@ -110,6 +111,9 @@ public class TimedModePage : Page
 
         powerups = new PowerupController(uiDoc.rootVisualElement.Q<VisualElement>("PowerupUI"), true, currentBoard);
 
+        this.AddObserver(PauseGame, Notifications.PAUSE_GAME);
+
+
         //TODO: Remove this
         bool test = true;
         timerLabel.RegisterCallback<PointerDownEvent>((e) =>
@@ -118,16 +122,23 @@ public class TimedModePage : Page
             AddTime(-20f);
             test = !test;
         });
+        //TODO
     }
 
     public override void HidePage()
     {
         this.RemoveObserver(BoardComplete, Notifications.BOARD_COMPLETE, currentBoard);
+        this.RemoveObserver(UnpauseGame, Notifications.UNPAUSE_GAME, pauseOwner);
+        this.RemoveObserver(PauseGame, Notifications.PAUSE_GAME);
+
+        currentBoard.UnregisterListeners();
         powerups.Unregister();
     }
 
     public override IEnumerator AnimateIn()
     {
+        canClick = false;
+
         boardCounter.Hide();
         timerLabel.Hide();
 
@@ -140,10 +151,14 @@ public class TimedModePage : Page
 
         timerCoroutine = UpdateTimer();
         PageManager.instance.StartCoroutine(timerCoroutine);
+
+        canClick = true;
     }
 
     public override IEnumerator AnimateOut()
     {
+        canClick = false;
+
         //Kill timer update coroutine
         PageManager.instance.StopCoroutine(timerCoroutine);
         timerCoroutine = null;
@@ -366,6 +381,8 @@ public class TimedModePage : Page
         StopBGFlash();
         PageManager.instance.StopCoroutine(timerCoroutine);
 
+        powerups.SlideOut().Play();
+
         object[] data = new object[7];
         data[0] = coinsWon;
         data[1] = null; //This indicates that it's a post a timed mode round
@@ -376,6 +393,33 @@ public class TimedModePage : Page
         data[6] = completedLevels.Count;
 
         PageManager.instance.StartCoroutine(PageManager.instance.AddPageToStack<EndOfLevelPopup>(data));
+    }
+
+    private void PauseGame(object sender, object info)
+    {
+        if (pauseOwner != null)
+            return;
+
+        canClick = false;
+
+        pauseOwner = sender;
+
+        this.RemoveObserver(PauseGame, Notifications.PAUSE_GAME);
+        this.AddObserver(UnpauseGame, Notifications.UNPAUSE_GAME, pauseOwner);
+
+        PageManager.instance.StopCoroutine(timerCoroutine);
+    }
+
+    private void UnpauseGame(object sender, object info)
+    {
+        canClick = true;
+
+        this.RemoveObserver(UnpauseGame, Notifications.UNPAUSE_GAME, pauseOwner);
+        this.AddObserver(PauseGame, Notifications.PAUSE_GAME);
+
+        pauseOwner = null;
+
+        PageManager.instance.StartCoroutine(timerCoroutine);
     }
 
     #endregion

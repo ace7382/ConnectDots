@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -68,6 +69,8 @@ public class GamePlayPage : Page
 
     private IEnumerator BoardComplete()
     {
+        powerups.SlideOut().Play();
+
         yield return currentBoard.LevelCompleteAnimation();
     }
 

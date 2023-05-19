@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -85,6 +86,17 @@ public class PowerupController
         (hintButton.userData as PowerupButtonController).UnregisterListeners();
         (removeSpecialTilesButton.userData as PowerupButtonController).UnregisterListeners();
         (fillEmptyButton.userData as PowerupButtonController).UnregisterListeners();
+    }
+
+    public Tween SlideOut()
+    {
+        return  DOTween.To(
+                    () => root.transform.position
+                    , x => root.transform.position = x
+                    , new Vector3(0f, root.resolvedStyle.height + root.panel.GetSafeArea().Bottom, root.transform.position.z)
+                    , .65f
+                )
+                .SetEase(Ease.OutQuart);
     }
 
     #endregion

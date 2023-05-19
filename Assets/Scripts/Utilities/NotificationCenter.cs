@@ -148,12 +148,6 @@ public class NotificationCenter
 		Debug.Log(string.Format("{0} posted a notification: {1} {2}", sender.ToString()
 			, notificationName, e == null ? "without data" : "with data attached"));
 
-		//if (string.IsNullOrEmpty(notificationName))
-		//{
-		//	Debug.LogError("A notification name is required");
-		//	return;
-		//}
-
 		// No need to take action if we dont monitor this notification
 		if (!_table.ContainsKey(notificationName))
 			return;

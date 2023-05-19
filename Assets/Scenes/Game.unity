@@ -162,6 +162,7 @@ MonoBehaviour:
   - {fileID: 9197481963319205126, guid: f014d65b84f5a504a956143cfe0b77e6, type: 3}
   - {fileID: 9197481963319205126, guid: b7843884c3dee0a4a9af15f6275f0e94, type: 3}
   - {fileID: 9197481963319205126, guid: e28464476fb99164b8092622975f1e4f, type: 3}
+  - {fileID: 9197481963319205126, guid: fad7aed246e45dd4481ffdd2c045fd93, type: 3}
 --- !u!4 &413392889
 Transform:
   m_ObjectHideFlags: 0
@@ -240,6 +241,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   uiDoc: {fileID: 451804059}
   circleRadius: 50
+  lineThickness: 0
 --- !u!1 &461595106
 GameObject:
   m_ObjectHideFlags: 0
@@ -506,6 +508,7 @@ GameObject:
   m_Component:
   - component: {fileID: 947681501}
   - component: {fileID: 947681500}
+  - component: {fileID: 947681502}
   m_Layer: 0
   m_Name: Coin Manager
   m_TagString: Untagged
@@ -525,6 +528,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f1223a3a0ba3784ea5d36e59205e600, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uiDoc: {fileID: 947681502}
 --- !u!4 &947681501
 Transform:
   m_ObjectHideFlags: 0
@@ -540,6 +544,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &947681502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 947681499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_PanelSettings: {fileID: 11400000, guid: 1b9a01e3f792f214dbcc75a466a99349, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 9197481963319205126, guid: 45557a15ac2b05b4d9bf38b44dd67722, type: 3}
+  m_SortingOrder: 1001
 --- !u!1 &1125119773
 GameObject:
   m_ObjectHideFlags: 0

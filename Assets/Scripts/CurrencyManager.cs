@@ -14,7 +14,15 @@ public class CurrencyManager : MonoBehaviour
 
     #endregion
 
+    #region Inspector Variables
+
+    [SerializeField] private UIDocument uiDoc;
+
+    #endregion
+
     #region Private Variables
+
+    private VisualElement coinDisplayContainer;
 
     private Dictionary<int, int> ownedColors;
     private Vector2 coinFlyDestination; //TODO: Make this the UI element's origin? not sure it matters though
@@ -43,6 +51,11 @@ public class CurrencyManager : MonoBehaviour
         CurrencyManager.instance.AddCurrency(PowerupType.HINT, 20);
         CurrencyManager.instance.AddCurrency(PowerupType.REMOVE_SPECIAL_TILE, 20);
         CurrencyManager.instance.AddCurrency(PowerupType.FILL_EMPTY, 20);
+    }
+
+    private void Start()
+    {
+        coinDisplayContainer = uiDoc.rootVisualElement.Q<VisualElement>("Container");
     }
 
     #endregion
@@ -128,6 +141,58 @@ public class CurrencyManager : MonoBehaviour
         return ret;
     }
 
+    public int AwardCoins(Tile tile)
+    {
+        if (tile.State == TileState.BLANK || tile.LineCancelled)
+            return 0;
+
+        AddCurrency(tile.Line == null ? 0 : tile.Line.colorIndex, tile.Multiplier);
+
+        return tile.Multiplier;
+    }
+
+    public void SpawnCoin_Newt(int colorIndex, Vector3 origin)
+    {
+        coinFlyDestination                  = UIManager.instance.TopBar.CoinsButton.worldBound.center; //TODO: Set this outside of the function
+
+        VisualElement coin                  = new VisualElement();
+        coin.SetWidth(25f);
+        coin.SetHeight(coin.style.width);
+        coin.SetColor(UIManager.instance.GetColor(colorIndex));
+        coin.SetBorderColor(Color.black);
+        coin.SetBorderWidth(3f);
+        coin.SetBorderRadius(10f);
+
+        coin.style.position                 = Position.Absolute;
+        coin.transform.position             = origin;
+
+        coinDisplayContainer.Add(coin);
+
+        float animationTime                 = Random.Range(.75f, 1f);
+        float delay                         = Random.Range(0f, animationTime * .9f);
+
+        Sequence seq                        = DOTween.Sequence();
+
+        Tween goToCorner                    = DOTween.To(() => coin.transform.position,
+                                                x => coin.transform.position = x,
+                                                new Vector3(coinFlyDestination.x, coinFlyDestination.y, coin.transform.position.z),
+                                                animationTime - delay)
+                                                .SetDelay(delay)
+                                                .SetEase(Ease.InBack);
+
+        Tween scaleDown                     = DOTween.To(() => coin.transform.scale,
+                                                x => coin.transform.scale = x,
+                                                new Vector3(0f, 0f, coin.transform.scale.z),
+                                                animationTime - delay)
+                                                .SetDelay(delay)
+                                                .SetEase(Ease.InBack)
+                                                .OnKill(() => coin.RemoveFromHierarchy());
+
+        seq.Append(goToCorner);
+        seq.Join(scaleDown);
+        seq.Play();
+    }
+
     public void SpawnCoin(int colorIndex, Vector3 origin, VisualElement parent, Vector2 destination)
     {
         coinFlyDestination = destination; //TODO: Calculate this at app start/screensize change or link to a UI element
@@ -142,6 +207,7 @@ public class CurrencyManager : MonoBehaviour
         coin.SetColor(UIManager.instance.GetColor(colorIndex));
         coin.SetBorderColor(Color.black);
         coin.SetBorderWidth(3f);
+        coin.SetBorderRadius(10f);
         coin.style.position = Position.Absolute;
 
         parent.Add(coin);

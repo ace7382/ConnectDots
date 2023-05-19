@@ -6,4 +6,6 @@ public enum Notifications
     LINE_COMPLETED,
     BOARD_COMPLETE,
     POWERUP_USED,
+    PAUSE_GAME,
+    UNPAUSE_GAME
 }

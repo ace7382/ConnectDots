@@ -58,11 +58,15 @@ public class CoinDrawer : Page
         {
             emptyLabel.Show();
         }
+
+        this.PostNotification(Notifications.PAUSE_GAME);
     }
 
     public override void HidePage()
     {
         UIManager.instance.TopBar.UpdateBackButtonOnClick(previousBackButtonAction);
+
+        this.PostNotification(Notifications.UNPAUSE_GAME);
     }
 
     public override IEnumerator AnimateIn()

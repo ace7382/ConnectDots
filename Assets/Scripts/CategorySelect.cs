@@ -250,10 +250,9 @@ public class CategorySelect : Page
             header_LeftPanel.Show();
             header_RightPanel.Show();
 
-            List<Objective> catObjectives           = ObjectiveManager.instance.GetObjectivesForCategory(cat);
             header_ObjectivesCompletedLabel.text    = string.Format("{0} / {1}",
-                                                        catObjectives.FindAll(x => x.IsComplete).Count.ToString("000"),
-                                                        catObjectives.Count.ToString("000"));
+                                                        ObjectiveManager.instance.GetCompletedObjectivesForCategory(cat).Count.ToString("000")
+                                                        , ObjectiveManager.instance.GetObjectivesForCategory(cat).Count.ToString("000"));
 
             List<Level> catLevels                   = cat.GetLevels();
             header_LevelsCompletedLabel.text        = string.Format("{0} / {1}",

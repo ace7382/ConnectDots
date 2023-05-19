@@ -8,6 +8,7 @@ public class TileBorder
     #region Private Variables
 
     private VisualElement   ve;
+    private bool            active;
     private bool            tilesToLeftAndRight;
     private Tile            leftUpTile;
     private Tile            rightDownTile;
@@ -17,8 +18,10 @@ public class TileBorder
     #region Public Properties
 
     public bool             TilesToLeftAndRight { get { return tilesToLeftAndRight; } }
+    public bool             Active              { get { return active; } }
     public Tile             LeftUpTile          { get { return leftUpTile; } }
     public Tile             RightDownTile       { get { return rightDownTile; } }
+    public VisualElement    VisualElement       { get { return ve; } }
 
     #endregion
 
@@ -43,7 +46,8 @@ public class TileBorder
     public void SetActive(bool showing)
     {
         //We don't want to use show/hide bc that will affect the board's layout
-        ve.SetOpacity(showing ? 100f : 0f); 
+        //ve.SetOpacity(showing ? 100f : 0f); 
+        active = showing;
 
         if (tilesToLeftAndRight)
         {

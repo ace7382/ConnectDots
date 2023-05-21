@@ -67,6 +67,14 @@ public static class VisualElementExtensions
         if (bottom) ve.style.marginBottom = marginSize;
     }
 
+    public static void SetPadding(this VisualElement ve, float paddingSize, bool top = true, bool right = true, bool bottom = true, bool left = true)
+    {
+        if (top)    ve.style.paddingTop         = paddingSize;
+        if (right)  ve.style.paddingRight       = paddingSize;
+        if (left)   ve.style.paddingLeft        = paddingSize;
+        if (bottom) ve.style.paddingBottom      = paddingSize;
+    }
+
     public static void SetBorderWidth(this VisualElement value, float borderWidth, bool top = true, bool right = true, bool bottom = true, bool left = true)
     {
         if(top)     value.style.borderTopWidth        = borderWidth;

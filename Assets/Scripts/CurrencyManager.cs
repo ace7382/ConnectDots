@@ -153,7 +153,7 @@ public class CurrencyManager : MonoBehaviour
 
     public void SpawnCoin_Newt(int colorIndex, Vector3 origin)
     {
-        coinFlyDestination                  = UIManager.instance.TopBar.CoinsButton.worldBound.center; //TODO: Set this outside of the function
+        coinFlyDestination                  = UIManager.instance.TopBar.CoinsButton.worldBound.center; //TODO: Set this outside of the function and update on screensize change
 
         VisualElement coin                  = new VisualElement();
         coin.SetWidth(25f);
@@ -182,7 +182,7 @@ public class CurrencyManager : MonoBehaviour
 
         Tween scaleDown                     = DOTween.To(() => coin.transform.scale,
                                                 x => coin.transform.scale = x,
-                                                new Vector3(0f, 0f, coin.transform.scale.z),
+                                                Vector3.zero,
                                                 animationTime - delay)
                                                 .SetDelay(delay)
                                                 .SetEase(Ease.InBack)
@@ -191,45 +191,6 @@ public class CurrencyManager : MonoBehaviour
         seq.Append(goToCorner);
         seq.Join(scaleDown);
         seq.Play();
-    }
-
-    public void SpawnCoin(int colorIndex, Vector3 origin, VisualElement parent, Vector2 destination)
-    {
-        coinFlyDestination = destination; //TODO: Calculate this at app start/screensize change or link to a UI element
-
-        VisualElement coin = new VisualElement();
-        coin.style.SetWidth(25f);
-        coin.style.SetHeight(25f);
-
-        float animationTime = Random.Range(.75f, 1f);
-        float delay = Random.Range(0f, animationTime * .9f);
-
-        coin.SetColor(UIManager.instance.GetColor(colorIndex));
-        coin.SetBorderColor(Color.black);
-        coin.SetBorderWidth(3f);
-        coin.SetBorderRadius(10f);
-        coin.style.position = Position.Absolute;
-
-        parent.Add(coin);
-
-        coin.transform.position = origin;
-
-        Tween goToCorner = DOTween.To(() => coin.transform.position,
-                            x => coin.transform.position = x,
-                            new Vector3(coinFlyDestination.x, coinFlyDestination.y, coin.transform.position.z),
-                            animationTime - delay)
-                            .SetDelay(delay)
-                            .SetEase(Ease.InBack)
-                            .Play();
-
-        Tween scaleDwn = DOTween.To(() => coin.transform.scale,
-                            x => coin.transform.scale = x,
-                            new Vector3(0f, 0f, coin.transform.scale.z),
-                            animationTime - delay)
-                            .SetDelay(delay)
-                            .SetEase(Ease.InBack)
-                            .OnKill(() => coin.RemoveFromHierarchy())
-                            .Play();
     }
 
     public int GetPowerupsOwned(PowerupType type)

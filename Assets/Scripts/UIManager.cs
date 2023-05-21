@@ -63,7 +63,7 @@ public class UIManager : MonoBehaviour
     #region Public Properties
 
     public VisualTreeAsset      TilePrefab          { get { return tilePrefab; } }
-    public float                BoardPadding        { get { return boardPadding; } }
+    public float                Board_SpaceOnEdge   { get { return boardPadding; } }
     public float                HardBorderSize      { get { return hardBorderSize; } }
     public float                SoftBorderSize      { get { return softBorderSize; } }
     public Color                HardBorderColor     { get { return hardBorderColor; } }

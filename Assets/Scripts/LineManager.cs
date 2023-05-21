@@ -8,25 +8,26 @@ public class LineManager : MonoBehaviour
 {
     #region Singleton
 
-    public static LineManager instance;
+    public static LineManager               instance;
 
     #endregion
 
     #region Inspector Variables
 
-    [SerializeField] private UIDocument uiDoc;
-    [SerializeField] private float      circleRadius; //TODO: Move this to the board
-    [SerializeField] private float      lineThickness;
+    [SerializeField] private UIDocument     uiDoc;
 
     #endregion
 
     #region Private Variables
 
-    private VisualElement           lineContainer;
+    private VisualElement                   lineContainer;
 
-    private List<UIToolkitCircle>   endPoints;
+    private List<UIToolkitCircle>           endPoints;
 
     private Dictionary<Line, UIToolkitLine> lines;
+
+    private float                           endPointRadius;
+    private float                           lineThickness;
 
     #endregion
 
@@ -52,13 +53,17 @@ public class LineManager : MonoBehaviour
     private void Start()
     {
         lineContainer = uiDoc.rootVisualElement.Q<VisualElement>("LineContainer");
-
-        lineThickness = circleRadius * .9f;
     }
 
     #endregion
 
     #region Public Functions
+
+    public void SetLineSizes(float endPointRadius, float lineThickness)
+    {
+        this.endPointRadius = endPointRadius;
+        this.lineThickness  = lineThickness;
+    }    
 
     public void DrawEndPoint(Tile t)
     {
@@ -70,7 +75,7 @@ public class LineManager : MonoBehaviour
         if (t.State != TileState.END)
             return;
 
-        UIToolkitCircle endPoint = new UIToolkitCircle(t.Container.worldBound.center, circleRadius, t.Line.Color);
+        UIToolkitCircle endPoint = new UIToolkitCircle(t.Container.worldBound.center, endPointRadius, t.Line.Color);
 
         lineContainer.Add(endPoint);
         endPoints.Add(endPoint);

@@ -63,13 +63,26 @@ public class Board
         float borderThickness       = 8f;
         float borderSizePercent     = .75f;
 
+        float boardPadding          = 15f;
+
         float tileSize              = Mathf.Floor(
                                         (screen.worldBound.width
-                                            - (2f * UIManager.instance.BoardPadding)
+                                            - (2f * UIManager.instance.Board_SpaceOnEdge)
                                             - ((level.Cols - 1) * borderThickness)) 
                                         / (float)level.Cols);
 
-        boardVE.SetWidth(new StyleLength(tileSize * level.Cols + borderThickness * (level.Cols - 1)));
+        boardVE.SetWidth(new StyleLength(
+                            (tileSize * level.Cols) 
+                            + (borderThickness * (level.Cols - 1))
+                            + (2f * boardPadding)
+                        ));
+
+        boardVE.SetPadding(boardPadding);
+        boardVE.SetBorderRadius(25f);
+        boardVE.SetColor(new Color(0f, 0f, 0f, .5f));
+
+        LineManager.instance.SetLineSizes(tileSize / 4f, (tileSize / 3f) * .75f);
+        float tileBorderRadius = tileSize / 5f;
 
         tiles                       = new List<List<Tile>>();
         tileBorders                 = new List<TileBorder>();
@@ -105,14 +118,15 @@ public class Board
                 tile.SetWidth(tileSize * .9f);
                 tile.SetHeight(tile.style.width);
                 tile.SetMargins(tileSize * .05f);
+                tile.SetBorderRadius(tileBorderRadius);
                 tile.SetOpacity(0f);
 
                 rowVE.Add(tile);
                 tileParent.RemoveFromHierarchy();
 
                 Level.SpecialTileDefinitions rules = level.GetSpecialTileDef(col, row);
-                Tile t = new Tile(new Vector2Int(col, row)
-                                                        , tile, rules == null ? false : rules.blank);
+                Tile t = new Tile(new Vector2Int(col, row), tile, rules == null ? false : rules.blank);
+
                 if (rules != null)
                 {
                     if (rules.multiplier > 1)   t.SetMultiplier(rules.multiplier);
@@ -134,7 +148,7 @@ public class Board
                     hBorder.SetMargins((tileSize - wid) / 2f, false, true, false, true);
                     hBorder.SetHeight(borderThickness);
                     hBorder.SetBorderRadius(borderThickness / 2f);
-                    hBorder.SetColor(Color.black);
+                    hBorder.SetColor(Color.white);
                     hBorder.pickingMode             = PickingMode.Ignore;
 
                     horizontalBorders.Add(hBorder);
@@ -151,7 +165,7 @@ public class Board
                     vBorder.SetWidth(borderThickness);
                     vBorder.SetHeight(new StyleLength(borderSizePercent * tile.style.width.value.value));
                     vBorder.SetBorderRadius(borderThickness / 2f);
-                    vBorder.SetColor(Color.black);
+                    vBorder.SetColor(Color.white);
                     vBorder.pickingMode             = PickingMode.Ignore;
 
                     rowVE.Add(vBorder);

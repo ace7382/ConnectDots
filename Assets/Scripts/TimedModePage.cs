@@ -167,7 +167,6 @@ public class TimedModePage : Page
         if (bgFlash != null)
             bgFlash.Kill();
 
-        //UIManager.instance.SetBackground(originalColor);
         UIManager.instance.SetBackground(currentCategory.Colors[0]);
         if (currentCategory.Colors.Count > 1) UIManager.instance.SetBackgroundShift(currentCategory.Colors);
 
@@ -181,6 +180,7 @@ public class TimedModePage : Page
     private IEnumerator CountdownToStart()
     {
         VisualElement countdownContainer = uiDoc.rootVisualElement.Q<VisualElement>("CountdownContainer");
+
         Label a     = countdownContainer.Q<Label>("3");
         Label a1    = countdownContainer.Q<Label>("31");
         Label a2    = countdownContainer.Q<Label>("32");
@@ -195,7 +195,9 @@ public class TimedModePage : Page
         Label c3    = countdownContainer.Q<Label>("13");
         Label start = countdownContainer.Q<Label>("Start");
 
+        countdownContainer.Show();
         start.Hide();
+
         WaitForSeconds w = new WaitForSeconds(.25f);
         WaitForSeconds w4 = new WaitForSeconds(1f);
 
@@ -316,6 +318,10 @@ public class TimedModePage : Page
         }
         else
         {
+            PageManager.instance.StopCoroutine(timerCoroutine);
+
+            yield return new WaitForSeconds(.7f);
+
             RoundOver(true);
         }
     }
@@ -378,6 +384,8 @@ public class TimedModePage : Page
 
     private void RoundOver(bool won)
     {
+        //TODO: have a lose/win animation play before immediately pulling up the end of level screen
+
         StopBGFlash();
         PageManager.instance.StopCoroutine(timerCoroutine);
 

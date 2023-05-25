@@ -133,7 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1777242733}
   - component: {fileID: 1777242732}
-  - component: {fileID: 1777242731}
+  - component: {fileID: 1777242734}
   m_Layer: 5
   m_Name: UIDocument
   m_TagString: Untagged
@@ -141,22 +141,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1777242731
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1777242730}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f3203662b400fe4991fb36b7cf90ff7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  uiDoc: {fileID: 1777242732}
-  drawBetween: {x: 0, y: 0}
-  go: 0
-  points: []
 --- !u!114 &1777242732
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -171,7 +155,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_PanelSettings: {fileID: 11400000, guid: 1b9a01e3f792f214dbcc75a466a99349, type: 2}
   m_ParentUI: {fileID: 0}
-  sourceAsset: {fileID: 9197481963319205126, guid: 23a1dd573de576343ac4d6dfc77cc3b1, type: 3}
+  sourceAsset: {fileID: 9197481963319205126, guid: 5285ac214fb8a4e448f6be587b70fbd1, type: 3}
   m_SortingOrder: 0
 --- !u!4 &1777242733
 Transform:
@@ -188,6 +172,31 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1777242734
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1777242730}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f3203662b400fe4991fb36b7cf90ff7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uiDoc: {fileID: 1777242732}
+  dragging: 0
+  dragOrigin: {x: 0, y: 0}
+  zoomSpeed: 0.01
+  primaryTouchID: 0
+  secondaryTouchID: 0
+  primaryOrigin: {x: 0, y: 0}
+  secondaryOrigin: {x: 0, y: 0}
+  zoomBounds: {x: 0.4, y: 2.5}
+  edgeBoundsInWorldSpaceX: {x: 0, y: 0}
+  edgeBoundsInWorldSpaceY: {x: 0, y: 0}
+  mapSize: {x: 4000, y: 6000}
+  dragSensitivity: 100
 --- !u!1 &2140365951
 GameObject:
   m_ObjectHideFlags: 0

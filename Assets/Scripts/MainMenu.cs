@@ -9,6 +9,7 @@ public class MainMenu : Page
     #region Private Variables
 
     private VisualElement playButton;
+    private VisualElement shopButton;
     private bool canClick;
 
     #endregion
@@ -21,16 +22,19 @@ public class MainMenu : Page
 
         UIManager.instance.TopBar.ShowTopBar(false);
 
-        playButton = uiDoc.rootVisualElement.Q<VisualElement>("PlayButton");
+        playButton  = uiDoc.rootVisualElement.Q<VisualElement>("PlayButton");
+        shopButton  = uiDoc.rootVisualElement.Q<VisualElement>("ShopButton");
 
-        playButton.RegisterCallback<PointerDownEvent>(PlayButtonClicked);
+        playButton.RegisterCallback<PointerUpEvent>(PlayButtonClicked);
+        shopButton.RegisterCallback<PointerUpEvent>(OpenShop);
 
-        canClick = true;
+        canClick    = true;
     }
 
     public override void HidePage()
     {
-        playButton.UnregisterCallback<PointerDownEvent>(PlayButtonClicked);
+        playButton.UnregisterCallback<PointerUpEvent>(PlayButtonClicked);
+        shopButton.UnregisterCallback<PointerUpEvent>(OpenShop);
     }
 
     public override IEnumerator AnimateIn()
@@ -57,12 +61,20 @@ public class MainMenu : Page
 
     #region Private Functions
 
-    private void PlayButtonClicked(PointerDownEvent evt)
+    private void PlayButtonClicked(PointerUpEvent evt)
     {
         if (!canClick)
             return;
 
         PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<CategorySelect>());
+    }
+
+    private void OpenShop(PointerUpEvent evt)
+    {
+        if (!canClick)
+            return;
+
+        PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<Shop>());
     }
 
     #endregion

@@ -53,3 +53,18 @@
     flex-grow: 1;
     flex-shrink: 0;
 }
+
+.ShopDescriptionText {
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    -unity-font-definition: initial;
+    -unity-font: url('project://database/Assets/GUI%20PRO%20Kit%20-%20Simple%20Casual/Fonts/Quicksand-Bold.ttf?fileID=12800000&guid=8a7ef750b018c41e78d4f8f786ae57e5&type=3#Quicksand-Bold');
+    font-size: 55px;
+    -unity-text-align: upper-center;
+}

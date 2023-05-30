@@ -31,4 +31,14 @@ public static class ScrollViewExtentions
         scroll.Q<VisualElement>("unity-content-viewport").Add(indicator1);
         scroll.Q<VisualElement>("unity-content-viewport").Add(indicator2);
     }
+
+    public static void ClearWithChildBoundIndicators(this ScrollView scroll, VisualElement indicator1, VisualElement indicator2)
+    {
+        VisualElement temp = new VisualElement();
+        temp.Add(indicator1);
+        temp.Add(indicator2);
+        scroll.Clear();
+        scroll.Add(indicator1);
+        scroll.Add(indicator2);
+    }
 }

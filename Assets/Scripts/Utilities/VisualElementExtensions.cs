@@ -139,4 +139,71 @@ public static class VisualElementExtensions
 
         shifts.Add(ve, seq);
     }
+
+
+    //TODO: finish writing this so it can be used.
+    //Not high priority at all, so not finishing it rn
+
+    ///// <summary>
+    ///// 
+    ///// </summary>
+    ///// <param name="ve"></param>
+    ///// <param name="side">0 top, 1 right, 2 bottom, 3 left</param>
+    ///// <param name=""></param>
+    ///// <returns></returns>
+    //public static Tween SlideInOutFromSide(this VisualElement ve, int side, bool slideIn, float animationLength)
+    //{
+    //    float destinationX, destinationY;
+
+    //    switch (side)
+    //    {
+    //        case 0:
+    //            if (slideIn)
+    //                destinationY    = 0f;
+    //            else
+    //                destinationY    = -1 * ve.localBound.height;
+
+    //            destinationX        = ve.transform.position.x;
+    //            break;
+    //        case 1:
+    //            if (slideIn)
+    //                destinationX    = -1 * ve.localBound.width;
+    //            else
+    //                destinationX    = 0f;
+
+    //            destinationY        = ve.transform.position.y;
+    //            break;
+    //        case 2:
+    //            if (slideIn)
+    //                destinationX    = 0f;
+    //            else
+    //                destinationX    = ve.localBound.width;
+
+    //            destinationY        = ve.transform.position.y;
+    //            break;
+    //        default
+    //            if (slideIn)
+    //                destinationX = 0f;
+    //            else
+    //                destinationX = -1 * ve.localBound.width;
+
+    //            destinationY = ve.transform.position.y;
+    //            break;
+
+    //    }
+
+
+    //    return  
+    //        DOTween.To(
+    //            () => ve.transform.position
+    //            , x => ve.transform.position = x
+    //            , new Vector3(
+    //                destinationX
+    //                , destinationY
+    //                , ve.transform.position.z)
+    //            , animationLength
+    //        )
+    //        .Pause()
+    //        .SetEase(Ease.OutQuart);
+    //}
 }

@@ -229,6 +229,15 @@ public class CurrencyManager : MonoBehaviour
         this.PostNotification(Notifications.POWERUP_USED, type);
     }
 
+    public bool CanAfford(ShopItem item)
+    {
+        //Find an index where the curr man has fewer coins than the cost amount
+        //if index == 0+ -> cannot afford (return false)
+        //if index == -1 (doesn't exist) -> can afford (return true)
+
+        return item.Costs.FindIndex(x => GetCoinsForColorIndex(x.colorIndex) < x.amount) == -1;
+    }
+
     #endregion
 
     #region Private Functions

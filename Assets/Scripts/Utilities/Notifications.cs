@@ -7,5 +7,6 @@ public enum Notifications
     BOARD_COMPLETE,
     POWERUP_USED,
     PAUSE_GAME,
-    UNPAUSE_GAME
+    UNPAUSE_GAME,
+    ITEM_PURCHASED
 }

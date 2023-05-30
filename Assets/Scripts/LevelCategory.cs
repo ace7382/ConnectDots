@@ -94,10 +94,10 @@ public class LevelCategory : ScriptableObject
 
     public void UnlockCategory()
     {
-        for (int i = 0; i < REQS_Purchase.Count; i++)
-        {
-            CurrencyManager.instance.SpendCurrency(REQS_Purchase[i].colorIndex, REQS_Purchase[i].amount);
-        }
+        //for (int i = 0; i < REQS_Purchase.Count; i++)
+        //{
+        //    CurrencyManager.instance.SpendCurrency(REQS_Purchase[i].colorIndex, REQS_Purchase[i].amount);
+        //}
 
         unlocked = true;
 

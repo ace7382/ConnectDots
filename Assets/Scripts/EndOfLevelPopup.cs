@@ -183,6 +183,7 @@ public class EndOfLevelPopup : Page
 
     public override IEnumerator AnimateIn()
     {
+        //TODO: these can be coinscrol.Q<toparrow> etc i think. Save a few tre traversal steps
         VisualElement topIndicator      = uiDoc.rootVisualElement.Q<VisualElement>("TopArrow");
         VisualElement bottomIndicator   = uiDoc.rootVisualElement.Q<VisualElement>("BottomArrow");
         

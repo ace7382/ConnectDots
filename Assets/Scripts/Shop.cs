@@ -1,18 +1,18 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class Shop : Page
 {
-    //#region Consts
+    #region Private Consts
 
-    ////We set these here because the map reference isn't loaded
-    ////  until a frame after ShowPage is run
-    //private const float     MAP_SIZE_WIDTH      = 4000f;
-    //private const float     MAP_SIZE_HEIGHT     = 6000f;
+    private const float     DETAILS_LEFT_WIDTH  = 702f;
+    private const float     DETAILS_RIGHT_WIDTH = 378f;
 
-    //#endregion
+    #endregion
 
     #region Private Variables
 
@@ -20,6 +20,11 @@ public class Shop : Page
 
     private VisualElement   screen;
     private VisualElement   shopBoard;
+    private VisualElement   detailsPanel;
+    private VisualElement   detailsButton;
+    private VisualElement   closeDetails;
+    private ScrollView      costScrollView;
+    private VisualElement   purchaseButton;
 
     private int             primaryTouchID;
     private int             secondaryTouchID;
@@ -35,12 +40,49 @@ public class Shop : Page
     private float           zoomStartingDistance;
     private float           zoomStartingScale;
 
+    private VisualElement   selectedShopNode;
+
+    private List<VisualElement> nodes;
+
     #endregion
 
     #region Private Properties
 
     private bool            Dragging            { get { return primaryTouchID != -99; } }
     private bool            Zooming             { get { return secondaryTouchID != -99; } }
+
+    private VisualElement   SelectedShopNode
+    {
+        get { return selectedShopNode; }
+        set
+        {
+            if (selectedShopNode == value)
+            {
+                //Unselect and hide details panel
+
+                return;
+            }
+            
+            if (selectedShopNode != null)
+            {
+                VisualElement old = selectedShopNode;
+
+                old.Q<VisualElement>("SelectionBorder").Hide();
+                
+                //TODO: I resize the category select buttons on select.
+                //Not sure if i want to do that here though
+            }
+
+            selectedShopNode = value;
+
+            if (selectedShopNode != null)
+            {
+                selectedShopNode.Q<VisualElement>("SelectionBorder").Show();
+            }
+
+            SetDetailsPanel(selectedShopNode);
+        }
+    }
 
     #endregion
 
@@ -50,29 +92,48 @@ public class Shop : Page
     {
         screen              = uiDoc.rootVisualElement.Q<VisualElement>("Page");
         shopBoard           = uiDoc.rootVisualElement.Q<VisualElement>("ShopBoard");
+        detailsPanel        = uiDoc.rootVisualElement.Q<VisualElement>("DetailsPanel");
+        detailsButton       = uiDoc.rootVisualElement.Q<VisualElement>("DetailsButton");
+        closeDetails        = detailsPanel.Q<VisualElement>("CloseButton");
+        costScrollView      = detailsPanel.Q<ScrollView>("CostScroll");
+        purchaseButton      = detailsPanel.Q<VisualElement>("PurchaseButton");
 
         primaryTouchID      = -99;
         secondaryTouchID    = -99;
         
         zoomSpeed           = .02f;
 
-        //TODO: Recalculate this if the screen size changes (if switched to landscape etc)
-        RectOffsetFloat safe= uiDoc.rootVisualElement.panel.GetSafeArea();
-
-        //zoomBounds          = new Vector2(
-        //                        Mathf.Max(
-        //                            .5f
-        //                            , Screen.width / MAP_SIZE_WIDTH
-        //                            , Screen.height / MAP_SIZE_HEIGHT
-        //                        )
-        //                        , 2.5f
-        //                    );
+        nodes               = new List<VisualElement>();
 
         shopBoard.RegisterCallback<PointerDownEvent>(OnPointerDownOnShopBoard);
         shopBoard.RegisterCallback<PointerMoveEvent>(OnPointerMoveOnShopBoard);
         shopBoard.RegisterCallback<PointerUpEvent>(OnPointerUpOnShopBoard);
         shopBoard.RegisterCallback<WheelEvent>(OnMouseScroll);
         screen.RegisterCallback<PointerLeaveEvent>(OnPointerLeaveScreen);
+
+
+        detailsPanel.transform
+            .position       = new Vector3(
+                                -1 * Screen.width
+                                , detailsPanel.transform.position.y
+                                , detailsPanel.transform.position.z
+                            );
+
+        detailsButton.RegisterCallback<PointerUpEvent>((evt) =>
+        {
+            if (!canClick)
+                return;
+
+            PageManager.instance.StartCoroutine(ShowDetailsPanel());
+        });
+
+        closeDetails.RegisterCallback<PointerUpEvent>((evt) =>
+        {
+            if (!canClick)
+                return;
+
+            PageManager.instance.StartCoroutine(CloseDetailsPanel());
+        });
     }
 
     public override IEnumerator AnimateIn()
@@ -83,6 +144,7 @@ public class Shop : Page
 
         //TODO: Handle device safe area
         //      Will need to handle it on bounds check and on zoom size setup
+        //TODO: re calculate this on screen size change
         zoomBounds = new Vector2(
                                 Mathf.Max(
                                     .5f
@@ -91,7 +153,8 @@ public class Shop : Page
                                 )
                                 , 2.5f
                             );
-        
+
+        SetupShop();
 
         canClick = true;
     }
@@ -111,6 +174,8 @@ public class Shop : Page
         shopBoard.UnregisterCallback<WheelEvent>(OnMouseScroll);
 
         screen.UnregisterCallback<PointerLeaveEvent>(OnPointerLeaveScreen);
+
+        this.RemoveObserver(CheckNodeUnlocked, Notifications.ITEM_PURCHASED);
     }
 
     #endregion
@@ -119,7 +184,94 @@ public class Shop : Page
 
     private void SetupShop()
     {
-        
+        float spacing                   = 25f;
+        float gridSize                  = 150f;
+
+        Vector2 zeroLocation            = new Vector2(shopBoard.resolvedStyle.width / 2f, shopBoard.resolvedStyle.height / 2f);
+
+        List<ShopItem> shopItems        = Resources.LoadAll<ShopItem>("ShopItems").ToList();
+
+        for (int i = 0; i < shopItems.Count; i++)
+        {
+            ShopItem shopItem           = shopItems[i];
+            VisualElement shopButton    = UIManager.instance.LevelSelectButton.Instantiate();
+            VisualElement buttonBG      = shopButton.Q<VisualElement>("LevelSelectButton");
+            VisualElement icon          = shopButton.Q<VisualElement>("Icon");
+            VisualElement purchasedIcon = shopButton.Q<VisualElement>("CompletedIcon");
+
+            shopButton.style.position   = Position.Absolute;
+            shopButton.style.left       = zeroLocation.x + ((gridSize + spacing) * shopItem.Position.x);
+            shopButton.style.top        = zeroLocation.y + ((gridSize + spacing) * shopItem.Position.y);
+
+            shopButton.userData         = shopItem;
+
+            nodes.Add(shopButton);
+
+            if (shopItem.NodeUnlocked)
+            {
+                //buttonBG.SetColor(shopItem.GetColor());
+                buttonBG.SetColor(UIManager.instance.GetColor(0));
+                icon.style
+                    .backgroundImage = shopItem.GetIcon();
+            }
+            else
+            {
+                //Locked and hidden icon
+                buttonBG.SetColor(Color.grey); //TODO: This better lol
+                icon.style
+                    .backgroundImage = null;
+            }
+
+            shopButton.RegisterCallback<PointerUpEvent>((evt) =>
+            {
+                if (!canClick)
+                    return;
+
+                SelectedShopNode = shopButton;
+            });
+
+            //purchasedIcon.Show(shopItem.Purchased);
+            //buttonBG.SetBorderColor(shopItem.Purchased ? Color.yellow : Color.clear);
+            purchasedIcon.RemoveFromHierarchy();
+            buttonBG.SetBorderColor(Color.clear);
+
+            shopButton.Q<Label>().RemoveFromHierarchy();
+            shopBoard.Add(shopButton);
+        }
+
+        this.AddObserver(CheckNodeUnlocked, Notifications.ITEM_PURCHASED);
+    }
+
+    private void CheckNodeUnlocked(object sender, object info)
+    {
+        //sender    -   ShopItem    -   The ShopItem that was purchased
+
+        ShopItem boughtItem         = (ShopItem)sender;
+
+        for (int i = 0; i < nodes.Count; i++)
+        {
+            ShopItem currentSI      = (ShopItem)nodes[i].userData;
+
+            if (!currentSI.PrePurchases.Contains(boughtItem))
+                continue;
+
+            VisualElement buttonBG  = nodes[i].Q<VisualElement>("LevelSelectButton");
+            VisualElement icon      = nodes[i].Q<VisualElement>("Icon");
+
+            if (currentSI.NodeUnlocked)
+            {
+                buttonBG.SetColor(UIManager.instance.GetColor(0));
+                icon.style
+                    .backgroundImage = currentSI.GetIcon();
+            }
+            else
+            {
+                //Locked and hidden icon
+                buttonBG.SetColor(Color.grey); //TODO: This better lol
+                icon.style
+                    .backgroundImage = null;
+            }
+        }
     }
 
     private void OnPointerDownOnShopBoard(PointerDownEvent evt)
@@ -270,6 +422,211 @@ public class Shop : Page
 
             secondaryOrigin_Screen      = Vector2.zero;
         }
+    }
+
+    private void SetDetailsPanel(VisualElement content)
+    {
+        VisualElement container             = detailsPanel.Q<VisualElement>("LeftPanel");
+        VisualElement topIndicator          = costScrollView.Q<VisualElement>("TopArrow");
+        VisualElement bottomIndicator       = costScrollView.Q<VisualElement>("BottomArrow");
+
+        container.Clear();
+        costScrollView.ClearWithChildBoundIndicators(topIndicator, bottomIndicator);
+
+        ShopItem item                       = content.userData as ShopItem;
+
+        container.Add(item.GetDisplayContent());
+        detailsPanel.SetBorderColor(item.GetColor());
+
+        if (item.Purchased)
+        {
+            SetDetailsOwned(item);
+        }
+        else
+        {
+            detailsPanel.Q<VisualElement>("RightPanel").Show();
+            detailsPanel.Q<VisualElement>("LeftPanel").SetWidth(DETAILS_LEFT_WIDTH);
+            detailsPanel.Q<VisualElement>("PurchasedIcon").Hide();
+
+            for (int i = 0; i < item.Costs.Count; i++)
+            {
+                VisualElement costLine      = UIManager.instance.CoinDisplay.Instantiate();
+
+                costLine.style.height       = new StyleLength(StyleKeyword.Auto);
+                costLine.style.minHeight    = costLine.style.height;
+                costLine.style.maxHeight    = new StyleLength(StyleKeyword.None);
+
+                costLine.Q<VisualElement>("CoinSquare").SetColor(UIManager.instance.GetColor(item.Costs[i].colorIndex));
+                costLine.Q<Label>("AmountLabel").text = CurrencyManager.instance.GetCoinsForColorIndex(item.Costs[i].colorIndex).ToString() 
+                                                        + " / " + item.Costs[i].amount.ToString();
+
+                costScrollView.Add(costLine);
+            }
+
+            costScrollView.SetBoundIndicators(topIndicator, bottomIndicator);
+            costScrollView.verticalScroller.valueChanged += (evt) => {
+                costScrollView.ShowHideVerticalBoundIndicators(topIndicator, bottomIndicator);
+            };
+
+            Label purchaseButtonLabel       = purchaseButton.Q<Label>();
+
+            purchaseButton.UnregisterCallback<PointerUpEvent>((evt) => OnPurchase(item, evt));
+            purchaseButton.SetColor(Color.clear);
+
+            if (!item.NodeUnlocked)
+            {
+                //TODO: Don't think i'm going to use this.
+                //      I think i'm going to add tile border barriers with "remove" requirements
+
+                purchaseButton.SetBorderColor(Color.grey);
+                purchaseButtonLabel
+                    .style.color            = Color.grey;
+                purchaseButtonLabel.text    = "Unlock Requirements";
+            }
+            else if (CurrencyManager.instance.CanAfford(item))
+            {
+                purchaseButton.SetBorderColor(Color.green);
+                purchaseButtonLabel
+                    .style.color            = Color.green;
+                purchaseButtonLabel.text    = "Purchase";
+
+                purchaseButton.RegisterCallback<PointerUpEvent>((evt) => OnPurchase(item, evt));
+            }
+            else
+            {
+                purchaseButton.SetBorderColor(Color.red);
+                purchaseButton.SetColor(Color.grey);
+                purchaseButtonLabel
+                    .style.color            = Color.red;
+                purchaseButtonLabel.text    = "Need More";
+            }
+
+            //TODO: when a cost list with few enough lines that it doesn't require scrolling, the bottom indicator
+            //      still shows. Probably will be resolved with the TODO below
+            //TODO: This should probably be moved into a coroutine by reworking this function. Just need it set on a seperate frame
+            //      bc the scrollview's size is set at the begining of the functions, so this can't access it yet
+            costScrollView.schedule.Execute(() => costScrollView.ShowHideVerticalBoundIndicators(topIndicator, bottomIndicator));
+        }
+
+        PageManager.instance.StartCoroutine(ShowDetailsPanel());
+    }
+
+    private void SetDetailsOwned(ShopItem item)
+    {
+        VisualElement purchasedIcon = detailsPanel.Q<VisualElement>("PurchasedIcon");
+
+        detailsPanel.Q<VisualElement>("RightPanel").Hide();
+        detailsPanel.Q<VisualElement>("LeftPanel").SetWidth(DETAILS_LEFT_WIDTH + DETAILS_RIGHT_WIDTH);
+        purchasedIcon.SetColor(item.GetColor());
+        purchasedIcon.Show();
+    }
+
+    private void OnPurchase(ShopItem item, PointerUpEvent evt)
+    {
+        item.OnPurchase();
+
+        //Update shop "board"
+        //  move line over tile.
+        //  Hide Tile icon maybe?
+        //  Set other nodes to available that require the purchase of the current item
+
+        SetDetailsOwned(item);
+    }
+
+    private IEnumerator ShowDetailsPanel()
+    {
+        canClick = false;
+
+        yield return DetailsButtonOut();
+
+        yield return DetailsPanelIn();
+
+        canClick = true;
+    }
+
+    private IEnumerator CloseDetailsPanel()
+    {
+        canClick = false;
+
+        yield return DetailsPanelOut();
+
+        yield return DetailsButtonIn();
+
+        canClick = true;
+    }
+
+    private IEnumerator DetailsButtonIn()
+    {
+        if (detailsButton.transform.position.x == 0f)
+            yield break;
+
+        Tween buttonIn = DOTween.To(
+                            () => detailsButton.transform.position
+                            , x => detailsButton.transform.position = x
+                            , new Vector3(
+                                0f
+                                , detailsButton.transform.position.y
+                                , detailsButton.transform.position.z)
+                            , .65f)
+                        .SetEase(Ease.OutQuart);
+
+        yield return buttonIn.WaitForCompletion();
+    }
+
+    private IEnumerator DetailsButtonOut()
+    {
+        if (detailsButton.transform.position.x == -1f * detailsButton.localBound.width)
+            yield break;
+
+        Tween buttonOut = DOTween.To(
+                            () => detailsButton.transform.position
+                            , x => detailsButton.transform.position = x
+                            , new Vector3(
+                                -1f * detailsButton.localBound.width
+                                , detailsButton.transform.position.y
+                                , detailsButton.transform.position.z)
+                            , .65f)
+                        .SetEase(Ease.OutQuart);
+
+        yield return buttonOut.WaitForCompletion();
+    }
+
+    private IEnumerator DetailsPanelIn()
+    {
+        if (detailsPanel.transform.position.x == 0f)
+            yield break;
+
+        Tween panelIn   = DOTween.To(
+                            () => detailsPanel.transform.position
+                            , x => detailsPanel.transform.position = x
+                            , new Vector3(
+                                0f
+                                , detailsPanel.transform.position.y
+                                , detailsPanel.transform.position.z)
+                            , .65f)
+                        .SetEase(Ease.OutQuart);
+
+        yield return panelIn.WaitForCompletion();
+    }
+
+    private IEnumerator DetailsPanelOut()
+    {
+        if (detailsPanel.transform.position.x == -1f * Screen.width)
+            yield break;
+
+        Tween panelOut  = DOTween.To(
+                            () => detailsPanel.transform.position
+                            , x => detailsPanel.transform.position = x
+                            , new Vector3(
+                                -1f * Screen.width
+                                , detailsPanel.transform.position.y
+                                , detailsPanel.transform.position.z)
+                            , .65f)
+                        .SetEase(Ease.OutQuart);
+        
+        yield return panelOut.WaitForCompletion();
+
+        detailsPanel.SetBorderColor(Color.black);
     }
 
     #endregion

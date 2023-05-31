@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd8761b26dc05d149aec4b382434efbb, type: 3}
   m_Name: Unlock - YellowStar
   m_EditorClassIdentifier: 
-  previousPurchasesNeeded: []
-  shopGridPosition: {x: 0, y: 0}
+  previousPurchasesNeeded:
+  - {fileID: 11400000, guid: 35e42093cc7f5b5439ec1dc7fbbce35f, type: 2}
+  shopGridPosition: {x: 2, y: 0}
   gridSize: {x: 1, y: 1}
   cost:
   - colorIndex: 1
@@ -26,5 +27,4 @@ MonoBehaviour:
     amount: 5
   - colorIndex: 5
     amount: 5
-  purchased: 1
   levelCategoryToUnlock: {fileID: 11400000, guid: 935d5c80aa378944a8b6e55adb387757, type: 2}

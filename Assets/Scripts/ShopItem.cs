@@ -31,7 +31,7 @@ public abstract class ShopItem : ScriptableObject
 
     public Vector2                                  Position                    { get { return shopGridPosition; } }
     public Vector2                                  Size                        { get { return gridSize; } }
-    public bool                                     Purchased                   { get { return ShopManager.instance.IsItemPurchased(this); } } //{ get { return purchased; } }
+    public bool                                     Purchased                   { get { return ShopManager.instance.IsItemPurchased(this); } }
     public bool                                     NodeUnlocked                { get { return previousPurchasesNeeded.FindIndex(x => !ShopManager.instance.IsItemPurchased(x)) == -1; } }
     public List<PurchaseCost>                       Costs                       { get { return cost; } }
     public List<ShopItem>                           PrePurchases                { get { return previousPurchasesNeeded; } }

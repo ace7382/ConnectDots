@@ -14,10 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   previousPurchasesNeeded:
   - {fileID: 11400000, guid: 6d4fde6d88a1f834b9cd3c027b541680, type: 2}
-  shopGridPosition: {x: 1, y: 0}
+  shopGridPosition: {x: 3, y: 0}
   gridSize: {x: 1, y: 1}
   cost:
   - colorIndex: 1
     amount: 5
-  purchased: 0
   levelCategoryToUnlock: {fileID: 11400000, guid: 06c4a1a0614cd7d42afb84a183b6e82c, type: 2}

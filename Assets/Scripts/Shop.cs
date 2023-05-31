@@ -7,10 +7,34 @@ using UnityEngine.UIElements;
 
 public class Shop : Page
 {
+    #region Private Structs
+    
+    private struct ProductLine
+    {
+        public int              ColorIndex;
+        public Vector2          GridOrigin;
+        public bool             NodeUnlocked;
+        public VisualElement    StartNode;
+        public VisualElement    EndNode;
+
+        public ProductLine(int colorIndex, Vector2 gridOrigin, bool unlocked)
+        {
+            ColorIndex          = colorIndex;
+            GridOrigin          = gridOrigin;
+            NodeUnlocked        = unlocked;
+            StartNode           = null;
+            EndNode             = null;
+        }
+    }
+
+    #endregion
+
     #region Private Consts
 
     private const float     DETAILS_LEFT_WIDTH  = 702f;
     private const float     DETAILS_RIGHT_WIDTH = 378f;
+    private const float     SPACING             = 25f;
+    private const float     GRID_SIZE           = 150f;
 
     #endregion
 
@@ -43,6 +67,7 @@ public class Shop : Page
     private VisualElement   selectedShopNode;
 
     private List<VisualElement> nodes;
+    private List<ProductLine>   productLines;
 
     #endregion
 
@@ -104,6 +129,7 @@ public class Shop : Page
         zoomSpeed           = .02f;
 
         nodes               = new List<VisualElement>();
+        productLines        = new List<ProductLine>();
 
         shopBoard.RegisterCallback<PointerDownEvent>(OnPointerDownOnShopBoard);
         shopBoard.RegisterCallback<PointerMoveEvent>(OnPointerMoveOnShopBoard);
@@ -184,9 +210,6 @@ public class Shop : Page
 
     private void SetupShop()
     {
-        float spacing                   = 25f;
-        float gridSize                  = 150f;
-
         Vector2 zeroLocation            = new Vector2(shopBoard.resolvedStyle.width / 2f, shopBoard.resolvedStyle.height / 2f);
 
         List<ShopItem> shopItems        = Resources.LoadAll<ShopItem>("ShopItems").ToList();
@@ -200,19 +223,31 @@ public class Shop : Page
             VisualElement purchasedIcon = shopButton.Q<VisualElement>("CompletedIcon");
 
             shopButton.style.position   = Position.Absolute;
-            shopButton.style.left       = zeroLocation.x + ((gridSize + spacing) * shopItem.Position.x);
-            shopButton.style.top        = zeroLocation.y + ((gridSize + spacing) * shopItem.Position.y);
+            shopButton.style.left       = zeroLocation.x + ((GRID_SIZE + SPACING) * shopItem.Position.x);
+            shopButton.style.top        = zeroLocation.y + ((GRID_SIZE + SPACING) * shopItem.Position.y);
 
             shopButton.userData         = shopItem;
 
             nodes.Add(shopButton);
 
-            if (shopItem.NodeUnlocked)
+            if (ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.UNLOCK_SHOP)
+                || (shopItem is ShopItem_UnlockFeature 
+                    && ((ShopItem_UnlockFeature)shopItem).Feat == ShopItem_UnlockFeature.Feature.UNLOCK_SHOP))
             {
-                //buttonBG.SetColor(shopItem.GetColor());
-                buttonBG.SetColor(UIManager.instance.GetColor(0));
-                icon.style
-                    .backgroundImage = shopItem.GetIcon();
+                if (shopItem.NodeUnlocked)
+                {
+                    //buttonBG.SetColor(shopItem.GetColor());
+                    buttonBG.SetColor(UIManager.instance.GetColor(0));
+                    icon.style
+                        .backgroundImage = shopItem.GetIcon();
+                }
+                else
+                {
+                    //Locked and hidden icon
+                    buttonBG.SetColor(Color.grey); //TODO: This better lol
+                    icon.style
+                        .backgroundImage = null;
+                }
             }
             else
             {
@@ -230,8 +265,6 @@ public class Shop : Page
                 SelectedShopNode = shopButton;
             });
 
-            //purchasedIcon.Show(shopItem.Purchased);
-            //buttonBG.SetBorderColor(shopItem.Purchased ? Color.yellow : Color.clear);
             purchasedIcon.RemoveFromHierarchy();
             buttonBG.SetBorderColor(Color.clear);
 
@@ -240,6 +273,8 @@ public class Shop : Page
         }
 
         this.AddObserver(CheckNodeUnlocked, Notifications.ITEM_PURCHASED);
+
+        SetupProductLines();
     }
 
     private void CheckNodeUnlocked(object sender, object info)
@@ -247,6 +282,38 @@ public class Shop : Page
         //sender    -   ShopItem    -   The ShopItem that was purchased
 
         ShopItem boughtItem         = (ShopItem)sender;
+
+        //If the bought item unlocks a feature
+        //  if the feature is shop unlocked
+        //      draw blue line at point x,y
+        //  if feature is  blue product line
+        //      drwa at abc
+        
+        if (boughtItem is ShopItem_UnlockFeature)
+        {
+            ShopItem_UnlockFeature featItem = (ShopItem_UnlockFeature)boughtItem;
+
+            if (featItem.Feat == ShopItem_UnlockFeature.Feature.UNLOCK_SHOP)
+            {
+                int count = 0;
+
+                for (int i = 0; i < productLines.Count; i++)
+                {
+                    if (productLines[i].ColorIndex == 1 || productLines[i].ColorIndex == 2
+                            || productLines[i].ColorIndex == 3 || productLines[i].ColorIndex == 4)
+                    {
+                        productLines[i].StartNode.Q<VisualElement>("LevelSelectButton").SetColor(UIManager.instance.GetColor(0));
+
+                        DrawProductLineEndPoints(productLines[i]);
+
+                        count++;
+                    }
+
+                    if (count == 4)
+                        break;
+                }
+            }
+        }
 
         for (int i = 0; i < nodes.Count; i++)
         {
@@ -274,8 +341,75 @@ public class Shop : Page
         }
     }
 
+    private void SetupProductLines()
+    {
+        List<ProductLine> newProductLines  = new List<ProductLine>()
+        {
+            new     ProductLine(1   , new Vector2(1, 0)     , ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.UNLOCK_SHOP))
+            , new   ProductLine(2   , new Vector2(-1, 0)    , ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.UNLOCK_SHOP))
+            , new   ProductLine(3   , new Vector2(0, 1)     , ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.UNLOCK_SHOP))
+            , new   ProductLine(4   , new Vector2(0, -1)    , ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.UNLOCK_SHOP))
+        };
+
+        Vector2 zeroLocation            = new Vector2(shopBoard.resolvedStyle.width / 2f, shopBoard.resolvedStyle.height / 2f);
+
+        for (int i = 0; i < newProductLines.Count; i++)
+        {
+            ProductLine productLine     = newProductLines[i];
+
+            VisualElement shopButton    = UIManager.instance.LevelSelectButton.Instantiate();
+            VisualElement buttonBG      = shopButton.Q<VisualElement>("LevelSelectButton");
+            VisualElement icon          = shopButton.Q<VisualElement>("Icon");
+            VisualElement purchasedIcon = shopButton.Q<VisualElement>("CompletedIcon");
+
+            shopButton.style.position   = Position.Absolute;
+            shopButton.style.left       = zeroLocation.x + ((GRID_SIZE + SPACING) * productLine.GridOrigin.x);
+            shopButton.style.top        = zeroLocation.y + ((GRID_SIZE + SPACING) * productLine.GridOrigin.y);
+            
+            purchasedIcon.RemoveFromHierarchy();
+            icon.RemoveFromHierarchy();
+            buttonBG.SetBorderColor(Color.clear);
+
+            shopButton.userData         = productLine;
+            productLine.StartNode       = shopButton;
+
+            shopBoard.Add(shopButton);
+            productLines.Add(productLine);
+
+            if (productLine.NodeUnlocked)
+            {
+                buttonBG.SetColor(UIManager.instance.GetColor(0));
+                
+                DrawProductLineEndPoints(productLine);
+            }
+            else
+            {
+                buttonBG.SetColor(Color.grey);
+            }
+        }
+    }
+
+    private void DrawProductLineEndPoints(ProductLine productLine)
+    {
+        Vector2 origin = shopBoard.WorldToLocal(productLine.StartNode.Q<VisualElement>("LevelSelectButton").worldBound.center);
+
+        UIToolkitCircle endPoint = new UIToolkitCircle(
+                                origin//productLine.StartNode.worldBound.center
+                                , GRID_SIZE / 4f
+                                , UIManager.instance.GetColor(productLine.ColorIndex)
+                            ); ;
+
+        shopBoard.Add(endPoint);
+        endPoint.BringToFront();
+    }
+
     private void OnPointerDownOnShopBoard(PointerDownEvent evt)
     {
+        //TODO: Opening details panel etc stops you from
+        //      dragging/zooming for the length of the animation
+        //      might want to change that bc it feels like i should be able to pan/zoom
+        //      before the panel is fully in out
+
         if (!canClick)
             return;
 
@@ -435,79 +569,86 @@ public class Shop : Page
 
         ShopItem item                       = content.userData as ShopItem;
 
-        container.Add(item.GetDisplayContent());
-        detailsPanel.SetBorderColor(item.GetColor());
-
-        if (item.Purchased)
+        if (!item.NodeUnlocked)
         {
-            SetDetailsOwned(item);
+            SetDetailsMystery(); 
         }
         else
         {
-            detailsPanel.Q<VisualElement>("RightPanel").Show();
-            detailsPanel.Q<VisualElement>("LeftPanel").SetWidth(DETAILS_LEFT_WIDTH);
-            detailsPanel.Q<VisualElement>("PurchasedIcon").Hide();
+            container.Add(item.GetDisplayContent());
+            detailsPanel.SetBorderColor(item.GetColor());
 
-            for (int i = 0; i < item.Costs.Count; i++)
+            if (item.Purchased)
             {
-                VisualElement costLine      = UIManager.instance.CoinDisplay.Instantiate();
-
-                costLine.style.height       = new StyleLength(StyleKeyword.Auto);
-                costLine.style.minHeight    = costLine.style.height;
-                costLine.style.maxHeight    = new StyleLength(StyleKeyword.None);
-
-                costLine.Q<VisualElement>("CoinSquare").SetColor(UIManager.instance.GetColor(item.Costs[i].colorIndex));
-                costLine.Q<Label>("AmountLabel").text = CurrencyManager.instance.GetCoinsForColorIndex(item.Costs[i].colorIndex).ToString() 
-                                                        + " / " + item.Costs[i].amount.ToString();
-
-                costScrollView.Add(costLine);
-            }
-
-            costScrollView.SetBoundIndicators(topIndicator, bottomIndicator);
-            costScrollView.verticalScroller.valueChanged += (evt) => {
-                costScrollView.ShowHideVerticalBoundIndicators(topIndicator, bottomIndicator);
-            };
-
-            Label purchaseButtonLabel       = purchaseButton.Q<Label>();
-
-            purchaseButton.UnregisterCallback<PointerUpEvent>((evt) => OnPurchase(item, evt));
-            purchaseButton.SetColor(Color.clear);
-
-            if (!item.NodeUnlocked)
-            {
-                //TODO: Don't think i'm going to use this.
-                //      I think i'm going to add tile border barriers with "remove" requirements
-
-                purchaseButton.SetBorderColor(Color.grey);
-                purchaseButtonLabel
-                    .style.color            = Color.grey;
-                purchaseButtonLabel.text    = "Unlock Requirements";
-            }
-            else if (CurrencyManager.instance.CanAfford(item))
-            {
-                purchaseButton.SetBorderColor(Color.green);
-                purchaseButtonLabel
-                    .style.color            = Color.green;
-                purchaseButtonLabel.text    = "Purchase";
-
-                purchaseButton.RegisterCallback<PointerUpEvent>((evt) => OnPurchase(item, evt));
+                SetDetailsOwned(item);
             }
             else
             {
-                purchaseButton.SetBorderColor(Color.red);
-                purchaseButton.SetColor(Color.grey);
-                purchaseButtonLabel
-                    .style.color            = Color.red;
-                purchaseButtonLabel.text    = "Need More";
+                detailsPanel.Q<VisualElement>("RightPanel").Show();
+                detailsPanel.Q<VisualElement>("LeftPanel").SetWidth(DETAILS_LEFT_WIDTH);
+                detailsPanel.Q<VisualElement>("PurchasedIcon").Hide();
+
+                for (int i = 0; i < item.Costs.Count; i++)
+                {
+                    VisualElement costLine = UIManager.instance.CoinDisplay.Instantiate();
+
+                    costLine.style.height = new StyleLength(StyleKeyword.Auto);
+                    costLine.style.minHeight = costLine.style.height;
+                    costLine.style.maxHeight = new StyleLength(StyleKeyword.None);
+
+                    costLine.Q<VisualElement>("CoinSquare").SetColor(UIManager.instance.GetColor(item.Costs[i].colorIndex));
+                    costLine.Q<Label>("AmountLabel").text = CurrencyManager.instance.GetCoinsForColorIndex(item.Costs[i].colorIndex).ToString()
+                                                            + " / " + item.Costs[i].amount.ToString();
+
+                    costScrollView.Add(costLine);
+                }
+
+                costScrollView.SetBoundIndicators(topIndicator, bottomIndicator);
+                costScrollView.verticalScroller.valueChanged += (evt) =>
+                {
+                    costScrollView.ShowHideVerticalBoundIndicators(topIndicator, bottomIndicator);
+                };
+
+                Label purchaseButtonLabel = purchaseButton.Q<Label>();
+
+                purchaseButton.UnregisterCallback<PointerUpEvent>((evt) => OnPurchase(item, evt));
+                purchaseButton.SetColor(Color.clear);
+
+                if (!item.NodeUnlocked)
+                {
+                    //TODO: Don't think i'm going to use this.
+                    //      I think i'm going to add tile border barriers with "remove" requirements
+
+                    purchaseButton.SetBorderColor(Color.grey);
+                    purchaseButtonLabel
+                        .style.color = Color.grey;
+                    purchaseButtonLabel.text = "Unlock Requirements";
+                }
+                else if (CurrencyManager.instance.CanAfford(item))
+                {
+                    purchaseButton.SetBorderColor(Color.green);
+                    purchaseButtonLabel
+                        .style.color = Color.green;
+                    purchaseButtonLabel.text = "Purchase";
+
+                    purchaseButton.RegisterCallback<PointerUpEvent>((evt) => OnPurchase(item, evt));
+                }
+                else
+                {
+                    purchaseButton.SetBorderColor(Color.red);
+                    purchaseButton.SetColor(Color.grey);
+                    purchaseButtonLabel
+                        .style.color = Color.red;
+                    purchaseButtonLabel.text = "Need More";
+                }
+
+                //TODO: when a cost list with few enough lines that it doesn't require scrolling, the bottom indicator
+                //      still shows. Probably will be resolved with the TODO below
+                //TODO: This should probably be moved into a coroutine by reworking this function. Just need it set on a seperate frame
+                //      bc the scrollview's size is set at the begining of the functions, so this can't access it yet
+                costScrollView.schedule.Execute(() => costScrollView.ShowHideVerticalBoundIndicators(topIndicator, bottomIndicator));
             }
-
-            //TODO: when a cost list with few enough lines that it doesn't require scrolling, the bottom indicator
-            //      still shows. Probably will be resolved with the TODO below
-            //TODO: This should probably be moved into a coroutine by reworking this function. Just need it set on a seperate frame
-            //      bc the scrollview's size is set at the begining of the functions, so this can't access it yet
-            costScrollView.schedule.Execute(() => costScrollView.ShowHideVerticalBoundIndicators(topIndicator, bottomIndicator));
         }
-
         PageManager.instance.StartCoroutine(ShowDetailsPanel());
     }
 
@@ -521,14 +662,28 @@ public class Shop : Page
         purchasedIcon.Show();
     }
 
+    private void SetDetailsMystery()
+    {
+        VisualElement purchasedIcon = detailsPanel.Q<VisualElement>("PurchasedIcon");
+
+        detailsPanel.Q<VisualElement>("RightPanel").Hide();
+        VisualElement leftPanel = detailsPanel.Q<VisualElement>("LeftPanel");
+        leftPanel.SetWidth(DETAILS_LEFT_WIDTH + DETAILS_RIGHT_WIDTH);
+
+        Label questionMarks = new Label();
+        questionMarks.text  = "?????";
+        questionMarks.AddToClassList("ShopDescriptionText");
+        questionMarks.style.flexGrow = 1f;
+        questionMarks.style.alignSelf = Align.Center;
+        questionMarks.style.unityTextAlign = TextAnchor.MiddleCenter;
+        leftPanel.Add(questionMarks);
+
+        purchasedIcon.Hide();
+    }
+
     private void OnPurchase(ShopItem item, PointerUpEvent evt)
     {
         item.OnPurchase();
-
-        //Update shop "board"
-        //  move line over tile.
-        //  Hide Tile icon maybe?
-        //  Set other nodes to available that require the purchase of the current item
 
         SetDetailsOwned(item);
     }

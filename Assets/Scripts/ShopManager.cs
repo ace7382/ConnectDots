@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ShopManager : MonoBehaviour
@@ -16,7 +17,7 @@ public class ShopManager : MonoBehaviour
 
     #region Private Variables
 
-    private HashSet<ShopItem>           purchasedItems;
+    private Dictionary<ShopItem, int>   purchasedItems;
 
     #endregion
 
@@ -29,7 +30,7 @@ public class ShopManager : MonoBehaviour
         else if (instance != this)
             Destroy(gameObject);
 
-        purchasedItems = new HashSet<ShopItem>();
+        purchasedItems = new Dictionary<ShopItem, int>();
     }
 
     #endregion
@@ -38,18 +39,25 @@ public class ShopManager : MonoBehaviour
 
     public void ItemPurchased(ShopItem item)
     {
-        if (purchasedItems.Add(item))
-        {
-            item.PostNotification(Notifications.ITEM_PURCHASED);
-        }
-        //TODO: Idk if i need to handle a purchase fail?
-        //      if something can be bought multiple times though, something
-        //      besides a HashSet (or beside this function) will need to be used
+        if (purchasedItems.ContainsKey(item))
+            purchasedItems[item]++;
+        else
+            purchasedItems.Add(item, 1);
+        
+        item.PostNotification(Notifications.ITEM_PURCHASED);
     }
 
     public bool IsItemPurchased(ShopItem item)
     {
-        return purchasedItems.Contains(item);
+        return purchasedItems.ContainsKey(item);
+    }
+
+    public bool FeatureUnlocked(ShopItem_UnlockFeature.Feature feature)
+    {
+        return purchasedItems.Where(x =>
+            x.Key is ShopItem_UnlockFeature
+            && ((ShopItem_UnlockFeature)x.Key).Feat == feature
+        ).Count() > 0;
     }
 
     #endregion

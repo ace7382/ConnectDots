@@ -11,19 +11,21 @@ public class Shop : Page
     
     private struct ProductLine
     {
-        public int              ColorIndex;
-        public Vector2          GridOrigin;
-        public bool             NodeUnlocked;
-        public VisualElement    StartNode;
-        public VisualElement    EndNode;
+        public int                  ColorIndex;
+        public Vector2Int           StartPosition;
+        public bool                 NodeUnlocked;
+        public VisualElement        StartNode;
+        public VisualElement        EndNode;
+        public List<UIToolkitLine>  Lines;
 
-        public ProductLine(int colorIndex, Vector2 gridOrigin, bool unlocked)
+        public ProductLine(int colorIndex, Vector2Int startPosition, bool unlocked)
         {
             ColorIndex          = colorIndex;
-            GridOrigin          = gridOrigin;
+            StartPosition       = startPosition;
             NodeUnlocked        = unlocked;
             StartNode           = null;
             EndNode             = null;
+            Lines               = new List<UIToolkitLine>();
         }
     }
 
@@ -35,6 +37,10 @@ public class Shop : Page
     private const float     DETAILS_RIGHT_WIDTH = 378f;
     private const float     SPACING             = 25f;
     private const float     GRID_SIZE           = 150f;
+    private const int       GRID_X_MIN          = -10;
+    private const int       GRID_X_MAX          = 10;
+    private const int       GRID_Y_MIN          = -10;
+    private const int       GRID_Y_MAX          = 10;
 
     #endregion
 
@@ -68,6 +74,9 @@ public class Shop : Page
 
     private List<VisualElement> nodes;
     private List<ProductLine>   productLines;
+    private Dictionary<Vector2Int, bool> visibleNodes;
+
+    private EventCallback<PointerUpEvent> purchaseButtonAction;
 
     #endregion
 
@@ -130,6 +139,17 @@ public class Shop : Page
 
         nodes               = new List<VisualElement>();
         productLines        = new List<ProductLine>();
+        visibleNodes        = new Dictionary<Vector2Int, bool>();
+
+        for (int i = GRID_X_MIN; i <= GRID_X_MAX; i++)
+        {
+            for (int j = GRID_Y_MIN; j <= GRID_Y_MAX; j++)
+            {
+                visibleNodes.Add(new Vector2Int(i, j), false);
+            }
+        }
+
+        visibleNodes[Vector2Int.zero] = true;
 
         shopBoard.RegisterCallback<PointerDownEvent>(OnPointerDownOnShopBoard);
         shopBoard.RegisterCallback<PointerMoveEvent>(OnPointerMoveOnShopBoard);
@@ -201,7 +221,7 @@ public class Shop : Page
 
         screen.UnregisterCallback<PointerLeaveEvent>(OnPointerLeaveScreen);
 
-        this.RemoveObserver(CheckNodeUnlocked, Notifications.ITEM_PURCHASED);
+        this.RemoveObserver(OnItemPurchase, Notifications.ITEM_PURCHASED);
     }
 
     #endregion
@@ -213,6 +233,13 @@ public class Shop : Page
         Vector2 zeroLocation            = new Vector2(shopBoard.resolvedStyle.width / 2f, shopBoard.resolvedStyle.height / 2f);
 
         List<ShopItem> shopItems        = Resources.LoadAll<ShopItem>("ShopItems").ToList();
+
+        List<Vector2Int> ownedNodes     = ShopManager.instance.OwnedNodes();
+
+        for (int i = 0; i < ownedNodes.Count; i++)
+        {
+            SetVisibleNodes(ownedNodes[i]);
+        }
 
         for (int i = 0; i < shopItems.Count; i++)
         {
@@ -230,20 +257,43 @@ public class Shop : Page
 
             nodes.Add(shopButton);
 
-            if (ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.UNLOCK_SHOP)
-                || (shopItem is ShopItem_UnlockFeature 
-                    && ((ShopItem_UnlockFeature)shopItem).Feat == ShopItem_UnlockFeature.Feature.UNLOCK_SHOP))
+            //if (ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.UNLOCK_SHOP)
+            //    || (shopItem is ShopItem_UnlockFeature 
+            //        && ((ShopItem_UnlockFeature)shopItem).Feat == ShopItem_UnlockFeature.Feature.UNLOCK_SHOP))
+            //{
+            //    if (shopItem.NodeUnlocked)
+            //    {
+            //        //buttonBG.SetColor(shopItem.GetColor());
+            //        buttonBG.SetColor(UIManager.instance.GetColor(0));
+            //        icon.style
+            //            .backgroundImage = shopItem.GetIcon();
+            //    }
+            //    else
+            //    {
+            //        //Locked and hidden icon
+            //        buttonBG.SetColor(Color.grey); //TODO: This better lol
+            //        icon.style
+            //            .backgroundImage = null;
+            //    }
+            //}
+            //else
+            //{
+            //    //Locked and hidden icon
+            //    buttonBG.SetColor(Color.grey); //TODO: This better lol
+            //    icon.style
+            //        .backgroundImage = null;
+            //}
+
+            if (visibleNodes.ContainsKey(shopItem.Position))
             {
-                if (shopItem.NodeUnlocked)
+                if (visibleNodes[shopItem.Position])
                 {
-                    //buttonBG.SetColor(shopItem.GetColor());
                     buttonBG.SetColor(UIManager.instance.GetColor(0));
                     icon.style
                         .backgroundImage = shopItem.GetIcon();
                 }
                 else
                 {
-                    //Locked and hidden icon
                     buttonBG.SetColor(Color.grey); //TODO: This better lol
                     icon.style
                         .backgroundImage = null;
@@ -251,7 +301,8 @@ public class Shop : Page
             }
             else
             {
-                //Locked and hidden icon
+                Debug.Log("ShopItem " + shopItem.name + " has a Position outside of the shop grid size");
+
                 buttonBG.SetColor(Color.grey); //TODO: This better lol
                 icon.style
                     .backgroundImage = null;
@@ -272,22 +323,16 @@ public class Shop : Page
             shopBoard.Add(shopButton);
         }
 
-        this.AddObserver(CheckNodeUnlocked, Notifications.ITEM_PURCHASED);
+        this.AddObserver(OnItemPurchase, Notifications.ITEM_PURCHASED);
 
         SetupProductLines();
     }
 
-    private void CheckNodeUnlocked(object sender, object info)
+    private void OnItemPurchase(object sender, object info)
     {
         //sender    -   ShopItem    -   The ShopItem that was purchased
 
         ShopItem boughtItem         = (ShopItem)sender;
-
-        //If the bought item unlocks a feature
-        //  if the feature is shop unlocked
-        //      draw blue line at point x,y
-        //  if feature is  blue product line
-        //      drwa at abc
         
         if (boughtItem is ShopItem_UnlockFeature)
         {
@@ -303,8 +348,10 @@ public class Shop : Page
                             || productLines[i].ColorIndex == 3 || productLines[i].ColorIndex == 4)
                     {
                         productLines[i].StartNode.Q<VisualElement>("LevelSelectButton").SetColor(UIManager.instance.GetColor(0));
+                        
+                        DrawProductLineStartPoint(productLines[i]);
 
-                        DrawProductLineEndPoints(productLines[i]);
+                        SetVisibleNodes(productLines[i].StartPosition);
 
                         count++;
                     }
@@ -315,29 +362,70 @@ public class Shop : Page
             }
         }
 
+        SetVisibleNodes(boughtItem.Position);
+
+        VisualElement boughtItemNode = null;
+
         for (int i = 0; i < nodes.Count; i++)
         {
             ShopItem currentSI      = (ShopItem)nodes[i].userData;
-
-            if (!currentSI.PrePurchases.Contains(boughtItem))
-                continue;
-
             VisualElement buttonBG  = nodes[i].Q<VisualElement>("LevelSelectButton");
             VisualElement icon      = nodes[i].Q<VisualElement>("Icon");
 
-            if (currentSI.NodeUnlocked)
+            if (visibleNodes.ContainsKey(currentSI.Position))
             {
-                buttonBG.SetColor(UIManager.instance.GetColor(0));
-                icon.style
-                    .backgroundImage = currentSI.GetIcon();
+                if (visibleNodes[currentSI.Position])
+                {
+                    buttonBG.SetColor(UIManager.instance.GetColor(0));
+                    icon.style
+                        .backgroundImage = currentSI.GetIcon();
+                }
+                else
+                {
+                    buttonBG.SetColor(Color.grey); //TODO: This better lol
+                    icon.style
+                        .backgroundImage = null;
+                }
             }
-            else
-            {
-                //Locked and hidden icon
-                buttonBG.SetColor(Color.grey); //TODO: This better lol
-                icon.style
-                    .backgroundImage = null;
-            }
+
+            if (currentSI == boughtItem)
+                boughtItemNode = nodes[i];
+
+            //ShopItem currentSI = (ShopItem)nodes[i].userData;
+
+            //if (!currentSI.PrePurchases.Contains(boughtItem))
+            //    continue;
+
+            //VisualElement buttonBG  = nodes[i].Q<VisualElement>("LevelSelectButton");
+            //VisualElement icon      = nodes[i].Q<VisualElement>("Icon");
+
+            //if (currentSI.NodeUnlocked)
+            //{
+            //    buttonBG.SetColor(UIManager.instance.GetColor(0));
+            //    icon.style
+            //        .backgroundImage = currentSI.GetIcon();
+            //}
+            //else
+            //{
+            //    //Locked and hidden icon
+            //    buttonBG.SetColor(Color.grey); //TODO: This better lol
+            //    icon.style
+            //        .backgroundImage = null;
+            //}
+        }
+
+        if (boughtItem.ProductLine != 0)
+        {
+            VisualElement buttonBG  = boughtItemNode.Q<VisualElement>("LevelSelectButton");
+            VisualElement icon      = boughtItemNode.Q<VisualElement>("Icon");
+            Vector2 destination     = shopBoard.WorldToLocal(buttonBG.worldBound.center);
+
+            canClick                = false;
+
+            Tween draw              = productLines.Find(x => boughtItem.ProductLine == x.ColorIndex).Lines[0]
+                                        .DrawTowardNewPoint_Tween(destination, .3f)
+                                        .OnComplete(() => canClick = true)
+                                        .Play();
         }
     }
 
@@ -345,10 +433,10 @@ public class Shop : Page
     {
         List<ProductLine> newProductLines  = new List<ProductLine>()
         {
-            new     ProductLine(1   , new Vector2(1, 0)     , ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.UNLOCK_SHOP))
-            , new   ProductLine(2   , new Vector2(-1, 0)    , ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.UNLOCK_SHOP))
-            , new   ProductLine(3   , new Vector2(0, 1)     , ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.UNLOCK_SHOP))
-            , new   ProductLine(4   , new Vector2(0, -1)    , ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.UNLOCK_SHOP))
+            new     ProductLine(1   , new Vector2Int(1, 0)  , ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.UNLOCK_SHOP))
+            , new   ProductLine(2   , new Vector2Int(-1, 0) , ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.UNLOCK_SHOP))
+            , new   ProductLine(3   , new Vector2Int(0, 1)  , ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.UNLOCK_SHOP))
+            , new   ProductLine(4   , new Vector2Int(0, -1) , ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.UNLOCK_SHOP))
         };
 
         Vector2 zeroLocation            = new Vector2(shopBoard.resolvedStyle.width / 2f, shopBoard.resolvedStyle.height / 2f);
@@ -363,8 +451,8 @@ public class Shop : Page
             VisualElement purchasedIcon = shopButton.Q<VisualElement>("CompletedIcon");
 
             shopButton.style.position   = Position.Absolute;
-            shopButton.style.left       = zeroLocation.x + ((GRID_SIZE + SPACING) * productLine.GridOrigin.x);
-            shopButton.style.top        = zeroLocation.y + ((GRID_SIZE + SPACING) * productLine.GridOrigin.y);
+            shopButton.style.left       = zeroLocation.x + ((GRID_SIZE + SPACING) * productLine.StartPosition.x);
+            shopButton.style.top        = zeroLocation.y + ((GRID_SIZE + SPACING) * productLine.StartPosition.y);
             
             purchasedIcon.RemoveFromHierarchy();
             icon.RemoveFromHierarchy();
@@ -380,7 +468,7 @@ public class Shop : Page
             {
                 buttonBG.SetColor(UIManager.instance.GetColor(0));
                 
-                DrawProductLineEndPoints(productLine);
+                DrawProductLineStartPoint(productLine);
             }
             else
             {
@@ -389,7 +477,7 @@ public class Shop : Page
         }
     }
 
-    private void DrawProductLineEndPoints(ProductLine productLine)
+    private void DrawProductLineStartPoint(ProductLine productLine)
     {
         Vector2 origin = shopBoard.WorldToLocal(productLine.StartNode.Q<VisualElement>("LevelSelectButton").worldBound.center);
 
@@ -401,6 +489,35 @@ public class Shop : Page
 
         shopBoard.Add(endPoint);
         endPoint.BringToFront();
+
+        UIToolkitLine line = new UIToolkitLine(
+                                new List<Vector2>() { endPoint.Center }
+                                , GRID_SIZE / 3f * .75f
+                                , UIManager.instance.GetColor(productLine.ColorIndex)
+                                , LineCap.Round
+                            );
+
+        shopBoard.Add(line);
+        line.BringToFront();
+
+        productLine.Lines.Add(line);
+    }
+
+    private void SetVisibleNodes(Vector2Int position)
+    {
+        Vector2Int up       = new Vector2Int(position.x, position.y + 1);
+        Vector2Int right    = new Vector2Int(position.x + 1, position.y);
+        Vector2Int down     = new Vector2Int(position.x, position.y - 1);
+        Vector2Int left     = new Vector2Int(position.x - 1, position.y);
+
+        if (visibleNodes.ContainsKey(up))
+            visibleNodes[up] = true;
+        if (visibleNodes.ContainsKey(right))
+            visibleNodes[right] = true;
+        if (visibleNodes.ContainsKey(down))
+            visibleNodes[down] = true;
+        if (visibleNodes.ContainsKey(left))
+            visibleNodes[left] = true;
     }
 
     private void OnPointerDownOnShopBoard(PointerDownEvent evt)
@@ -569,9 +686,13 @@ public class Shop : Page
 
         ShopItem item                       = content.userData as ShopItem;
 
-        if (!item.NodeUnlocked)
+        //if (!item.NodeUnlocked)
+        //{
+        //    SetDetailsMystery(); 
+        //}
+        if (!visibleNodes[item.Position])
         {
-            SetDetailsMystery(); 
+            SetDetailsMystery();
         }
         else
         {
@@ -611,10 +732,13 @@ public class Shop : Page
 
                 Label purchaseButtonLabel = purchaseButton.Q<Label>();
 
-                purchaseButton.UnregisterCallback<PointerUpEvent>((evt) => OnPurchase(item, evt));
+                //purchaseButton.UnregisterCallback<PointerUpEvent>((evt) => OnPurchase(item, evt));
+                purchaseButton.UnregisterCallback<PointerUpEvent>(purchaseButtonAction);
+
                 purchaseButton.SetColor(Color.clear);
 
-                if (!item.NodeUnlocked)
+                //if (!item.NodeUnlocked)
+                if (!visibleNodes.ContainsKey(item.Position))
                 {
                     //TODO: Don't think i'm going to use this.
                     //      I think i'm going to add tile border barriers with "remove" requirements
@@ -631,7 +755,10 @@ public class Shop : Page
                         .style.color = Color.green;
                     purchaseButtonLabel.text = "Purchase";
 
-                    purchaseButton.RegisterCallback<PointerUpEvent>((evt) => OnPurchase(item, evt));
+                    purchaseButtonAction = (evt) => { OnPurchase(item, evt); };
+                    purchaseButton.RegisterCallback<PointerUpEvent>(purchaseButtonAction);
+
+                    //purchaseButton.RegisterCallback<PointerUpEvent>((evt) => OnPurchase(item, evt));
                 }
                 else
                 {

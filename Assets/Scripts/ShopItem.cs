@@ -19,9 +19,12 @@ public abstract class ShopItem : ScriptableObject
     #region Inspector Variables
 
     [Header("General Shop Item Variables")]
-    [SerializeField] protected List<ShopItem>       previousPurchasesNeeded;
-    [SerializeField] protected Vector2              shopGridPosition;
-    [SerializeField] protected Vector2              gridSize                    = new Vector2(1, 1);
+    //[SerializeField] protected List<ShopItem>       previousPurchasesNeeded;
+    [SerializeField] protected Vector2Int           shopGridPosition;
+    [SerializeField] protected Vector2Int           gridSize                    = new Vector2Int(1, 1);
+
+    //[SerializeField] protected ShopItem             previousNode;
+    [SerializeField] protected int                  productLine;
 
     [SerializeField] protected List<PurchaseCost>   cost;
 
@@ -29,12 +32,23 @@ public abstract class ShopItem : ScriptableObject
 
     #region Public Properties
 
-    public Vector2                                  Position                    { get { return shopGridPosition; } }
+    public Vector2Int                               Position                    { get { return shopGridPosition; } }
     public Vector2                                  Size                        { get { return gridSize; } }
     public bool                                     Purchased                   { get { return ShopManager.instance.IsItemPurchased(this); } }
-    public bool                                     NodeUnlocked                { get { return previousPurchasesNeeded.FindIndex(x => !ShopManager.instance.IsItemPurchased(x)) == -1; } }
     public List<PurchaseCost>                       Costs                       { get { return cost; } }
-    public List<ShopItem>                           PrePurchases                { get { return previousPurchasesNeeded; } }
+    public int                                      ProductLine                 { get { return productLine; } }
+    //public List<ShopItem>                           PrePurchases                { get { return previousPurchasesNeeded; } }
+
+    //public bool NodeUnlocked 
+    //{ 
+    //    get 
+    //    {
+    //        return previousPurchasesNeeded.FindIndex(x => !ShopManager.instance.IsItemPurchased(x)) == -1;
+    //    } 
+    //}
+
+    //public ShopItem PreviousNode { get { return previousNode; } }
+    //public bool CanBePurchased { get { return ShopManager.instance.IsItemPurchased(previousNode); } }
 
     #endregion
 

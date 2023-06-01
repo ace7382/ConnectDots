@@ -9,6 +9,8 @@ public class UIToolkitCircle : VisualElement
     private float       radius;
     private Color       color;
 
+    public Vector2      Center      { get { return center; } }
+
     public UIToolkitCircle(Vector2 origin, float radius, Color color)
     {
         center      = origin;

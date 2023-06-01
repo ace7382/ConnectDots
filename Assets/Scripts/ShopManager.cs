@@ -60,5 +60,18 @@ public class ShopManager : MonoBehaviour
         ).Count() > 0;
     }
 
+    public List<Vector2Int> OwnedNodes()
+    {
+        List<Vector2Int> ret = new List<Vector2Int>();
+
+        foreach (ShopItem s in purchasedItems.Keys)
+        {
+            //TODO: Account for different sized nodes
+            ret.Add(s.Position);
+        }
+
+        return ret;
+    }
+
     #endregion
 }

@@ -12,10 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd8761b26dc05d149aec4b382434efbb, type: 3}
   m_Name: Unlock - PurpleStar
   m_EditorClassIdentifier: 
-  previousPurchasesNeeded:
-  - {fileID: 11400000, guid: 6d4fde6d88a1f834b9cd3c027b541680, type: 2}
   shopGridPosition: {x: 3, y: 0}
   gridSize: {x: 1, y: 1}
+  productLine: 1
   cost:
   - colorIndex: 1
     amount: 5

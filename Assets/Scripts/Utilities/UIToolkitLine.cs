@@ -6,10 +6,12 @@ using UnityEngine.UIElements;
 
 public class UIToolkitLine : VisualElement
 {
-    private List<Vector2> points;
-    private float thickness;
-    private Color color;
-    private LineCap cap;
+    private List<Vector2>   points;
+    private float           thickness;
+    private Color           color;
+    private LineCap         cap;
+
+    public List<Vector2>    Points      { get { return points; } }
 
     public UIToolkitLine(List<Vector2> points, float width, Color color, LineCap cap)
     {
@@ -47,6 +49,38 @@ public class UIToolkitLine : VisualElement
             painter.LineTo(points[i]);
 
         painter.Stroke();
+    }
+
+    public IEnumerator DrawTowardNewPoint(Vector2 newPoint, float duration)
+    {
+        Points.Add(Points[Points.Count - 1]);
+
+        Tween draw  =   DOTween.To(
+                            () => Points[Points.Count - 1]
+                            , x => Points[Points.Count - 1] = x
+                            , newPoint
+                            , duration
+                        )
+                        .OnUpdate(() => this.MarkDirtyRepaint())
+                        .SetEase(Ease.Linear)
+                        .Play();
+
+        yield return draw.WaitForCompletion();
+    }
+
+    public Tween DrawTowardNewPoint_Tween(Vector2 newPoint, float duration)
+    {
+        Points.Add(Points[Points.Count - 1]);
+
+        Tween draw = DOTween.To(
+                            () => Points[Points.Count - 1]
+                            , x => Points[Points.Count - 1] = x
+                            , newPoint
+                            , duration
+                        )
+                        .OnUpdate(() => this.MarkDirtyRepaint());
+
+        return draw;
     }
 
     public IEnumerator ShrinkLine(bool bothDirections, bool forward, float duration)

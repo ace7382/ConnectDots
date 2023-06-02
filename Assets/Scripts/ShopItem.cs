@@ -19,13 +19,9 @@ public abstract class ShopItem : ScriptableObject
     #region Inspector Variables
 
     [Header("General Shop Item Variables")]
-    //[SerializeField] protected List<ShopItem>       previousPurchasesNeeded;
     [SerializeField] protected Vector2Int           shopGridPosition;
     [SerializeField] protected Vector2Int           gridSize                    = new Vector2Int(1, 1);
-
-    //[SerializeField] protected ShopItem             previousNode;
     [SerializeField] protected int                  productLine;
-
     [SerializeField] protected List<PurchaseCost>   cost;
 
     #endregion
@@ -37,18 +33,6 @@ public abstract class ShopItem : ScriptableObject
     public bool                                     Purchased                   { get { return ShopManager.instance.IsItemPurchased(this); } }
     public List<PurchaseCost>                       Costs                       { get { return cost; } }
     public int                                      ProductLine                 { get { return productLine; } }
-    //public List<ShopItem>                           PrePurchases                { get { return previousPurchasesNeeded; } }
-
-    //public bool NodeUnlocked 
-    //{ 
-    //    get 
-    //    {
-    //        return previousPurchasesNeeded.FindIndex(x => !ShopManager.instance.IsItemPurchased(x)) == -1;
-    //    } 
-    //}
-
-    //public ShopItem PreviousNode { get { return previousNode; } }
-    //public bool CanBePurchased { get { return ShopManager.instance.IsItemPurchased(previousNode); } }
 
     #endregion
 

@@ -11,6 +11,7 @@ public class ShopItem_UnlockFeature : ShopItem
     public enum Feature
     {
         UNLOCK_SHOP,
+        PRODUCT_LINE_TAB,
     }
 
     #endregion

@@ -41,6 +41,8 @@ public class Shop : Page
     private const int       GRID_X_MAX          = 10;
     private const int       GRID_Y_MIN          = -10;
     private const int       GRID_Y_MAX          = 10;
+    private const float     PL_TAB_SHOWING      = 420f;
+    private const float     PL_TAB_HIDDEN       = 420f - 75f; //75 is pl tab height
 
     #endregion
 
@@ -236,6 +238,21 @@ public class Shop : Page
 
         List<Vector2Int> ownedNodes     = ShopManager.instance.OwnedNodes();
 
+        detailsButton
+            .transform.position         = new Vector3(
+                                            -1f * detailsButton.localBound.width
+                                            , detailsButton.transform.position.y
+                                            , detailsButton.transform.position.z
+                                        );
+
+        VisualElement detailsPLTab      = uiDoc.rootVisualElement.Q<VisualElement>("ProductLineTab");
+        detailsPLTab.style.bottom       = PL_TAB_HIDDEN;
+        detailsPLTab.transform.position = new Vector3(
+                                            -1f * Screen.width
+                                            , detailsPLTab.transform.position.y
+                                            , detailsPLTab.transform.position.z
+                                        );
+
         for (int i = 0; i < ownedNodes.Count; i++)
         {
             SetVisibleNodes(ownedNodes[i]);
@@ -256,33 +273,6 @@ public class Shop : Page
             shopButton.userData         = shopItem;
 
             nodes.Add(shopButton);
-
-            //if (ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.UNLOCK_SHOP)
-            //    || (shopItem is ShopItem_UnlockFeature 
-            //        && ((ShopItem_UnlockFeature)shopItem).Feat == ShopItem_UnlockFeature.Feature.UNLOCK_SHOP))
-            //{
-            //    if (shopItem.NodeUnlocked)
-            //    {
-            //        //buttonBG.SetColor(shopItem.GetColor());
-            //        buttonBG.SetColor(UIManager.instance.GetColor(0));
-            //        icon.style
-            //            .backgroundImage = shopItem.GetIcon();
-            //    }
-            //    else
-            //    {
-            //        //Locked and hidden icon
-            //        buttonBG.SetColor(Color.grey); //TODO: This better lol
-            //        icon.style
-            //            .backgroundImage = null;
-            //    }
-            //}
-            //else
-            //{
-            //    //Locked and hidden icon
-            //    buttonBG.SetColor(Color.grey); //TODO: This better lol
-            //    icon.style
-            //        .backgroundImage = null;
-            //}
 
             if (visibleNodes.ContainsKey(shopItem.Position))
             {
@@ -332,8 +322,20 @@ public class Shop : Page
     {
         //sender    -   ShopItem    -   The ShopItem that was purchased
 
-        ShopItem boughtItem         = (ShopItem)sender;
-        
+        //Get the VE of the purchased item
+        //  Spin and recolor the purchased item's node
+        //Find all nodes next to the purchased node
+        //  if the node is not revealed, spin and reveal the node
+        //Draw the correct prodcut line to the purchased item's node
+
+        ShopItem boughtItem                     = (ShopItem)sender;
+
+        VisualElement boughtItemNode            = null;
+        List<VisualElement> newlyOpenedNodes    = new List<VisualElement>();
+        List<ProductLine> newlyOpenedPLs        = new List<ProductLine>();
+
+        SetVisibleNodes(boughtItem.Position);
+
         if (boughtItem is ShopItem_UnlockFeature)
         {
             ShopItem_UnlockFeature featItem = (ShopItem_UnlockFeature)boughtItem;
@@ -347,11 +349,11 @@ public class Shop : Page
                     if (productLines[i].ColorIndex == 1 || productLines[i].ColorIndex == 2
                             || productLines[i].ColorIndex == 3 || productLines[i].ColorIndex == 4)
                     {
-                        productLines[i].StartNode.Q<VisualElement>("LevelSelectButton").SetColor(UIManager.instance.GetColor(0));
-                        
-                        DrawProductLineStartPoint(productLines[i]);
+                        ProductLine p = productLines[i];
 
-                        SetVisibleNodes(productLines[i].StartPosition);
+                        SetVisibleNodes(p.StartPosition);
+
+                        newlyOpenedPLs.Add(p);
 
                         count++;
                     }
@@ -360,59 +362,176 @@ public class Shop : Page
                         break;
                 }
             }
+            else if (featItem.Feat == ShopItem_UnlockFeature.Feature.PRODUCT_LINE_TAB)
+            {
+                VisualElement productLineTab = uiDoc.rootVisualElement.Q<VisualElement>("ProductLineTab");
+                Label label = productLineTab.Q<Label>();
+
+                ShopItem s = SelectedShopNode.userData as ShopItem;
+
+                //TODO: Get the color's name once that functionality is built
+                label.text = s.ProductLine.ToString() + " Product Line";
+                productLineTab.SetColor(UIManager.instance.GetColor(s.ProductLine));
+                productLineTab.SetBorderColor(s.GetColor());
+
+                Tween tabUp = DOTween.To(
+                                    () => productLineTab.style.bottom.value.value
+                                    , x => productLineTab.style.bottom = x
+                                    , PL_TAB_SHOWING
+                                    , .25f)
+                                .SetEase(Ease.OutQuart);
+
+                tabUp.Play();
+            }
         }
-
-        SetVisibleNodes(boughtItem.Position);
-
-        VisualElement boughtItemNode = null;
 
         for (int i = 0; i < nodes.Count; i++)
         {
             ShopItem currentSI      = (ShopItem)nodes[i].userData;
             VisualElement buttonBG  = nodes[i].Q<VisualElement>("LevelSelectButton");
-            VisualElement icon      = nodes[i].Q<VisualElement>("Icon");
 
             if (visibleNodes.ContainsKey(currentSI.Position))
             {
-                if (visibleNodes[currentSI.Position])
+                if (visibleNodes[currentSI.Position] && buttonBG.style.backgroundColor.value == Color.grey)
                 {
-                    buttonBG.SetColor(UIManager.instance.GetColor(0));
-                    icon.style
-                        .backgroundImage = currentSI.GetIcon();
-                }
-                else
-                {
-                    buttonBG.SetColor(Color.grey); //TODO: This better lol
-                    icon.style
-                        .backgroundImage = null;
+                    newlyOpenedNodes.Add(nodes[i]);
                 }
             }
 
             if (currentSI == boughtItem)
                 boughtItemNode = nodes[i];
-
-            //ShopItem currentSI = (ShopItem)nodes[i].userData;
-
-            //if (!currentSI.PrePurchases.Contains(boughtItem))
-            //    continue;
-
-            //VisualElement buttonBG  = nodes[i].Q<VisualElement>("LevelSelectButton");
-            //VisualElement icon      = nodes[i].Q<VisualElement>("Icon");
-
-            //if (currentSI.NodeUnlocked)
-            //{
-            //    buttonBG.SetColor(UIManager.instance.GetColor(0));
-            //    icon.style
-            //        .backgroundImage = currentSI.GetIcon();
-            //}
-            //else
-            //{
-            //    //Locked and hidden icon
-            //    buttonBG.SetColor(Color.grey); //TODO: This better lol
-            //    icon.style
-            //        .backgroundImage = null;
-            //}
         }
+
+        //------
+        
+        Sequence seq                = DOTween.Sequence();
+        float animationLength       = .5f;
+
+        Tween shrinkPurchased       = DOTween.To(
+                                        () => boughtItemNode.transform.scale
+                                        , x => boughtItemNode.style.scale = x
+                                        , Vector3.zero
+                                        , animationLength / 2f)
+                                    .SetEase(Ease.InQuad)
+                                    .OnComplete(() =>
+                                        {
+                                            VisualElement bg    = boughtItemNode.Q<VisualElement>("LevelSelectButton");
+                                            VisualElement icon  = boughtItemNode.Q<VisualElement>("Icon");
+                                            Color c             = UIManager.instance.GetColor(boughtItem.ProductLine);
+
+                                            icon.Hide();
+                                            bg.SetColor(new Color(
+                                                c.r + (1f - c.r) * .8f
+                                                , c.g + (1f - c.g) * .8f
+                                                , c.b + (1f - c.b) * .8f
+                                                , 1f));
+                                        })
+                                    .Pause();
+
+        Tween resizePurchased       = DOTween.To(
+                                        () => boughtItemNode.transform.scale
+                                        , x => boughtItemNode.style.scale = x
+                                        , Vector3.one
+                                        , animationLength / 2f)
+                                    .SetEase(Ease.OutQuad)
+                                    .Pause();
+
+        seq.Append(shrinkPurchased);
+        seq.Append(resizePurchased);
+
+        for (int i = 0; i < newlyOpenedNodes.Count; i++)
+        {
+            VisualElement node      = newlyOpenedNodes[i];
+            Tween shrinkNode        = DOTween.To(
+                                            () => node.transform.scale
+                                            , x => node.style.scale = x
+                                            , Vector3.zero
+                                            , animationLength / 2f)
+                                        .SetEase(Ease.InQuad)
+                                        .OnComplete(() =>
+                                        {
+                                            VisualElement bg    = node.Q<VisualElement>("LevelSelectButton");
+                                            VisualElement icon  = node.Q<VisualElement>("Icon");
+                                            Color c             = UIManager.instance.GetColor(0);
+
+                                            icon.style
+                                                .backgroundImage= ((ShopItem)node.userData).GetIcon();
+                                            bg.SetColor(c);
+                                        })
+                                        .Pause();
+
+            if (i == 0)
+                seq.Append(shrinkNode);
+            else
+                seq.Join(shrinkNode);
+        }
+
+        for (int i = 0; i < newlyOpenedPLs.Count; i++)
+        {
+            ProductLine pl          = newlyOpenedPLs[i];
+            
+            Tween shrinkNode        = DOTween.To(
+                                            () => pl.StartNode.transform.scale
+                                            , x => pl.StartNode.style.scale = x
+                                            , Vector3.zero
+                                            , animationLength / 2f)
+                                        .SetEase(Ease.InQuad)
+                                        .OnComplete(() =>
+                                        {
+                                            VisualElement bg = pl.StartNode.Q<VisualElement>("LevelSelectButton");
+                                            Color c = UIManager.instance.GetColor(pl.ColorIndex);
+
+                                            bg.SetColor(new Color(
+                                            c.r + (1f - c.r) * .8f
+                                            , c.g + (1f - c.g) * .8f
+                                            , c.b + (1f - c.b) * .8f
+                                            , 1f));
+                                        })
+                                        .Pause();
+
+            if (i == 0 && newlyOpenedNodes.Count == 0)
+                seq.Append(shrinkNode);
+            else
+                seq.Join(shrinkNode);
+        }
+
+        for (int i = 0; i < newlyOpenedNodes.Count; i++)
+        {
+            VisualElement node      = newlyOpenedNodes[i];
+
+            Tween resizeNode        = DOTween.To(
+                                            () => node.transform.scale
+                                            , x => node.style.scale = x
+                                            , Vector3.one
+                                            , animationLength / 2f)
+                                        .SetEase(Ease.OutQuad)
+                                        .Pause();
+
+            if (i == 0)
+                seq.Append(resizeNode);
+            else
+                seq.Join(resizeNode);
+        }
+
+        for (int i = 0; i < newlyOpenedPLs.Count; i++)
+        {
+            ProductLine pl          = newlyOpenedPLs[i];
+            Tween resizeNode        = DOTween.To(
+                                            () => pl.StartNode.transform.scale
+                                            , x => pl.StartNode.style.scale = x
+                                            , Vector3.one
+                                            , animationLength / 2f)
+                                        .SetEase(Ease.OutQuad)
+                                        .OnStart(() => DrawProductLineStartPoint(pl))
+                                        .Pause();
+
+            if (i == 0 && newlyOpenedNodes.Count == 0)
+                seq.Append(resizeNode);
+            else
+                seq.Join(resizeNode);
+        }
+
+        seq.Play();
 
         if (boughtItem.ProductLine != 0)
         {
@@ -482,7 +601,7 @@ public class Shop : Page
         Vector2 origin = shopBoard.WorldToLocal(productLine.StartNode.Q<VisualElement>("LevelSelectButton").worldBound.center);
 
         UIToolkitCircle endPoint = new UIToolkitCircle(
-                                origin//productLine.StartNode.worldBound.center
+                                origin
                                 , GRID_SIZE / 4f
                                 , UIManager.instance.GetColor(productLine.ColorIndex)
                             ); ;
@@ -552,6 +671,8 @@ public class Shop : Page
 
     private void OnPointerMoveOnShopBoard(PointerMoveEvent evt)
     {
+        //TODO: Dragging/Zooming should cancel out opening a node
+
         if (Zooming)
         {
             if (evt.pointerId == primaryTouchID)
@@ -680,16 +801,18 @@ public class Shop : Page
         VisualElement container             = detailsPanel.Q<VisualElement>("LeftPanel");
         VisualElement topIndicator          = costScrollView.Q<VisualElement>("TopArrow");
         VisualElement bottomIndicator       = costScrollView.Q<VisualElement>("BottomArrow");
+        VisualElement productLineTab        = uiDoc.rootVisualElement.Q<VisualElement>("ProductLineTab");
+        Label productLineLabel              = productLineTab.Q<Label>();
 
         container.Clear();
         costScrollView.ClearWithChildBoundIndicators(topIndicator, bottomIndicator);
 
         ShopItem item                       = content.userData as ShopItem;
 
-        //if (!item.NodeUnlocked)
-        //{
-        //    SetDetailsMystery(); 
-        //}
+        productLineLabel.text               = item.ProductLine.ToString() + " Product Line";
+        productLineTab.SetColor(UIManager.instance.GetColor(item.ProductLine));
+        productLineTab.SetBorderColor(item.GetColor());
+
         if (!visibleNodes[item.Position])
         {
             SetDetailsMystery();
@@ -732,23 +855,11 @@ public class Shop : Page
 
                 Label purchaseButtonLabel = purchaseButton.Q<Label>();
 
-                //purchaseButton.UnregisterCallback<PointerUpEvent>((evt) => OnPurchase(item, evt));
                 purchaseButton.UnregisterCallback<PointerUpEvent>(purchaseButtonAction);
 
                 purchaseButton.SetColor(Color.clear);
 
-                //if (!item.NodeUnlocked)
-                if (!visibleNodes.ContainsKey(item.Position))
-                {
-                    //TODO: Don't think i'm going to use this.
-                    //      I think i'm going to add tile border barriers with "remove" requirements
-
-                    purchaseButton.SetBorderColor(Color.grey);
-                    purchaseButtonLabel
-                        .style.color = Color.grey;
-                    purchaseButtonLabel.text = "Unlock Requirements";
-                }
-                else if (CurrencyManager.instance.CanAfford(item))
+                if (CurrencyManager.instance.CanAfford(item))
                 {
                     purchaseButton.SetBorderColor(Color.green);
                     purchaseButtonLabel
@@ -757,15 +868,12 @@ public class Shop : Page
 
                     purchaseButtonAction = (evt) => { OnPurchase(item, evt); };
                     purchaseButton.RegisterCallback<PointerUpEvent>(purchaseButtonAction);
-
-                    //purchaseButton.RegisterCallback<PointerUpEvent>((evt) => OnPurchase(item, evt));
                 }
                 else
                 {
-                    purchaseButton.SetBorderColor(Color.red);
-                    purchaseButton.SetColor(Color.grey);
+                    purchaseButton.SetBorderColor(Color.grey);
                     purchaseButtonLabel
-                        .style.color = Color.red;
+                        .style.color = Color.grey;
                     purchaseButtonLabel.text = "Need More";
                 }
 
@@ -776,6 +884,7 @@ public class Shop : Page
                 costScrollView.schedule.Execute(() => costScrollView.ShowHideVerticalBoundIndicators(topIndicator, bottomIndicator));
             }
         }
+
         PageManager.instance.StartCoroutine(ShowDetailsPanel());
     }
 
@@ -878,7 +987,11 @@ public class Shop : Page
         if (detailsPanel.transform.position.x == 0f)
             yield break;
 
-        Tween panelIn   = DOTween.To(
+        VisualElement productLineTab = uiDoc.rootVisualElement.Q<VisualElement>("ProductLineTab");
+
+        Sequence seq = DOTween.Sequence();
+
+        Tween panelIn = DOTween.To(
                             () => detailsPanel.transform.position
                             , x => detailsPanel.transform.position = x
                             , new Vector3(
@@ -888,13 +1001,80 @@ public class Shop : Page
                             , .65f)
                         .SetEase(Ease.OutQuart);
 
-        yield return panelIn.WaitForCompletion();
+        Tween tabIn =   DOTween.To(
+                            () => productLineTab.transform.position
+                            , x => productLineTab.transform.position = x
+                            , new Vector3(
+                                0f
+                                , productLineTab.transform.position.y
+                                , productLineTab.transform.position.z)
+                            , .65f)
+                        .SetEase(Ease.OutQuart);
+
+        seq.Append(panelIn);
+        seq.Join(tabIn);
+
+        yield return seq.WaitForCompletion();
+
+        if (ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.PRODUCT_LINE_TAB))
+        {
+            Label label                     = productLineTab.Q<Label>();
+
+            ShopItem s                      = SelectedShopNode.userData as ShopItem;
+
+            //TODO: Get the color's name once that functionality is built
+            label.text                      = s.ProductLine.ToString() + " Product Line";
+            productLineTab.SetColor(UIManager.instance.GetColor(s.ProductLine));
+            productLineTab.SetBorderColor(s.GetColor());
+
+            Tween tabUp =   DOTween.To(
+                                () => productLineTab.style.bottom.value.value
+                                , x => productLineTab.style.bottom = x
+                                , PL_TAB_SHOWING
+                                , .25f)
+                            .SetEase(Ease.OutQuart);
+
+            yield return tabUp.WaitForCompletion();
+        }
     }
 
     private IEnumerator DetailsPanelOut()
     {
         if (detailsPanel.transform.position.x == -1f * Screen.width)
             yield break;
+
+        VisualElement productLineTab = uiDoc.rootVisualElement.Q<VisualElement>("ProductLineTab");
+
+        if (ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.PRODUCT_LINE_TAB))
+        {
+            Label label                     = productLineTab.Q<Label>();
+
+            ShopItem s                      = SelectedShopNode.userData as ShopItem;
+
+            //TODO: Get the color's name once that functionality is built
+            label.text                      = s.ProductLine.ToString() + " Product Line";
+            productLineTab.SetColor(UIManager.instance.GetColor(s.ProductLine));
+
+            Tween tabDown = DOTween.To(
+                                () => productLineTab.style.bottom.value.value
+                                , x => productLineTab.style.bottom = x
+                                , PL_TAB_HIDDEN
+                                , .25f)
+                            .SetEase(Ease.OutQuart)
+                            .Play();
+        }
+
+        Sequence seq    = DOTween.Sequence();
+
+        Tween tabOut    = DOTween.To(
+                            () => productLineTab.transform.position
+                            , x => productLineTab.transform.position = x
+                            , new Vector3(
+                                -1f * Screen.width
+                                , productLineTab.transform.position.y
+                                , productLineTab.transform.position.z)
+                            , .65f)
+                        .SetEase(Ease.OutQuart);
 
         Tween panelOut  = DOTween.To(
                             () => detailsPanel.transform.position
@@ -905,10 +1085,11 @@ public class Shop : Page
                                 , detailsPanel.transform.position.z)
                             , .65f)
                         .SetEase(Ease.OutQuart);
-        
-        yield return panelOut.WaitForCompletion();
 
-        detailsPanel.SetBorderColor(Color.black);
+        seq.Append(tabOut);
+        seq.Join(panelOut);
+
+        yield return seq.WaitForCompletion();
     }
 
     #endregion

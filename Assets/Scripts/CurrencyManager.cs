@@ -48,9 +48,14 @@ public class CurrencyManager : MonoBehaviour
         ownedColors = new Dictionary<int, int>();
         ownedPowerups = new Dictionary<PowerupType, int>();
 
+        //TODO: Remove this
         CurrencyManager.instance.AddCurrency(PowerupType.HINT, 20);
         CurrencyManager.instance.AddCurrency(PowerupType.REMOVE_SPECIAL_TILE, 20);
         CurrencyManager.instance.AddCurrency(PowerupType.FILL_EMPTY, 20);
+        for (int i = 0; i < UIManager.instance.ColorCount; i++)
+        {
+            CurrencyManager.instance.AddCurrency(i, 1000);
+        }
     }
 
     private void Start()
@@ -151,7 +156,7 @@ public class CurrencyManager : MonoBehaviour
         return tile.Multiplier;
     }
 
-    public void SpawnCoin_Newt(int colorIndex, Vector3 origin)
+    public void SpawnCoin(int colorIndex, Vector3 origin)
     {
         coinFlyDestination                  = UIManager.instance.TopBar.CoinsButton.worldBound.center; //TODO: Set this outside of the function and update on screensize change
 

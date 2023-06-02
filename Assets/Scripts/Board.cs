@@ -515,7 +515,7 @@ public class Board
                     
                     for (int am = 0; am < awardedCoins; am++)
                     {
-                        CurrencyManager.instance.SpawnCoin_Newt(colIndex, tiles[i][j].Container.worldBound.center);
+                        CurrencyManager.instance.SpawnCoin(colIndex, tiles[i][j].Container.worldBound.center);
                     }
 
                     if (ret.ContainsKey(colIndex))

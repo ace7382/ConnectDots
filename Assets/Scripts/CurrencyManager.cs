@@ -52,9 +52,10 @@ public class CurrencyManager : MonoBehaviour
         CurrencyManager.instance.AddCurrency(PowerupType.HINT, 20);
         CurrencyManager.instance.AddCurrency(PowerupType.REMOVE_SPECIAL_TILE, 20);
         CurrencyManager.instance.AddCurrency(PowerupType.FILL_EMPTY, 20);
+
         for (int i = 0; i < UIManager.instance.ColorCount; i++)
         {
-            CurrencyManager.instance.AddCurrency(i, 1000);
+            CurrencyManager.instance.AddCurrency(i, Random.Range(50, 12000));
         }
     }
 

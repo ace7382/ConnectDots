@@ -22,6 +22,7 @@ public abstract class ShopItem : ScriptableObject
     [SerializeField] protected Vector2Int           shopGridPosition;
     [SerializeField] protected Vector2Int           gridSize                    = new Vector2Int(1, 1);
     [SerializeField] protected int                  productLine;
+    [SerializeField] protected ShopItem             previousProductLineItem;
     [SerializeField] protected List<PurchaseCost>   cost;
 
     #endregion
@@ -33,12 +34,13 @@ public abstract class ShopItem : ScriptableObject
     public bool                                     Purchased                   { get { return ShopManager.instance.IsItemPurchased(this); } }
     public List<PurchaseCost>                       Costs                       { get { return cost; } }
     public int                                      ProductLine                 { get { return productLine; } }
+    public ShopItem                                 PreviousItem                { get { return previousProductLineItem; } }
 
     #endregion
 
     #region Abstract Functions
 
-    public abstract VisualElement   GetDisplayContent();
+    public abstract VisualElement   GetDisplayContent(bool owned);
     public abstract Color           GetColor();
     public abstract Texture2D       GetIcon();
 

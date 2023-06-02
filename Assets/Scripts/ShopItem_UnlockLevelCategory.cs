@@ -22,20 +22,19 @@ public class ShopItem_UnlockLevelCategory : ShopItem
         levelCategoryToUnlock.UnlockCategory();
     }
 
-    public override VisualElement GetDisplayContent()
+    public override VisualElement GetDisplayContent(bool owned)
     {
-        VisualElement container = new VisualElement();
+        VisualElement container                 = new VisualElement();
 
-        container.style.flexGrow= 1f;
-        container.style
-            .justifyContent     = Justify.Center;
-        container.style
-            .alignItems         = Align.Center;
+        container.style.flexGrow                = 1f;
+        container.style.flexDirection           = FlexDirection.Row;
+        container.style.justifyContent          = owned ? Justify.Center : Justify.FlexStart;
 
-        VisualElement catIcon   = UIManager.instance.LevelSelectButton.Instantiate();
-        VisualElement icon      = catIcon.Q<VisualElement>("Icon");
-        VisualElement bg        = catIcon.Q<VisualElement>("LevelSelectButton");
+        VisualElement catIcon                   = UIManager.instance.LevelSelectButton.Instantiate();
+        VisualElement icon                      = catIcon.Q<VisualElement>("Icon");
+        VisualElement bg                        = catIcon.Q<VisualElement>("LevelSelectButton");
 
+        bg.style.alignSelf                      = Align.Center;
         bg.SetColor(levelCategoryToUnlock.Colors[0]);
         if (levelCategoryToUnlock.Colors.Count > 1) bg.SetShiftingBGColor(levelCategoryToUnlock.Colors);
 
@@ -45,19 +44,26 @@ public class ShopItem_UnlockLevelCategory : ShopItem
         catIcon.Q<VisualElement>("CompletedIcon").RemoveFromHierarchy();
         bg.SetBorderColor(Color.clear);
 
-        Label unlockText        = new Label();
-        unlockText.text         = "Unlock Level Category:"; 
+        VisualElement rightContainer            = new VisualElement();
+        rightContainer.style.flexDirection      = FlexDirection.Column;
+        rightContainer.style.alignItems         = Align.FlexStart;
+        rightContainer.style.justifyContent     = Justify.Center;
+
+        Label unlockText                        = new Label();
+        unlockText.text                         = "Unlock Level Category:"; 
         unlockText.AddToClassList("ShopDescriptionText");
-        unlockText.style
-            .fontSize           = 45f;
+        unlockText.style.fontSize               = 35f;
 
-        Label catName           = new Label();
-        catName.text            = levelCategoryToUnlock.name; //TODO: is name the correct property?
+        Label catName                           = new Label();
+        catName.text                            = levelCategoryToUnlock.name; //TODO: is name the correct property?
         catName.AddToClassList("ShopDescriptionText");
+        catName.style.fontSize                  = 70f;
 
-        container.Add(catIcon);
-        container.Add(unlockText);
-        container.Add(catName);
+        rightContainer.Add(unlockText);
+        rightContainer.Add(catName);
+
+        container.Add(bg);
+        container.Add(rightContainer);
 
         return container;
     }

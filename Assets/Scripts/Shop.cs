@@ -33,16 +33,12 @@ public class Shop : Page
 
     #region Private Consts
 
-    private const float     DETAILS_LEFT_WIDTH  = 702f;
-    private const float     DETAILS_RIGHT_WIDTH = 378f;
     private const float     SPACING             = 25f;
     private const float     GRID_SIZE           = 150f;
     private const int       GRID_X_MIN          = -10;
     private const int       GRID_X_MAX          = 10;
     private const int       GRID_Y_MIN          = -10;
     private const int       GRID_Y_MAX          = 10;
-    private const float     PL_TAB_SHOWING      = 420f;
-    private const float     PL_TAB_HIDDEN       = 420f - 75f; //75 is pl tab height
 
     #endregion
 
@@ -116,7 +112,7 @@ public class Shop : Page
                 selectedShopNode.Q<VisualElement>("SelectionBorder").Show();
             }
 
-            SetDetailsPanel(selectedShopNode);
+            PageManager.instance.StartCoroutine(SetDetailsPanel(selectedShopNode));
         }
     }
 
@@ -158,7 +154,6 @@ public class Shop : Page
         shopBoard.RegisterCallback<PointerUpEvent>(OnPointerUpOnShopBoard);
         shopBoard.RegisterCallback<WheelEvent>(OnMouseScroll);
         screen.RegisterCallback<PointerLeaveEvent>(OnPointerLeaveScreen);
-
 
         detailsPanel.transform
             .position       = new Vector3(
@@ -246,12 +241,7 @@ public class Shop : Page
                                         );
 
         VisualElement detailsPLTab      = uiDoc.rootVisualElement.Q<VisualElement>("ProductLineTab");
-        detailsPLTab.style.bottom       = PL_TAB_HIDDEN;
-        detailsPLTab.transform.position = new Vector3(
-                                            -1f * Screen.width
-                                            , detailsPLTab.transform.position.y
-                                            , detailsPLTab.transform.position.z
-                                        );
+        detailsPLTab.style.top          = 0f;
 
         for (int i = 0; i < ownedNodes.Count; i++)
         {
@@ -364,22 +354,22 @@ public class Shop : Page
             }
             else if (featItem.Feat == ShopItem_UnlockFeature.Feature.PRODUCT_LINE_TAB)
             {
-                VisualElement productLineTab = uiDoc.rootVisualElement.Q<VisualElement>("ProductLineTab");
-                Label label = productLineTab.Q<Label>();
+                VisualElement productLineTab    = uiDoc.rootVisualElement.Q<VisualElement>("ProductLineTab");
+                Label label                     = productLineTab.Q<Label>();
 
-                ShopItem s = SelectedShopNode.userData as ShopItem;
+                ShopItem s                      = SelectedShopNode.userData as ShopItem;
 
                 //TODO: Get the color's name once that functionality is built
-                label.text = s.ProductLine.ToString() + " Product Line";
-                productLineTab.SetColor(UIManager.instance.GetColor(s.ProductLine));
+                //      Set the color's name to the correct color using rich text
+                label.text                      = s.ProductLine.ToString() + " Product Line";
                 productLineTab.SetBorderColor(s.GetColor());
 
-                Tween tabUp = DOTween.To(
-                                    () => productLineTab.style.bottom.value.value
-                                    , x => productLineTab.style.bottom = x
-                                    , PL_TAB_SHOWING
-                                    , .25f)
-                                .SetEase(Ease.OutQuart);
+                Tween tabUp                     =   DOTween.To(
+                                                        () => productLineTab.style.top.value.value
+                                                        , x => productLineTab.style.top = x
+                                                        , -1 * (productLineTab.resolvedStyle.height - productLineTab.resolvedStyle.borderBottomWidth)
+                                                        , .25f)
+                                                    .SetEase(Ease.OutQuart);
 
                 tabUp.Play();
             }
@@ -796,12 +786,14 @@ public class Shop : Page
         }
     }
 
-    private void SetDetailsPanel(VisualElement content)
+    private IEnumerator SetDetailsPanel(VisualElement content)
     {
-        VisualElement container             = detailsPanel.Q<VisualElement>("LeftPanel");
+        canClick                            = false;
+
+        VisualElement container             = detailsPanel.Q<VisualElement>("Content");
         VisualElement topIndicator          = costScrollView.Q<VisualElement>("TopArrow");
         VisualElement bottomIndicator       = costScrollView.Q<VisualElement>("BottomArrow");
-        VisualElement productLineTab        = uiDoc.rootVisualElement.Q<VisualElement>("ProductLineTab");
+        VisualElement productLineTab        = detailsPanel.Q<VisualElement>("ProductLineTab");
         Label productLineLabel              = productLineTab.Q<Label>();
 
         container.Clear();
@@ -810,17 +802,19 @@ public class Shop : Page
         ShopItem item                       = content.userData as ShopItem;
 
         productLineLabel.text               = item.ProductLine.ToString() + " Product Line";
-        productLineTab.SetColor(UIManager.instance.GetColor(item.ProductLine));
+
+        //productLineTab.SetColor(UIManager.instance.GetColor(item.ProductLine));
         productLineTab.SetBorderColor(item.GetColor());
 
         if (!visibleNodes[item.Position])
         {
+            productLineTab.SetBorderColor(Color.black);
             SetDetailsMystery();
         }
         else
         {
-            container.Add(item.GetDisplayContent());
-            detailsPanel.SetBorderColor(item.GetColor());
+            container.Add(item.GetDisplayContent(item.Purchased));
+            detailsPanel.Q<VisualElement>("BG").SetBorderColor(item.GetColor());
 
             if (item.Purchased)
             {
@@ -828,24 +822,75 @@ public class Shop : Page
             }
             else
             {
-                detailsPanel.Q<VisualElement>("RightPanel").Show();
-                detailsPanel.Q<VisualElement>("LeftPanel").SetWidth(DETAILS_LEFT_WIDTH);
                 detailsPanel.Q<VisualElement>("PurchasedIcon").Hide();
+
+                costScrollView.Show();
+                container.Show();
+                purchaseButton.Show();
+                
+                costScrollView.SetOpacity(0f);
+
+                //VisualElement row       = new VisualElement();
+                List<VisualElement> costObjs = new List<VisualElement>();
 
                 for (int i = 0; i < item.Costs.Count; i++)
                 {
-                    VisualElement costLine = UIManager.instance.CoinDisplay.Instantiate();
+                    VisualElement obj           = UIManager.instance.CoinDisplay.Instantiate();
+                    VisualElement costLine      = obj.Q<VisualElement>("Container");
 
-                    costLine.style.height = new StyleLength(StyleKeyword.Auto);
-                    costLine.style.minHeight = costLine.style.height;
-                    costLine.style.maxHeight = new StyleLength(StyleKeyword.None);
+                    costLine.style.flexGrow     = 0f;
+                    costLine.style.flexShrink   = 1f;
+                    costLine.style.flexDirection= FlexDirection.Row;
+                    costLine.style.alignItems   = Align.Center;
+                    costLine.style.alignSelf    = Align.Auto;
+                    costLine.style
+                        .justifyContent         = Justify.FlexStart;
 
-                    costLine.Q<VisualElement>("CoinSquare").SetColor(UIManager.instance.GetColor(item.Costs[i].colorIndex));
-                    costLine.Q<Label>("AmountLabel").text = CurrencyManager.instance.GetCoinsForColorIndex(item.Costs[i].colorIndex).ToString()
+                    costLine.style.height       = new StyleLength(StyleKeyword.Auto);
+                    costLine.style.minHeight    = costLine.style.height;
+                    costLine.style.maxHeight    = new StyleLength(StyleKeyword.None);
+
+                    costLine.style.width        = costLine.style.height;
+                    costLine.style.minWidth     = costLine.style.height;
+                    costLine.style.maxWidth     = costLine.style.maxHeight;
+
+                    costLine.SetMargins(25f, false, true, false, true);
+                    costLine.Q<VisualElement>("X").SetMargins(15f, false, true, false, true);
+
+                    Label amountLabel           = costLine.Q<Label>("AmountLabel");
+                    amountLabel.style.position  = Position.Relative;
+                    amountLabel.text            = CurrencyManager.instance.GetCoinsForColorIndex(item.Costs[i].colorIndex).ToString()
                                                             + " / " + item.Costs[i].amount.ToString();
+                    costLine.Q<VisualElement>("CoinSquare").SetColor(UIManager.instance.GetColor(item.Costs[i].colorIndex));
 
-                    costScrollView.Add(costLine);
+                    costObjs.Add(costLine);
+                    //Debug.Log("Coin line style.width.value.value: " + costLine.style.width.value.value);
+                    //Debug.Log("Coin line .localbound.width: " + costLine.localBound.width);
+                    //Debug.Log("Coin line .layout.width" + costLine.layout.width);
+
+                    //if (i % 3 == 0)
+                    //{
+                    //    row                     = new VisualElement();
+                    //    row.style.flexDirection = FlexDirection.Row;
+                    //    row.style.flexGrow      = 0f;
+                    //    row.style.flexShrink    = 1f;
+                    //    row.style
+                    //        .justifyContent     = Justify.Center;
+                    //    row.style.alignItems    = Align.Stretch;
+                    //    row.style.alignSelf     = Align.Center;
+                    //    row.SetWidth(new StyleLength(new Length(95f, LengthUnit.Percent)));
+
+                    //    costScrollView.Add(row);
+                    //}
+
+                    //row.Add(costLine);
                 }
+
+                yield return null;
+
+                yield return CreateCostRows(costObjs);
+
+                costScrollView.SetOpacity(100f);
 
                 costScrollView.SetBoundIndicators(topIndicator, bottomIndicator);
                 costScrollView.verticalScroller.valueChanged += (evt) =>
@@ -861,65 +906,132 @@ public class Shop : Page
 
                 if (CurrencyManager.instance.CanAfford(item))
                 {
-                    purchaseButton.SetBorderColor(Color.green);
-                    purchaseButtonLabel
-                        .style.color = Color.green;
-                    purchaseButtonLabel.text = "Purchase";
+                    if (item.PreviousItem == null || ShopManager.instance.IsItemPurchased(item.PreviousItem))
+                    {
+                        purchaseButton.SetBorderColor(Color.green);
+                        purchaseButtonLabel
+                            .style.color = Color.green;
+                        purchaseButtonLabel.text = "Purchase";
 
-                    purchaseButtonAction = (evt) => { OnPurchase(item, evt); };
-                    purchaseButton.RegisterCallback<PointerUpEvent>(purchaseButtonAction);
+                        purchaseButtonAction = (evt) => { OnPurchase(item, evt); };
+                        purchaseButton.RegisterCallback<PointerUpEvent>(purchaseButtonAction);
+                    }
+                    else
+                    {
+                        purchaseButton.SetBorderColor(Color.grey);
+                        purchaseButtonLabel
+                            .style.color            = Color.grey;
+                        purchaseButtonLabel.text    = "Purchase more Items in this Item's Product Line to Unlock";
+                    }
                 }
                 else
                 {
                     purchaseButton.SetBorderColor(Color.grey);
                     purchaseButtonLabel
                         .style.color = Color.grey;
-                    purchaseButtonLabel.text = "Need More";
+                    purchaseButtonLabel.text        = "Need More Segments";
                 }
 
                 //TODO: when a cost list with few enough lines that it doesn't require scrolling, the bottom indicator
                 //      still shows. Probably will be resolved with the TODO below
                 //TODO: This should probably be moved into a coroutine by reworking this function. Just need it set on a seperate frame
                 //      bc the scrollview's size is set at the begining of the functions, so this can't access it yet
-                costScrollView.schedule.Execute(() => costScrollView.ShowHideVerticalBoundIndicators(topIndicator, bottomIndicator));
+                yield return null;
+                costScrollView.ShowHideVerticalBoundIndicators(topIndicator, bottomIndicator);
+                //costScrollView.schedule.Execute(() => costScrollView.ShowHideVerticalBoundIndicators(topIndicator, bottomIndicator));
             }
         }
 
         PageManager.instance.StartCoroutine(ShowDetailsPanel());
     }
 
+    private IEnumerator CreateCostRows(List<VisualElement> costEntries)
+    {
+        VisualElement row               = new VisualElement();
+
+        row.style.flexDirection         = FlexDirection.Row;
+        row.style.flexGrow              = 0f;
+        row.style.flexShrink            = 1f;
+        row.style.justifyContent        = Justify.Center;
+        row.style.alignItems            = Align.Stretch;
+        row.style.alignSelf             = Align.Center;
+
+        row.SetMargins(10f, true, false, true, false);
+
+        costScrollView.Add(row);
+
+        float maxWidth      = costScrollView.resolvedStyle.width * .9f;
+
+        Debug.Log(maxWidth);
+
+        for (int i = 0; i < costEntries.Count; i++)
+        {
+            row.Add(costEntries[i]);
+
+            yield return null;
+
+            Debug.Log(row.resolvedStyle.width);
+
+            if (row.resolvedStyle.width > maxWidth)
+            {
+                row                     = new VisualElement();
+
+                row.style.flexDirection = FlexDirection.Row;
+                row.style.flexGrow      = 0f;
+                row.style.flexShrink    = 1f;
+                row.style.justifyContent= Justify.Center;
+                row.style.alignItems    = Align.Stretch;
+                row.style.alignSelf     = Align.Center;
+
+                row.SetMargins(10f, true, false, true, false);
+
+                row.Add(costEntries[i]);
+
+                costScrollView.Add(row);
+            }
+        }
+    }
+
     private void SetDetailsOwned(ShopItem item)
     {
         VisualElement purchasedIcon = detailsPanel.Q<VisualElement>("PurchasedIcon");
 
-        detailsPanel.Q<VisualElement>("RightPanel").Hide();
-        detailsPanel.Q<VisualElement>("LeftPanel").SetWidth(DETAILS_LEFT_WIDTH + DETAILS_RIGHT_WIDTH);
+        costScrollView.Hide();
+        purchaseButton.Hide();
+
         purchasedIcon.SetColor(item.GetColor());
         purchasedIcon.Show();
     }
 
     private void SetDetailsMystery()
     {
-        VisualElement purchasedIcon = detailsPanel.Q<VisualElement>("PurchasedIcon");
+        detailsPanel.Q<VisualElement>("BG").SetBorderColor(Color.black);
 
-        detailsPanel.Q<VisualElement>("RightPanel").Hide();
-        VisualElement leftPanel = detailsPanel.Q<VisualElement>("LeftPanel");
-        leftPanel.SetWidth(DETAILS_LEFT_WIDTH + DETAILS_RIGHT_WIDTH);
+        VisualElement purchasedIcon         = detailsPanel.Q<VisualElement>("PurchasedIcon");
+        VisualElement container             = detailsPanel.Q<VisualElement>("Content");
 
-        Label questionMarks = new Label();
-        questionMarks.text  = "?????";
+        Label questionMarks                 = new Label();
+        questionMarks.text                  = "?????";
+
         questionMarks.AddToClassList("ShopDescriptionText");
-        questionMarks.style.flexGrow = 1f;
-        questionMarks.style.alignSelf = Align.Center;
-        questionMarks.style.unityTextAlign = TextAnchor.MiddleCenter;
-        leftPanel.Add(questionMarks);
+
+        questionMarks.style.flexGrow        = 1f;
+        questionMarks.style.alignSelf       = Align.Center;
+        questionMarks.style.unityTextAlign  = TextAnchor.MiddleCenter;
+
+        container.Add(questionMarks);
 
         purchasedIcon.Hide();
+        purchaseButton.Hide();
     }
 
     private void OnPurchase(ShopItem item, PointerUpEvent evt)
     {
         item.OnPurchase();
+
+        VisualElement container = detailsPanel.Q<VisualElement>("Content");
+        container.Clear();
+        container.Add(item.GetDisplayContent(item.Purchased));
 
         SetDetailsOwned(item);
     }
@@ -989,8 +1101,6 @@ public class Shop : Page
 
         VisualElement productLineTab = uiDoc.rootVisualElement.Q<VisualElement>("ProductLineTab");
 
-        Sequence seq = DOTween.Sequence();
-
         Tween panelIn = DOTween.To(
                             () => detailsPanel.transform.position
                             , x => detailsPanel.transform.position = x
@@ -1001,20 +1111,7 @@ public class Shop : Page
                             , .65f)
                         .SetEase(Ease.OutQuart);
 
-        Tween tabIn =   DOTween.To(
-                            () => productLineTab.transform.position
-                            , x => productLineTab.transform.position = x
-                            , new Vector3(
-                                0f
-                                , productLineTab.transform.position.y
-                                , productLineTab.transform.position.z)
-                            , .65f)
-                        .SetEase(Ease.OutQuart);
-
-        seq.Append(panelIn);
-        seq.Join(tabIn);
-
-        yield return seq.WaitForCompletion();
+        yield return panelIn.WaitForCompletion();
 
         if (ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.PRODUCT_LINE_TAB))
         {
@@ -1022,17 +1119,12 @@ public class Shop : Page
 
             ShopItem s                      = SelectedShopNode.userData as ShopItem;
 
-            //TODO: Get the color's name once that functionality is built
-            label.text                      = s.ProductLine.ToString() + " Product Line";
-            productLineTab.SetColor(UIManager.instance.GetColor(s.ProductLine));
-            productLineTab.SetBorderColor(s.GetColor());
-
-            Tween tabUp =   DOTween.To(
-                                () => productLineTab.style.bottom.value.value
-                                , x => productLineTab.style.bottom = x
-                                , PL_TAB_SHOWING
-                                , .25f)
-                            .SetEase(Ease.OutQuart);
+            Tween tabUp                     =   DOTween.To(
+                                                    () => productLineTab.style.top.value.value
+                                                    , x => productLineTab.style.top = x
+                                                    , -1 * (productLineTab.resolvedStyle.height - productLineTab.resolvedStyle.borderBottomWidth)//(productLineTab.localBound.height - productLineTab.style.borderBottomWidth.value)
+                                                    , .25f)
+                                                .SetEase(Ease.OutQuart);
 
             yield return tabUp.WaitForCompletion();
         }
@@ -1055,26 +1147,14 @@ public class Shop : Page
             label.text                      = s.ProductLine.ToString() + " Product Line";
             productLineTab.SetColor(UIManager.instance.GetColor(s.ProductLine));
 
-            Tween tabDown = DOTween.To(
-                                () => productLineTab.style.bottom.value.value
-                                , x => productLineTab.style.bottom = x
-                                , PL_TAB_HIDDEN
-                                , .25f)
-                            .SetEase(Ease.OutQuart)
-                            .Play();
+            Tween tabDown                   =   DOTween.To(
+                                                    () => productLineTab.style.top.value.value
+                                                    , x => productLineTab.style.top = x
+                                                    , 0f
+                                                    , .25f)
+                                                .SetEase(Ease.OutQuart)
+                                                .Play();
         }
-
-        Sequence seq    = DOTween.Sequence();
-
-        Tween tabOut    = DOTween.To(
-                            () => productLineTab.transform.position
-                            , x => productLineTab.transform.position = x
-                            , new Vector3(
-                                -1f * Screen.width
-                                , productLineTab.transform.position.y
-                                , productLineTab.transform.position.z)
-                            , .65f)
-                        .SetEase(Ease.OutQuart);
 
         Tween panelOut  = DOTween.To(
                             () => detailsPanel.transform.position
@@ -1086,10 +1166,7 @@ public class Shop : Page
                             , .65f)
                         .SetEase(Ease.OutQuart);
 
-        seq.Append(tabOut);
-        seq.Join(panelOut);
-
-        yield return seq.WaitForCompletion();
+        yield return panelOut.WaitForCompletion();
     }
 
     #endregion

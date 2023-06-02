@@ -33,7 +33,7 @@ public class ShopItem_UnlockFeature : ShopItem
 
     #region Inherited Functions
 
-    public override VisualElement GetDisplayContent()
+    public override VisualElement GetDisplayContent(bool owned)
     {
         return new VisualElement();
     }

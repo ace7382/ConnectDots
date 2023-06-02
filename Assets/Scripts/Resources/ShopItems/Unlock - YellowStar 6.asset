@@ -15,6 +15,7 @@ MonoBehaviour:
   shopGridPosition: {x: 4, y: 4}
   gridSize: {x: 1, y: 1}
   productLine: 1
+  previousProductLineItem: {fileID: 11400000, guid: 714c16c73ca4a524daef9fd8a1521677, type: 2}
   cost:
   - colorIndex: 1
     amount: 5

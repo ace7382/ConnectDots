@@ -10,20 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dd8761b26dc05d149aec4b382434efbb, type: 3}
-  m_Name: Unlock - YellowStar 11
+  m_Name: Unlock - PurpleStar 3
   m_EditorClassIdentifier: 
-  shopGridPosition: {x: -1, y: 4}
+  shopGridPosition: {x: 3, y: 2}
   gridSize: {x: 1, y: 1}
-  productLine: 1
+  productLine: 3
+  previousProductLineItem: {fileID: 11400000, guid: bcf2cbd5dcf26a94c9e99601723a5021, type: 2}
   cost:
   - colorIndex: 1
     amount: 5
-  - colorIndex: 2
-    amount: 5
-  - colorIndex: 3
-    amount: 5
-  - colorIndex: 4
-    amount: 5
-  - colorIndex: 5
-    amount: 5
-  levelCategoryToUnlock: {fileID: 11400000, guid: 935d5c80aa378944a8b6e55adb387757, type: 2}
+  levelCategoryToUnlock: {fileID: 11400000, guid: 06c4a1a0614cd7d42afb84a183b6e82c, type: 2}

@@ -5,10 +5,21 @@ using UnityEngine.UIElements;
 
 public enum PowerupType
 {
-    [Instructions("")]                                  none,
-    [Instructions("")]                                  HINT,
-    [Instructions("Select a Special Tile to Remove")]   REMOVE_SPECIAL_TILE,
-    [Instructions("Select a Blank Tile to Fill in")]    FILL_EMPTY,
+    [EnumName("")] 
+    [Instructions("")]
+    none,
+
+    [EnumName("Hint")]
+    [Instructions("")]
+    HINT,
+
+    [EnumName("Normalizer")]
+    [Instructions("Select a Special Tile to Remove")]
+    REMOVE_SPECIAL_TILE,
+
+    [EnumName("Hole Filler")]
+    [Instructions("Select a Blank Tile to Fill in")]
+    FILL_EMPTY,
 }
 
 public class PowerupButtonController

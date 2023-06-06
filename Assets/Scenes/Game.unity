@@ -452,12 +452,8 @@ MonoBehaviour:
   scrollingBackground: {fileID: 461595107}
   restrictedTileTexture: {fileID: 2800000, guid: 6ef43b2fa630ce04c8e6f83fd6c7ab32, type: 3}
   trophyTexture: {fileID: 2800000, guid: 3243b89739027b64d8528fc403185760, type: 3}
-  tilePrefab: {fileID: 9197481963319205126, guid: 34c19e51f2dc32344bb1818bee49950a, type: 3}
+  powerupIcon: {fileID: 9197481963319205126, guid: c8a183875e698c249833e40f9fcd0be6, type: 3}
   boardPadding: 25
-  hardBorderSize: 5
-  hardBorderColor: {r: 0, g: 0, b: 0, a: 1}
-  softBorderSize: 1
-  softBorderColor: {r: 0.8784314, g: 0.8784314, b: 0.8784314, a: 0.5882353}
   newTilePrefab: {fileID: 9197481963319205126, guid: 38659655961c28040be60cf492ca075b, type: 3}
   newRowPrefab: {fileID: 9197481963319205126, guid: e995da0b160f669478b07a0af70a6032, type: 3}
   gameColors:
@@ -470,10 +466,6 @@ MonoBehaviour:
   - {r: 0, g: 1, b: 1, a: 1}
   - {r: 0.5, g: 0.5, b: 0.5, a: 1}
   - {r: 0.8, g: 0.8, b: 0.8, a: 1}
-  directionalEndSprite: {fileID: 21300000, guid: e9c67226db1a34b43b2501a54079d8fe, type: 3}
-  omnidirectionalEndSprite: {fileID: 21300000, guid: 3c38db59c9b2fc64a919c53f02063c5b, type: 3}
-  lineSprite: {fileID: 21300000, guid: 336e86a669f7dd645a718996ea4e87ea, type: 3}
-  cornerSprite: {fileID: 21300000, guid: 93644a2bcf2cb2f4e97c0d2e97914e70, type: 3}
   bronzeMedal: {fileID: 2800000, guid: 20fcc7f0bf8db4b76881e98a8a42c63c, type: 3}
   silverMedal: {fileID: 2800000, guid: 086e140a14a0044fc8c046e36892c472, type: 3}
   goldMedal: {fileID: 2800000, guid: 817e572d8239f4a75a84952defabc914, type: 3}

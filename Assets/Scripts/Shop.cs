@@ -92,7 +92,10 @@ public class Shop : Page
         {
             if (selectedShopNode == value)
             {
-                //Unselect and hide details panel
+                selectedShopNode.Q<VisualElement>("SelectionBorder").Hide();
+                selectedShopNode = null;
+
+                PageManager.instance.StartCoroutine(DetailsPanelOut());
 
                 return;
             }
@@ -102,9 +105,6 @@ public class Shop : Page
                 VisualElement old = selectedShopNode;
 
                 old.Q<VisualElement>("SelectionBorder").Hide();
-                
-                //TODO: I resize the category select buttons on select.
-                //Not sure if i want to do that here though
             }
 
             selectedShopNode = value;
@@ -457,7 +457,7 @@ public class Shop : Page
         }
         else
         {
-            //CurrencyMan.spawn powerup coin
+            //TODO: CurrencyMan.spawn powerup coin
         }
 
         for (int i = 0; i < newlyOpenedNodes.Count; i++)
@@ -889,6 +889,9 @@ public class Shop : Page
         }
     }
 
+    //TODO: might want to make the panel fly out if the selected node changes
+    //      in order to get the cost items onto the scroll it needs to flash for a second
+    //      flying out -> updating -> flying in would fix that but its overall a longer wait
     private IEnumerator SetDetailsPanel(VisualElement content)
     {
         canClick                            = false;
@@ -927,7 +930,8 @@ public class Shop : Page
             {
                 SetDetailsOwned(item);
             }
-            else
+
+            if (!item.Purchased || item is ShopItem_MultiplePurchaseItem)
             {
                 detailsPanel.Q<VisualElement>("PurchasedIcon").Hide();
 
@@ -937,7 +941,6 @@ public class Shop : Page
                 
                 costScrollView.SetOpacity(0f);
 
-                //VisualElement row       = new VisualElement();
                 List<VisualElement> costObjs = new List<VisualElement>();
 
                 for (int i = 0; i < item.Costs.Count; i++)
@@ -1012,8 +1015,6 @@ public class Shop : Page
 
                 yield return null;
 
-                //yield return null;
-
                 yield return CreateCostRows(costObjs);
 
                 costScrollView.SetOpacity(100f);
@@ -1078,11 +1079,35 @@ public class Shop : Page
     private void SetDetailsOwned(ShopItem item)
     {
         VisualElement purchasedIcon = detailsPanel.Q<VisualElement>("PurchasedIcon");
-
-        costScrollView.Hide();
-        purchaseButton.Hide();
+        VisualElement icon          = purchasedIcon.Q<VisualElement>("Icon");
+        Label purchaseCounter       = purchasedIcon.Q<Label>();
 
         purchasedIcon.SetColor(item.GetColor());
+
+        if (!(item is ShopItem_MultiplePurchaseItem))
+        {
+            purchasedIcon.SetWidth(100f);
+            
+            costScrollView.Hide();
+            purchaseButton.Hide();
+
+            icon.Show();
+            purchaseCounter.Hide();
+        }
+        else
+        {
+            purchasedIcon.SetWidth(new StyleLength(StyleKeyword.None), true, false);
+            purchasedIcon.SetWidth(new StyleLength(StyleKeyword.Auto), false);
+
+            costScrollView.Show();
+            purchaseButton.Show();
+
+            icon.Hide();
+            purchaseCounter.Show();
+            purchaseCounter.text    = ShopManager.instance.GetNumPurchased(item).ToString();
+            //TODO: Set text to black/white based onbg color (utility function to be added from brain game utilities)
+        }
+
         purchasedIcon.Show();
     }
 
@@ -1112,11 +1137,12 @@ public class Shop : Page
     {
         item.OnPurchase();
 
-        VisualElement container = detailsPanel.Q<VisualElement>("Content");
-        container.Clear();
-        container.Add(item.GetDisplayContent(item.Purchased));
+        PageManager.instance.StartCoroutine(SetDetailsPanel(SelectedShopNode));
+        //VisualElement container = detailsPanel.Q<VisualElement>("Content");
+        //container.Clear();
+        //container.Add(item.GetDisplayContent(item.Purchased));
 
-        SetDetailsOwned(item);
+        //SetDetailsOwned(item);
     }
 
     private IEnumerator ShowDetailsPanel()

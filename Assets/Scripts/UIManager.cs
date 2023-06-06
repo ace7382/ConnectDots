@@ -13,65 +13,53 @@ public class UIManager : MonoBehaviour
 
     #region Inspector Variables
 
-    [SerializeField] private TopBarController topBarControl;
-    [SerializeField] private VisualTreeAsset levelSelectButton;
-    [SerializeField] private VisualTreeAsset objectiveCard;
-    [SerializeField] private VisualTreeAsset coinDisplay;
-    [SerializeField] private VisualTreeAsset requirementDisplay;
-    [SerializeField] private VisualTreeAsset timeAttackButtonPrefab;
-    [SerializeField] private ScrollingBackground scrollingBackground;
-    [SerializeField] private Texture2D restrictedTileTexture;
-    [SerializeField] private Texture2D trophyTexture;
+    [SerializeField] private TopBarController       topBarControl;
+    [SerializeField] private VisualTreeAsset        levelSelectButton;
+    [SerializeField] private VisualTreeAsset        objectiveCard;
+    [SerializeField] private VisualTreeAsset        coinDisplay;
+    [SerializeField] private VisualTreeAsset        requirementDisplay;
+    [SerializeField] private VisualTreeAsset        timeAttackButtonPrefab;
+    [SerializeField] private ScrollingBackground    scrollingBackground;
+    [SerializeField] private Texture2D              restrictedTileTexture;
+    [SerializeField] private Texture2D              trophyTexture;
+    [SerializeField] private VisualTreeAsset        powerupIcon;
 
     [Space]
 
     [Header("Board Variables")]
-    [SerializeField] private float boardPadding;
-    [SerializeField] private float hardBorderSize;
-    [SerializeField] private Color hardBorderColor;
-    [SerializeField] private float softBorderSize;
-    [SerializeField] private Color softBorderColor;
+    [SerializeField] private float                  boardPadding;
 
-    [SerializeField] private VisualTreeAsset newTilePrefab;
-    [SerializeField] private VisualTreeAsset newRowPrefab;
+    [SerializeField] private VisualTreeAsset        newTilePrefab;
+    [SerializeField] private VisualTreeAsset        newRowPrefab;
 
     [Space]
 
     [Header("Colors")]
-    [SerializeField] private List<Color> gameColors;
-
-    [Space]
-    [SerializeField] private Sprite directionalEndSprite;
-    [SerializeField] private Sprite omnidirectionalEndSprite;
-    [SerializeField] private Sprite lineSprite;
-    [SerializeField] private Sprite cornerSprite;
+    [SerializeField] private List<Color>            gameColors;
 
     [Space]
 
-    [SerializeField] private Texture2D bronzeMedal;
-    [SerializeField] private Texture2D silverMedal;
-    [SerializeField] private Texture2D goldMedal;
-    [SerializeField] private Texture2D starMedal;
+    [SerializeField] private Texture2D              bronzeMedal;
+    [SerializeField] private Texture2D              silverMedal;
+    [SerializeField] private Texture2D              goldMedal;
+    [SerializeField] private Texture2D              starMedal;
 
     [Space]
 
-    [SerializeField] private List<Texture2D> powerupIcons;
+    [SerializeField] private List<Texture2D>        powerupIcons;
 
     #endregion
 
     #region Public Properties
 
     public float                Board_SpaceOnEdge   { get { return boardPadding; } }
-    public float                HardBorderSize      { get { return hardBorderSize; } }
-    public float                SoftBorderSize      { get { return softBorderSize; } }
-    public Color                HardBorderColor     { get { return hardBorderColor; } }
-    public Color                SoftBorderColor     { get { return softBorderColor; } }
     public TopBarController     TopBar              { get { return topBarControl; } }
     public VisualTreeAsset      LevelSelectButton   { get { return levelSelectButton; } }
     public VisualTreeAsset      ObjectiveCard       { get { return objectiveCard; } }
     public VisualTreeAsset      CoinDisplay         { get { return coinDisplay; } }
     public VisualTreeAsset      RequirementDisplay  { get { return requirementDisplay; } }
     public VisualTreeAsset      TimeAttackButton    { get { return timeAttackButtonPrefab; } }
+    public VisualTreeAsset      PowerupButton       { get { return powerupIcon; } }
     public Texture2D            RestrictedTile      { get { return restrictedTileTexture; } }
     public Texture2D            TrophyTexture       { get { return trophyTexture; } }
     public Texture2D            BronzeMedal         { get { return bronzeMedal; } }
@@ -129,31 +117,6 @@ public class UIManager : MonoBehaviour
         }
 
         return gameColors[index];
-    }
-
-    public Sprite GetTileStateTexture(TileState state, EndTileRotation endPieceRotation)
-    {
-        if (state == TileState.END)
-        {
-            if (endPieceRotation == EndTileRotation.OPEN)
-                return omnidirectionalEndSprite;
-
-            return directionalEndSprite;
-        }
-        else if (state == TileState.LINE)
-        {
-            return lineSprite;
-        }
-        else if (state == TileState.CORNER)
-        {
-            return cornerSprite;
-        }
-        else if (state == TileState.HEAD)
-        {
-            return directionalEndSprite;
-        }
-
-        return null;
     }
 
     public Texture2D GetPowerupIcon(PowerupType type)

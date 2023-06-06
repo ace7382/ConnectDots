@@ -43,7 +43,7 @@ public class ShopManager : MonoBehaviour
             purchasedItems[item]++;
         else
             purchasedItems.Add(item, 1);
-        
+
         item.PostNotification(Notifications.ITEM_PURCHASED);
     }
 
@@ -71,6 +71,11 @@ public class ShopManager : MonoBehaviour
         }
 
         return ret;
+    }
+
+    public int GetNumPurchased(ShopItem item)
+    {
+        return IsItemPurchased(item) ? purchasedItems[item]: 0;
     }
 
     #endregion

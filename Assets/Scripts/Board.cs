@@ -515,7 +515,8 @@ public class Board
                     
                     for (int am = 0; am < awardedCoins; am++)
                     {
-                        CurrencyManager.instance.SpawnCoin(colIndex, tiles[i][j].Container.worldBound.center);
+                        CurrencyManager.instance.SpawnCoin(colIndex, tiles[i][j].Container.worldBound.center
+                            , UIManager.instance.TopBar.CoinsButton.worldBound.center); //TODO: This might need to be updated on screen change?
                     }
 
                     if (ret.ContainsKey(colIndex))

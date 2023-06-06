@@ -12,12 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96bab674b8899ce4690d1398fb8000f4, type: 3}
   m_Name: Unlock - Shop
   m_EditorClassIdentifier: 
-  previousPurchasesNeeded: []
   shopGridPosition: {x: 0, y: 0}
   gridSize: {x: 1, y: 1}
+  productLine: 0
+  previousProductLineItem: {fileID: 0}
   cost:
   - colorIndex: 0
     amount: 5
   feature: 0
-  colorIndex: 0
-  icon: {fileID: 0}
+  desc: The initial PRODUCT LINES
+  colorIndex: 1
+  icon: {fileID: 2800000, guid: 374bfa2c41d374de7b0ab440b68a5501, type: 3}

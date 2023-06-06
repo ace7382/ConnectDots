@@ -12,6 +12,7 @@ public class UIToolkitLine : VisualElement
     private LineCap         cap;
 
     public List<Vector2>    Points      { get { return points; } }
+    public Vector2          LastPoint   { get { return Points[Points.Count - 1]; } }
 
     public UIToolkitLine(List<Vector2> points, float width, Color color, LineCap cap)
     {
@@ -183,5 +184,18 @@ public class UIToolkitLine : VisualElement
             .OnComplete(() => points.RemoveAt(forward ? 0 : points.Count - 1));
 
         yield return movePt.WaitForCompletion();
+    }
+
+    public override string ToString()
+    {
+        string ret = string.Format("Line {0} | Color: {1} | Thickness: {2} | Cap Style: {3}\n"
+                    , name, color, thickness, cap);
+
+        for (int i = 0; i < points.Count; i++)
+        {
+            ret += string.Format("Point {0}: {1}\n", i.ToString(), points[i].ToString());
+        }
+
+        return ret;
     }
 }

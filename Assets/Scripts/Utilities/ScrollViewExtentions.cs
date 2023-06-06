@@ -13,10 +13,19 @@ public static class ScrollViewExtentions
         scroll.scrollOffset = new Vector2(resetHorizontalScroll ? 0f : scroll.scrollOffset.x, 0f);
     }
 
-    public static void ShowHideVerticalBoundIndicators(this ScrollView scroll, VisualElement upperBoundIndicator, VisualElement lowerBoundIndicator)
+    public static void ShowHideVerticalBoundIndicators(this ScrollView scroll
+        , VisualElement upperBoundIndicator, VisualElement lowerBoundIndicator
+        , VisualElement contentContainer = null, VisualElement viewport = null)
     {
         if (scroll.mode == ScrollViewMode.Horizontal)
             Debug.LogWarning("Using ShowHideVerticalBoundIndicators on a horizontal scroll");
+
+        if (contentContainer != null && contentContainer.resolvedStyle.height <= viewport.resolvedStyle.height)
+        {
+            lowerBoundIndicator.Hide();
+            upperBoundIndicator.Hide();
+            return;
+        }
 
         lowerBoundIndicator.Show(
             !(float.IsNaN(scroll.verticalScroller.highValue)

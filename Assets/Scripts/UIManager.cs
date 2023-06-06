@@ -26,7 +26,6 @@ public class UIManager : MonoBehaviour
     [Space]
 
     [Header("Board Variables")]
-    [SerializeField] private VisualTreeAsset tilePrefab;
     [SerializeField] private float boardPadding;
     [SerializeField] private float hardBorderSize;
     [SerializeField] private Color hardBorderColor;
@@ -62,7 +61,6 @@ public class UIManager : MonoBehaviour
 
     #region Public Properties
 
-    public VisualTreeAsset      TilePrefab          { get { return tilePrefab; } }
     public float                Board_SpaceOnEdge   { get { return boardPadding; } }
     public float                HardBorderSize      { get { return hardBorderSize; } }
     public float                SoftBorderSize      { get { return softBorderSize; } }

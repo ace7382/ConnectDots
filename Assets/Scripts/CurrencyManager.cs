@@ -48,7 +48,7 @@ public class CurrencyManager : MonoBehaviour
         ownedColors = new Dictionary<int, int>();
         ownedPowerups = new Dictionary<PowerupType, int>();
 
-        //TODO: Remove this
+        //TODO: Remove this///
         CurrencyManager.instance.AddCurrency(PowerupType.HINT, 20);
         CurrencyManager.instance.AddCurrency(PowerupType.REMOVE_SPECIAL_TILE, 20);
         CurrencyManager.instance.AddCurrency(PowerupType.FILL_EMPTY, 20);
@@ -57,6 +57,7 @@ public class CurrencyManager : MonoBehaviour
         {
             CurrencyManager.instance.AddCurrency(i, Random.Range(50, 12000));
         }
+        //////////////////////
     }
 
     private void Start()
@@ -157,9 +158,9 @@ public class CurrencyManager : MonoBehaviour
         return tile.Multiplier;
     }
 
-    public void SpawnCoin(int colorIndex, Vector3 origin)
+    public void SpawnCoin(int colorIndex, Vector3 origin, Vector2 destination, float animationTime = 0f)
     {
-        coinFlyDestination                  = UIManager.instance.TopBar.CoinsButton.worldBound.center; //TODO: Set this outside of the function and update on screensize change
+        coinFlyDestination                  =  destination;
 
         VisualElement coin                  = new VisualElement();
         coin.SetWidth(25f);
@@ -174,7 +175,7 @@ public class CurrencyManager : MonoBehaviour
 
         coinDisplayContainer.Add(coin);
 
-        float animationTime                 = Random.Range(.75f, 1f);
+        animationTime                       = animationTime == 0f ? Random.Range(.75f, 1f) : animationTime;
         float delay                         = Random.Range(0f, animationTime * .9f);
 
         Sequence seq                        = DOTween.Sequence();
@@ -184,18 +185,34 @@ public class CurrencyManager : MonoBehaviour
                                                 new Vector3(coinFlyDestination.x, coinFlyDestination.y, coin.transform.position.z),
                                                 animationTime - delay)
                                                 .SetDelay(delay)
-                                                .SetEase(Ease.InBack);
-
-        Tween scaleDown                     = DOTween.To(() => coin.transform.scale,
-                                                x => coin.transform.scale = x,
-                                                Vector3.zero,
-                                                animationTime - delay)
-                                                .SetDelay(delay)
                                                 .SetEase(Ease.InBack)
                                                 .OnKill(() => coin.RemoveFromHierarchy());
 
+        //TODO: Scaling and fading seem to happen basically instantly. Might need to use
+        //      different properties to fade them out, or might want to just have a destination object
+        //      that throbs/flashes and have the coins just remove themselves
+
+        //Tween scaleDown                     = DOTween.To(() => coin.transform.scale,
+        //                                        x => coin.transform.scale = x,
+        //                                        Vector3.zero,
+        //                                        animationTime - delay)
+        //                                        .SetDelay(delay)
+        //                                        .SetEase(Ease.InBack)
+        //                                        .OnKill(() => coin.RemoveFromHierarchy());
+
+        //Tween fade                          = DOTween.To(
+        //                                        () => coin.style.opacity.value
+        //                                        , x => coin.SetOpacity(x)
+        //                                        , 0f
+        //                                        , animationTime - delay
+        //                                    )
+        //                                    .SetDelay(delay)
+        //                                    .SetEase(Ease.Linear)
+        //                                    .OnKill(() => coin.RemoveFromHierarchy());
+
         seq.Append(goToCorner);
-        seq.Join(scaleDown);
+        //seq.Join(fade);
+        //seq.Join(scaleDown);
         seq.Play();
     }
 

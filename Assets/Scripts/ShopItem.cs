@@ -35,6 +35,7 @@ public abstract class ShopItem : ScriptableObject
     public List<PurchaseCost>                       Costs                       { get { return cost; } }
     public int                                      ProductLine                 { get { return productLine; } }
     public ShopItem                                 PreviousItem                { get { return previousProductLineItem; } }
+    public int                                      ProductLineNumber           { get { return GetProductLineNumber(); } }
 
     #endregion
 
@@ -56,6 +57,25 @@ public abstract class ShopItem : ScriptableObject
         }
 
         ShopManager.instance.ItemPurchased(this);
+    }
+
+    #endregion
+
+    #region Private Functions
+
+    private int GetProductLineNumber()
+    {
+        int productLineNumber   = 1;
+
+        ShopItem tempCheck      = this;
+
+        while (tempCheck.PreviousItem != null)
+        {
+            productLineNumber++;
+            tempCheck           = tempCheck.PreviousItem;
+        }
+
+        return productLineNumber;
     }
 
     #endregion

@@ -9,17 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96bab674b8899ce4690d1398fb8000f4, type: 3}
-  m_Name: Unlock - Product Line Tab
+  m_Script: {fileID: 11500000, guid: 89ee5c4faad6a284a8a5ab1c84b22a70, type: 3}
+  m_Name: Powerup - Remove Special
   m_EditorClassIdentifier: 
-  shopGridPosition: {x: -2, y: 0}
+  shopGridPosition: {x: 1, y: -3}
   gridSize: {x: 1, y: 1}
-  productLine: 2
+  productLine: 4
   previousProductLineItem: {fileID: 0}
   cost:
   - colorIndex: 0
-    amount: 5
-  feature: 1
-  desc: '''Product Line Tab'' in Shop'
-  colorIndex: 2
-  icon: {fileID: 2800000, guid: c7aa62ae78ffca0498c89e5f45f94c0e, type: 3}
+    amount: 25
+  powerupType: 1

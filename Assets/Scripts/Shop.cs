@@ -18,6 +18,8 @@ public class Shop : Page
         public VisualElement        EndNode;
         public List<UIToolkitLine>  Lines;
 
+        public UIToolkitLine        LastLine { get { return Lines[Lines.Count - 1]; } }
+
         public ProductLine(int colorIndex, Vector2Int startPosition, bool unlocked)
         {
             ColorIndex          = colorIndex;
@@ -312,15 +314,10 @@ public class Shop : Page
     {
         //sender    -   ShopItem    -   The ShopItem that was purchased
 
-        //Get the VE of the purchased item
-        //  Spin and recolor the purchased item's node
-        //Find all nodes next to the purchased node
-        //  if the node is not revealed, spin and reveal the node
-        //Draw the correct prodcut line to the purchased item's node
-
         ShopItem boughtItem                     = (ShopItem)sender;
 
         VisualElement boughtItemNode            = null;
+        VisualElement previousItemNode          = null;
         List<VisualElement> newlyOpenedNodes    = new List<VisualElement>();
         List<ProductLine> newlyOpenedPLs        = new List<ProductLine>();
 
@@ -359,9 +356,6 @@ public class Shop : Page
 
                 ShopItem s                      = SelectedShopNode.userData as ShopItem;
 
-                //TODO: Get the color's name once that functionality is built
-                //      Set the color's name to the correct color using rich text
-                label.text                      = s.ProductLine.ToString() + " Product Line";
                 productLineTab.SetBorderColor(s.GetColor());
 
                 Tween tabUp                     =   DOTween.To(
@@ -372,6 +366,13 @@ public class Shop : Page
                                                     .SetEase(Ease.OutQuart);
 
                 tabUp.Play();
+            }
+            else if (featItem.Feat == ShopItem_UnlockFeature.Feature.PRODUCT_LINE_NUMBER)
+            {
+                VisualElement productLineTab    = uiDoc.rootVisualElement.Q<VisualElement>("ProductLineTab");
+                Label label                     = productLineTab.Q<Label>();
+                label.text                      = boughtItem.ProductLine.ToString() + " Product Line - #" 
+                                                    + boughtItem.ProductLineNumber.ToString();
             }
         }
 
@@ -390,14 +391,39 @@ public class Shop : Page
 
             if (currentSI == boughtItem)
                 boughtItemNode = nodes[i];
+            else if (currentSI == boughtItem.PreviousItem)
+                previousItemNode = nodes[i];
         }
 
+        float animationLength       = .5f;
+        Sequence seq                = DOTween.Sequence();
+
+        int numOfCoinsToSpawn       = Mathf.Min(100, boughtItem.Costs.Sum(x => x.amount));
+        Vector2 spawnBoundsX        = new Vector2(detailsPanel.worldBound.center.x - ((detailsPanel.worldBound.width / 2f) * .8f)
+                                                , detailsPanel.worldBound.center.x + ((detailsPanel.worldBound.width / 2f) * .8f));
+
+        Vector2 spawnBoundsY        = new Vector2(detailsPanel.worldBound.center.y - ((detailsPanel.worldBound.height / 2f) * .8f)
+                                                , detailsPanel.worldBound.center.y + ((detailsPanel.worldBound.height / 2f) * .8f));
+
+        for (int i = 0; i < numOfCoinsToSpawn; i++)
+        {
+            Vector2 origin          = new Vector2(Random.Range(spawnBoundsX.x, spawnBoundsX.y)
+                                    , Random.Range(spawnBoundsY.x, spawnBoundsY.y));
+
+            int colIndex            = boughtItem.Costs[Random.Range(0, boughtItem.Costs.Count - 1)].colorIndex;
+
+            CurrencyManager.instance.SpawnCoin(
+                                    colIndex
+                                    , origin
+                                    , boughtItemNode.worldBound.center
+                                    , animationLength * 1.3f);
+        }
         //------
         
-        Sequence seq                = DOTween.Sequence();
-        float animationLength       = .5f;
-
-        Tween shrinkPurchased       = DOTween.To(
+        if (!(boughtItem is ShopItem_MultiplePurchaseItem))
+        {
+        
+            Tween shrinkPurchased   = DOTween.To(
                                         () => boughtItemNode.transform.scale
                                         , x => boughtItemNode.style.scale = x
                                         , Vector3.zero
@@ -418,7 +444,7 @@ public class Shop : Page
                                         })
                                     .Pause();
 
-        Tween resizePurchased       = DOTween.To(
+            Tween resizePurchased   = DOTween.To(
                                         () => boughtItemNode.transform.scale
                                         , x => boughtItemNode.style.scale = x
                                         , Vector3.one
@@ -426,8 +452,13 @@ public class Shop : Page
                                     .SetEase(Ease.OutQuad)
                                     .Pause();
 
-        seq.Append(shrinkPurchased);
-        seq.Append(resizePurchased);
+            seq.Append(shrinkPurchased);
+            seq.Append(resizePurchased);
+        }
+        else
+        {
+            //CurrencyMan.spawn powerup coin
+        }
 
         for (int i = 0; i < newlyOpenedNodes.Count; i++)
         {
@@ -526,15 +557,87 @@ public class Shop : Page
         if (boughtItem.ProductLine != 0)
         {
             VisualElement buttonBG  = boughtItemNode.Q<VisualElement>("LevelSelectButton");
-            VisualElement icon      = boughtItemNode.Q<VisualElement>("Icon");
             Vector2 destination     = shopBoard.WorldToLocal(buttonBG.worldBound.center);
+            ProductLine productLine = productLines.Find(x => boughtItem.ProductLine == x.ColorIndex);
+            canClick                = false; //TODO: This should probably be set false earlier in this function
 
-            canClick                = false;
+            if (boughtItem.PreviousItem != null && boughtItem.PreviousItem is ShopItem_MultiplePurchaseItem)
+            {
+                Vector2 preCenter   = shopBoard.WorldToLocal(
+                                        previousItemNode.Q<VisualElement>("LevelSelectButton")
+                                        .worldBound.center);
 
-            Tween draw              = productLines.Find(x => boughtItem.ProductLine == x.ColorIndex).Lines[0]
-                                        .DrawTowardNewPoint_Tween(destination, .3f)
+                Vector2 origin      = Vector2.zero;
+
+                if (preCenter.x < destination.x)
+                {
+                    Debug.Log("a");
+                    origin          = new Vector2(preCenter.x + (GRID_SIZE / 2f), preCenter.y);
+                }
+                else if (preCenter.x > destination.x)
+                {
+                    Debug.Log("b");
+                    origin          = new Vector2(preCenter.x - (GRID_SIZE / 2f), preCenter.y);
+                }
+                else if (preCenter.y < destination.y)
+                {
+                    Debug.Log("c");
+                    origin          = new Vector2(preCenter.x, preCenter.y + (GRID_SIZE / 2f));
+                }
+                else
+                {
+                    Debug.Log("d");
+                    origin          = new Vector2(preCenter.x, preCenter.y - (GRID_SIZE / 2f));
+                }
+
+                UIToolkitLine l = new UIToolkitLine(
+                    new List<Vector2>() { origin }
+                    , GRID_SIZE / 3f * .75f
+                    , UIManager.instance.GetColor(productLine.ColorIndex)
+                    , LineCap.Round);
+
+                shopBoard.Add(l);
+                l.BringToFront();
+                productLine.Lines.Add(l);
+            }
+
+            if (!(boughtItem is ShopItem_MultiplePurchaseItem))
+            {
+                Tween draw          = productLine.LastLine
+                                        .DrawTowardNewPoint_Tween(destination, animationLength)
                                         .OnComplete(() => canClick = true)
                                         .Play();
+            }
+            else
+            {
+                Vector2 newDest     = Vector2.zero;
+
+                if (productLine.LastLine.LastPoint.x < destination.x)
+                {
+                    newDest         = new Vector2(destination.x - (GRID_SIZE / 2f), destination.y);
+                }
+                else if (productLine.LastLine.LastPoint.x > destination.x)
+                {
+                    newDest         = new Vector2(destination.x + (GRID_SIZE / 2f), destination.y);
+                }
+                else if (productLine.LastLine.LastPoint.y < destination.y)
+                {
+                    newDest         = new Vector2(destination.x, destination.y - (GRID_SIZE / 2f));
+                }
+                else
+                {
+                    newDest         = new Vector2(destination.x, destination.y + (GRID_SIZE / 2f));
+                }
+
+                Tween draw          = productLine.LastLine
+                                        .DrawTowardNewPoint_Tween(newDest, animationLength)
+                                        .OnComplete(() => {
+                                            buttonBG.SetBorderWidth(20f);
+                                            buttonBG.SetBorderColor(UIManager.instance.GetColor(productLine.ColorIndex));
+                                            canClick = true;
+                                        })
+                                        .Play();
+            }
         }
     }
 
@@ -801,19 +904,23 @@ public class Shop : Page
 
         ShopItem item                       = content.userData as ShopItem;
 
-        productLineLabel.text               = item.ProductLine.ToString() + " Product Line";
+        if (ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.PRODUCT_LINE_NUMBER))
+            productLineLabel.text           = item.ProductLine.ToString() + " Product Line - #" + item.ProductLineNumber.ToString();
+        else
+            productLineLabel.text           = item.ProductLine.ToString() + " Product Line";
 
-        //productLineTab.SetColor(UIManager.instance.GetColor(item.ProductLine));
         productLineTab.SetBorderColor(item.GetColor());
 
         if (!visibleNodes[item.Position])
         {
             productLineTab.SetBorderColor(Color.black);
+            costScrollView.Hide();
             SetDetailsMystery();
         }
         else
         {
             container.Add(item.GetDisplayContent(item.Purchased));
+            costScrollView.Show();
             detailsPanel.Q<VisualElement>("BG").SetBorderColor(item.GetColor());
 
             if (item.Purchased)
@@ -864,39 +971,7 @@ public class Shop : Page
                     costLine.Q<VisualElement>("CoinSquare").SetColor(UIManager.instance.GetColor(item.Costs[i].colorIndex));
 
                     costObjs.Add(costLine);
-                    //Debug.Log("Coin line style.width.value.value: " + costLine.style.width.value.value);
-                    //Debug.Log("Coin line .localbound.width: " + costLine.localBound.width);
-                    //Debug.Log("Coin line .layout.width" + costLine.layout.width);
-
-                    //if (i % 3 == 0)
-                    //{
-                    //    row                     = new VisualElement();
-                    //    row.style.flexDirection = FlexDirection.Row;
-                    //    row.style.flexGrow      = 0f;
-                    //    row.style.flexShrink    = 1f;
-                    //    row.style
-                    //        .justifyContent     = Justify.Center;
-                    //    row.style.alignItems    = Align.Stretch;
-                    //    row.style.alignSelf     = Align.Center;
-                    //    row.SetWidth(new StyleLength(new Length(95f, LengthUnit.Percent)));
-
-                    //    costScrollView.Add(row);
-                    //}
-
-                    //row.Add(costLine);
                 }
-
-                yield return null;
-
-                yield return CreateCostRows(costObjs);
-
-                costScrollView.SetOpacity(100f);
-
-                costScrollView.SetBoundIndicators(topIndicator, bottomIndicator);
-                costScrollView.verticalScroller.valueChanged += (evt) =>
-                {
-                    costScrollView.ShowHideVerticalBoundIndicators(topIndicator, bottomIndicator);
-                };
 
                 Label purchaseButtonLabel = purchaseButton.Q<Label>();
 
@@ -908,10 +983,11 @@ public class Shop : Page
                 {
                     if (item.PreviousItem == null || ShopManager.instance.IsItemPurchased(item.PreviousItem))
                     {
-                        purchaseButton.SetBorderColor(Color.green);
+                        purchaseButton.SetBorderColor(item.GetColor());
+                        purchaseButton.SetColor(item.GetColor());
                         purchaseButtonLabel
-                            .style.color = Color.green;
-                        purchaseButtonLabel.text = "Purchase";
+                            .style.color            = Color.black;
+                        purchaseButtonLabel.text    = "Purchase";
 
                         purchaseButtonAction = (evt) => { OnPurchase(item, evt); };
                         purchaseButton.RegisterCallback<PointerUpEvent>(purchaseButtonAction);
@@ -919,26 +995,37 @@ public class Shop : Page
                     else
                     {
                         purchaseButton.SetBorderColor(Color.grey);
+                        purchaseButton.SetColor(Color.grey);
                         purchaseButtonLabel
-                            .style.color            = Color.grey;
-                        purchaseButtonLabel.text    = "Purchase more Items in this Item's Product Line to Unlock";
+                            .style.color            = Color.black;
+                        purchaseButtonLabel.text    = "Purchase earlier Product Line items";
                     }
                 }
                 else
                 {
                     purchaseButton.SetBorderColor(Color.grey);
+                    purchaseButton.SetColor(Color.grey);
                     purchaseButtonLabel
-                        .style.color = Color.grey;
+                        .style.color                = Color.black;
                     purchaseButtonLabel.text        = "Need More Segments";
                 }
 
-                //TODO: when a cost list with few enough lines that it doesn't require scrolling, the bottom indicator
-                //      still shows. Probably will be resolved with the TODO below
-                //TODO: This should probably be moved into a coroutine by reworking this function. Just need it set on a seperate frame
-                //      bc the scrollview's size is set at the begining of the functions, so this can't access it yet
                 yield return null;
-                costScrollView.ShowHideVerticalBoundIndicators(topIndicator, bottomIndicator);
-                //costScrollView.schedule.Execute(() => costScrollView.ShowHideVerticalBoundIndicators(topIndicator, bottomIndicator));
+
+                //yield return null;
+
+                yield return CreateCostRows(costObjs);
+
+                costScrollView.SetOpacity(100f);
+
+                costScrollView.SetBoundIndicators(topIndicator, bottomIndicator);
+                costScrollView.verticalScroller.valueChanged += (evt) =>
+                {
+                    costScrollView.ShowHideVerticalBoundIndicators(topIndicator, bottomIndicator);
+                };
+
+                costScrollView.ShowHideVerticalBoundIndicators(topIndicator, bottomIndicator
+                                , costScrollView.contentContainer, costScrollView.contentContainer.parent);
             }
         }
 
@@ -962,15 +1049,11 @@ public class Shop : Page
 
         float maxWidth      = costScrollView.resolvedStyle.width * .9f;
 
-        Debug.Log(maxWidth);
-
         for (int i = 0; i < costEntries.Count; i++)
         {
             row.Add(costEntries[i]);
 
             yield return null;
-
-            Debug.Log(row.resolvedStyle.width);
 
             if (row.resolvedStyle.width > maxWidth)
             {
@@ -1142,10 +1225,6 @@ public class Shop : Page
             Label label                     = productLineTab.Q<Label>();
 
             ShopItem s                      = SelectedShopNode.userData as ShopItem;
-
-            //TODO: Get the color's name once that functionality is built
-            label.text                      = s.ProductLine.ToString() + " Product Line";
-            productLineTab.SetColor(UIManager.instance.GetColor(s.ProductLine));
 
             Tween tabDown                   =   DOTween.To(
                                                     () => productLineTab.style.top.value.value

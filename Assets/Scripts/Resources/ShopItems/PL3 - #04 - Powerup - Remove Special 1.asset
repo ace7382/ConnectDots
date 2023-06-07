@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89ee5c4faad6a284a8a5ab1c84b22a70, type: 3}
+  m_Name: PL3 - #04 - Powerup - Remove Special 1
+  m_EditorClassIdentifier: 
+  shopGridPosition: {x: 0, y: 3}
+  gridSize: {x: 1, y: 1}
+  productLine: 3
+  previousProductLineItem: {fileID: 11400000, guid: 887c23f0ccfec1a4fa3773d2fbd1ba80, type: 2}
+  cost:
+  - colorIndex: 0
+    amount: 50
+  drawLinesToOutlineOnPurchase: 1
+  lineInPosition: {x: 0, y: 3}
+  lineOutPosition: {x: 0, y: 3}
+  powerupType: 2

@@ -37,6 +37,7 @@ public class Shop : Page
 
     private const float     SPACING             = 25f;
     private const float     GRID_SIZE           = 150f;
+    private const float     SELECTION_BORDER_ADD= 8f;   //This is the extra size set on the seleciton border. It's hard coded into the LevelSelectButton's UI file
     private const int       GRID_X_MIN          = -10;
     private const int       GRID_X_MAX          = 10;
     private const int       GRID_Y_MIN          = -10;
@@ -92,6 +93,10 @@ public class Shop : Page
         {
             if (selectedShopNode == value)
             {
+                //TODO: If the details panel is closed while a node is selected,
+                //      click it again to close the selection needs to hide the 
+                //      detailsButton
+
                 selectedShopNode.Q<VisualElement>("SelectionBorder").Hide();
                 selectedShopNode = null;
 
@@ -113,6 +118,10 @@ public class Shop : Page
             {
                 selectedShopNode.Q<VisualElement>("SelectionBorder").Show();
             }
+
+            Debug.Log(string.Format("worldbound: {0}\nBoard: {1}"
+                    , selectedShopNode.worldBound.center
+                    , shopBoard.WorldToLocal(selectedShopNode.worldBound.center)));
 
             PageManager.instance.StartCoroutine(SetDetailsPanel(selectedShopNode));
         }
@@ -141,15 +150,15 @@ public class Shop : Page
         productLines        = new List<ProductLine>();
         visibleNodes        = new Dictionary<Vector2Int, bool>();
 
-        for (int i = GRID_X_MIN; i <= GRID_X_MAX; i++)
-        {
-            for (int j = GRID_Y_MIN; j <= GRID_Y_MAX; j++)
-            {
-                visibleNodes.Add(new Vector2Int(i, j), false);
-            }
-        }
+        //for (int i = GRID_X_MIN; i <= GRID_X_MAX; i++)
+        //{
+        //    for (int j = GRID_Y_MIN; j <= GRID_Y_MAX; j++)
+        //    {
+        //        visibleNodes.Add(new Vector2Int(i, j), false);
+        //    }
+        //}
 
-        visibleNodes[Vector2Int.zero] = true;
+        //visibleNodes[Vector2Int.zero] = true;
 
         shopBoard.RegisterCallback<PointerDownEvent>(OnPointerDownOnShopBoard);
         shopBoard.RegisterCallback<PointerMoveEvent>(OnPointerMoveOnShopBoard);
@@ -245,24 +254,38 @@ public class Shop : Page
         VisualElement detailsPLTab      = uiDoc.rootVisualElement.Q<VisualElement>("ProductLineTab");
         detailsPLTab.style.top          = 0f;
 
-        for (int i = 0; i < ownedNodes.Count; i++)
-        {
-            SetVisibleNodes(ownedNodes[i]);
-        }
+        //for (int i = 0; i < ownedNodes.Count; i++)
+        //{
+        //    SetVisibleNodes(ownedNodes[i]);
+        //}
+
+        visibleNodes.Add(Vector2Int.zero, true);
 
         for (int i = 0; i < shopItems.Count; i++)
         {
+            if (shopItems[i].Position != Vector2Int.zero)
+                visibleNodes.Add(shopItems[i].Position, false);
+
             ShopItem shopItem           = shopItems[i];
             VisualElement shopButton    = UIManager.instance.LevelSelectButton.Instantiate();
             VisualElement buttonBG      = shopButton.Q<VisualElement>("LevelSelectButton");
             VisualElement icon          = shopButton.Q<VisualElement>("Icon");
             VisualElement purchasedIcon = shopButton.Q<VisualElement>("CompletedIcon");
+            VisualElement selBorder     = shopButton.Q<VisualElement>("SelectionBorder");
+
+            buttonBG.SetMargins(0f); //TEST
+            selBorder.SetMargins(0f);
 
             shopButton.style.position   = Position.Absolute;
-            shopButton.style.left       = zeroLocation.x + ((GRID_SIZE + SPACING) * shopItem.Position.x);
-            shopButton.style.top        = zeroLocation.y + ((GRID_SIZE + SPACING) * shopItem.Position.y);
+            shopButton.style.left       = zeroLocation.x + ((GRID_SIZE + SPACING) * shopItem.Position.x);// + (((GRID_SIZE + SPACING) / 2f) * (shopItem.Size.x - 1));
+            shopButton.style.top        = zeroLocation.y + ((GRID_SIZE + SPACING) * shopItem.Position.y);// + (((GRID_SIZE + SPACING) / 2f) * (shopItem.Size.y - 1));
 
             shopButton.userData         = shopItem;
+
+            buttonBG.SetWidth   ((GRID_SIZE * shopItem.Size.x) + (SPACING * (shopItem.Size.x - 1)), false, false);
+            buttonBG.SetHeight  ((GRID_SIZE * shopItem.Size.y) + (SPACING * (shopItem.Size.y - 1)), false, false);
+            selBorder.SetWidth  ((GRID_SIZE * shopItem.Size.x) + (SPACING * (shopItem.Size.x - 1)) + SELECTION_BORDER_ADD, false, false);
+            selBorder.SetHeight ((GRID_SIZE * shopItem.Size.y) + (SPACING * (shopItem.Size.y - 1)) + SELECTION_BORDER_ADD, false, false);
 
             nodes.Add(shopButton);
 
@@ -276,7 +299,7 @@ public class Shop : Page
                 }
                 else
                 {
-                    buttonBG.SetColor(Color.grey); //TODO: This better lol
+                    buttonBG.SetColor(Color.grey);
                     icon.style
                         .backgroundImage = null;
                 }
@@ -285,7 +308,7 @@ public class Shop : Page
             {
                 Debug.Log("ShopItem " + shopItem.name + " has a Position outside of the shop grid size");
 
-                buttonBG.SetColor(Color.grey); //TODO: This better lol
+                buttonBG.SetColor(Color.grey);
                 icon.style
                     .backgroundImage = null;
             }
@@ -304,6 +327,14 @@ public class Shop : Page
             shopButton.Q<Label>().RemoveFromHierarchy();
             shopBoard.Add(shopButton);
         }
+
+
+
+        for (int i = 0; i < ownedNodes.Count; i++)
+        {
+            SetVisibleNodes(ownedNodes[i]);
+        }
+
 
         this.AddObserver(OnItemPurchase, Notifications.ITEM_PURCHASED);
 
@@ -557,39 +588,106 @@ public class Shop : Page
         if (boughtItem.ProductLine != 0)
         {
             VisualElement buttonBG  = boughtItemNode.Q<VisualElement>("LevelSelectButton");
-            Vector2 destination     = shopBoard.WorldToLocal(buttonBG.worldBound.center);
             ProductLine productLine = productLines.Find(x => boughtItem.ProductLine == x.ColorIndex);
             canClick                = false; //TODO: This should probably be set false earlier in this function
 
-            if (boughtItem.PreviousItem != null && boughtItem.PreviousItem is ShopItem_MultiplePurchaseItem)
+            Vector2 destination     = Vector2.zero;
+            Vector2 origin          = Vector2.zero;
+            ShopItem prev           = boughtItem.PreviousItem;
+            Vector2 zeroLocation    = new Vector2(shopBoard.resolvedStyle.width / 2f, shopBoard.resolvedStyle.height / 2f)
+                                        + new Vector2(GRID_SIZE / 2f, GRID_SIZE / 2f);
+
+            Vector2 outComparer     = prev == null ?
+                productLines.Find(x => x.ColorIndex == boughtItem.ProductLine).StartPosition
+                : (prev.DrawLinesToOutline ?
+                    prev.LineOutPosition
+                    : prev.Position);
+
+            Vector2 inComparer      = boughtItem.DrawLinesToOutline ?
+                boughtItem.LineInPosition
+                : boughtItem.Position;
+
+            if (prev == null || !prev.DrawLinesToOutline)
+                origin              = productLine.LastLine.LastPoint;
+            else
             {
-                Vector2 preCenter   = shopBoard.WorldToLocal(
-                                        previousItemNode.Q<VisualElement>("LevelSelectButton")
-                                        .worldBound.center);
-
-                Vector2 origin      = Vector2.zero;
-
-                if (preCenter.x < destination.x)
+                if (outComparer.y < inComparer.y)
                 {
-                    Debug.Log("a");
-                    origin          = new Vector2(preCenter.x + (GRID_SIZE / 2f), preCenter.y);
+                    origin          = new Vector2(
+                                        (GRID_SIZE + SPACING) * outComparer.x
+                                        , ((GRID_SIZE + SPACING) * outComparer.y) + (GRID_SIZE / 2f)
+                                    );
                 }
-                else if (preCenter.x > destination.x)
+                else if (outComparer.y > inComparer.y)
                 {
-                    Debug.Log("b");
-                    origin          = new Vector2(preCenter.x - (GRID_SIZE / 2f), preCenter.y);
+                    origin          = new Vector2(
+                                        (GRID_SIZE + SPACING) * outComparer.x
+                                        , ((GRID_SIZE + SPACING) * outComparer.y) - (GRID_SIZE / 2f)
+                                    );
                 }
-                else if (preCenter.y < destination.y)
+                else if (outComparer.x < inComparer.x)
                 {
-                    Debug.Log("c");
-                    origin          = new Vector2(preCenter.x, preCenter.y + (GRID_SIZE / 2f));
+                    origin          = new Vector2(
+                                        ((GRID_SIZE + SPACING) * outComparer.x) + (GRID_SIZE / 2f)
+                                        , (GRID_SIZE + SPACING) * outComparer.y
+                                    );
                 }
                 else
                 {
-                    Debug.Log("d");
-                    origin          = new Vector2(preCenter.x, preCenter.y - (GRID_SIZE / 2f));
+                    origin          = new Vector2(
+                                        ((GRID_SIZE + SPACING) * outComparer.x) - (GRID_SIZE / 2f)
+                                        , (GRID_SIZE + SPACING) * outComparer.y
+                                    );
                 }
 
+                origin += zeroLocation;
+            }
+
+            if (!boughtItem.DrawLinesToOutline)
+                destination         = shopBoard.WorldToLocal(buttonBG.worldBound.center);
+            else
+            {
+                Debug.Log(string.Format("Drawing from OUT point: {0} to IN point: {1}", outComparer, inComparer));
+
+                if (outComparer.y < inComparer.y)
+                {
+                    Debug.Log("a");
+                    destination     = new Vector2(
+                                        (GRID_SIZE + SPACING) * inComparer.x
+                                        , ((GRID_SIZE + SPACING) * inComparer.y) - (GRID_SIZE / 2f));
+                }
+                else if (outComparer.y > inComparer.y)
+                {
+                    Debug.Log("b");
+                    destination     = new Vector2(
+                                        (GRID_SIZE + SPACING) * inComparer.x
+                                        , ((GRID_SIZE + SPACING) * inComparer.y) + (GRID_SIZE / 2f)
+                                    );
+                }
+                else if (outComparer.x < inComparer.x)
+                {
+                    Debug.Log("e");
+                    destination     = new Vector2(
+                                        ((GRID_SIZE + SPACING) * inComparer.x) - (GRID_SIZE / 2f)
+                                        , (GRID_SIZE + SPACING) * inComparer.y
+                                    );
+                }
+                else
+                {
+                    Debug.Log("w");
+                    destination     = new Vector2(
+                                        ((GRID_SIZE + SPACING) * inComparer.x) + (GRID_SIZE / 2f)
+                                        , (GRID_SIZE + SPACING) * inComparer.y
+                                    );
+                }
+
+                destination += zeroLocation;
+            }
+
+            Debug.Log("Drawing From " + origin + " to " + destination);
+
+            if (origin != productLine.LastLine.LastPoint)
+            {
                 UIToolkitLine l = new UIToolkitLine(
                     new List<Vector2>() { origin }
                     , GRID_SIZE / 3f * .75f
@@ -601,43 +699,19 @@ public class Shop : Page
                 productLine.Lines.Add(l);
             }
 
-            if (!(boughtItem is ShopItem_MultiplePurchaseItem))
-            {
-                Tween draw          = productLine.LastLine
-                                        .DrawTowardNewPoint_Tween(destination, animationLength)
-                                        .OnComplete(() => canClick = true)
-                                        .Play();
-            }
-            else
-            {
-                Vector2 newDest     = Vector2.zero;
+            Tween draw = productLine.LastLine
+                        .DrawTowardNewPoint_Tween(destination, animationLength)
+                        .OnComplete(() => {
 
-                if (productLine.LastLine.LastPoint.x < destination.x)
-                {
-                    newDest         = new Vector2(destination.x - (GRID_SIZE / 2f), destination.y);
-                }
-                else if (productLine.LastLine.LastPoint.x > destination.x)
-                {
-                    newDest         = new Vector2(destination.x + (GRID_SIZE / 2f), destination.y);
-                }
-                else if (productLine.LastLine.LastPoint.y < destination.y)
-                {
-                    newDest         = new Vector2(destination.x, destination.y - (GRID_SIZE / 2f));
-                }
-                else
-                {
-                    newDest         = new Vector2(destination.x, destination.y + (GRID_SIZE / 2f));
-                }
+                            if (boughtItem.DrawLinesToOutline)
+                            {
+                                buttonBG.SetBorderWidth(20f);
+                                buttonBG.SetBorderColor(UIManager.instance.GetColor(productLine.ColorIndex));
+                            }
 
-                Tween draw          = productLine.LastLine
-                                        .DrawTowardNewPoint_Tween(newDest, animationLength)
-                                        .OnComplete(() => {
-                                            buttonBG.SetBorderWidth(20f);
-                                            buttonBG.SetBorderColor(UIManager.instance.GetColor(productLine.ColorIndex));
-                                            canClick = true;
-                                        })
-                                        .Play();
-            }
+                            canClick = true;
+                        })
+                        .Play();
         }
     }
 
@@ -661,6 +735,10 @@ public class Shop : Page
             VisualElement buttonBG      = shopButton.Q<VisualElement>("LevelSelectButton");
             VisualElement icon          = shopButton.Q<VisualElement>("Icon");
             VisualElement purchasedIcon = shopButton.Q<VisualElement>("CompletedIcon");
+            VisualElement selBorder     = shopButton.Q<VisualElement>("SelectionBorder");
+            
+            buttonBG.SetMargins(0f); //TEST
+            selBorder.SetMargins(0f);
 
             shopButton.style.position   = Position.Absolute;
             shopButton.style.left       = zeroLocation.x + ((GRID_SIZE + SPACING) * productLine.StartPosition.x);
@@ -1248,9 +1326,9 @@ public class Shop : Page
 
         if (ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.PRODUCT_LINE_TAB))
         {
-            Label label                     = productLineTab.Q<Label>();
+            //Label label                     = productLineTab.Q<Label>();
 
-            ShopItem s                      = SelectedShopNode.userData as ShopItem;
+            //ShopItem s                      = SelectedShopNode.userData as ShopItem;
 
             Tween tabDown                   =   DOTween.To(
                                                     () => productLineTab.style.top.value.value

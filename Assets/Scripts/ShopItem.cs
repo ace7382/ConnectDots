@@ -25,17 +25,24 @@ public abstract class ShopItem : ScriptableObject
     [SerializeField] protected ShopItem             previousProductLineItem;
     [SerializeField] protected List<PurchaseCost>   cost;
 
+    [SerializeField] protected bool                 drawLinesToOutlineOnPurchase;
+    [SerializeField] protected Vector2Int           lineInPosition;
+    [SerializeField] protected Vector2Int           lineOutPosition;
+
     #endregion
 
     #region Public Properties
 
     public Vector2Int                               Position                    { get { return shopGridPosition; } }
-    public Vector2                                  Size                        { get { return gridSize; } }
+    public Vector2Int                               Size                        { get { return gridSize; } }
     public bool                                     Purchased                   { get { return ShopManager.instance.IsItemPurchased(this); } }
     public List<PurchaseCost>                       Costs                       { get { return cost; } }
     public int                                      ProductLine                 { get { return productLine; } }
     public ShopItem                                 PreviousItem                { get { return previousProductLineItem; } }
     public int                                      ProductLineNumber           { get { return GetProductLineNumber(); } }
+    public bool                                     DrawLinesToOutline          { get { return drawLinesToOutlineOnPurchase; } }
+    public Vector2Int                               LineInPosition              { get { return lineInPosition; } }
+    public Vector2Int                               LineOutPosition             { get { return lineOutPosition; } }
 
     #endregion
 

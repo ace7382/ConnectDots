@@ -52,6 +52,11 @@ public class UIToolkitLine : VisualElement
         painter.Stroke();
     }
 
+    public void AddNewPoint(Vector2 newPoint)
+    {
+        points.Add(newPoint);
+    }
+
     public IEnumerator DrawTowardNewPoint(Vector2 newPoint, float duration)
     {
         Points.Add(Points[Points.Count - 1]);

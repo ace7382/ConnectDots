@@ -78,5 +78,13 @@ public class ShopManager : MonoBehaviour
         return IsItemPurchased(item) ? purchasedItems[item]: 0;
     }
 
+    public List<ShopItem> GetPurchasedProductLineItems(int productLineIndex)
+    {
+        return  purchasedItems
+                    .Where(x => x.Key.ProductLine == productLineIndex)
+                    .Select(x => x.Key)
+                    .OrderBy(x => x.ProductLineNumber).ToList();
+    }
+
     #endregion
 }

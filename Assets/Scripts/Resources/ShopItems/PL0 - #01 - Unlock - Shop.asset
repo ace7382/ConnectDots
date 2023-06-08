@@ -19,7 +19,10 @@ MonoBehaviour:
   cost:
   - colorIndex: 0
     amount: 5
+  drawLinesToOutlineOnPurchase: 0
+  lineInPosition: {x: 0, y: 0}
+  lineOutPosition: {x: 0, y: 0}
   feature: 0
-  desc: The initial PRODUCT LINES
+  desc: Open up the Shop
   colorIndex: 1
   icon: {fileID: 2800000, guid: 374bfa2c41d374de7b0ab440b68a5501, type: 3}

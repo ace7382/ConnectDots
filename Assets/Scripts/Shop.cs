@@ -75,7 +75,9 @@ public class Shop : Page
 
     private List<VisualElement> nodes;
     private List<ProductLine>   productLines;
-    private Dictionary<Vector2Int, bool> visibleNodes;
+
+    private Dictionary<Vector2Int, VisualElement> VEbyPosition;
+    private Dictionary<VisualElement, bool> VEsRevealed;
 
     private EventCallback<PointerUpEvent> purchaseButtonAction;
 
@@ -148,17 +150,9 @@ public class Shop : Page
 
         nodes               = new List<VisualElement>();
         productLines        = new List<ProductLine>();
-        visibleNodes        = new Dictionary<Vector2Int, bool>();
 
-        //for (int i = GRID_X_MIN; i <= GRID_X_MAX; i++)
-        //{
-        //    for (int j = GRID_Y_MIN; j <= GRID_Y_MAX; j++)
-        //    {
-        //        visibleNodes.Add(new Vector2Int(i, j), false);
-        //    }
-        //}
-
-        //visibleNodes[Vector2Int.zero] = true;
+        VEbyPosition        = new Dictionary<Vector2Int, VisualElement>();
+        VEsRevealed         = new Dictionary<VisualElement, bool>();
 
         shopBoard.RegisterCallback<PointerDownEvent>(OnPointerDownOnShopBoard);
         shopBoard.RegisterCallback<PointerMoveEvent>(OnPointerMoveOnShopBoard);
@@ -254,18 +248,8 @@ public class Shop : Page
         VisualElement detailsPLTab      = uiDoc.rootVisualElement.Q<VisualElement>("ProductLineTab");
         detailsPLTab.style.top          = 0f;
 
-        //for (int i = 0; i < ownedNodes.Count; i++)
-        //{
-        //    SetVisibleNodes(ownedNodes[i]);
-        //}
-
-        visibleNodes.Add(Vector2Int.zero, true);
-
         for (int i = 0; i < shopItems.Count; i++)
         {
-            if (shopItems[i].Position != Vector2Int.zero)
-                visibleNodes.Add(shopItems[i].Position, false);
-
             ShopItem shopItem           = shopItems[i];
             VisualElement shopButton    = UIManager.instance.LevelSelectButton.Instantiate();
             VisualElement buttonBG      = shopButton.Q<VisualElement>("LevelSelectButton");
@@ -273,41 +257,45 @@ public class Shop : Page
             VisualElement purchasedIcon = shopButton.Q<VisualElement>("CompletedIcon");
             VisualElement selBorder     = shopButton.Q<VisualElement>("SelectionBorder");
 
-            buttonBG.SetMargins(0f); //TEST
+            for (int width = 0; width < shopItem.Size.x; width++)
+            {
+                for (int height = 0; height < shopItem.Size.y; height++)
+                {
+                    Vector2Int pos = new Vector2Int(shopItem.Position.x + width
+                                            , shopItem.Position.y + height);
+
+                    Debug.Log(shopItem + " " + pos);
+
+                    VEbyPosition.Add(pos, shopButton);
+                }
+            }
+
+            VEsRevealed.Add(shopButton, ShopManager.instance.IsItemPurchased(shopItem));
+
+            buttonBG.SetMargins(0f);
             selBorder.SetMargins(0f);
 
             shopButton.style.position   = Position.Absolute;
             shopButton.style.left       = zeroLocation.x + ((GRID_SIZE + SPACING) * shopItem.Position.x);// + (((GRID_SIZE + SPACING) / 2f) * (shopItem.Size.x - 1));
             shopButton.style.top        = zeroLocation.y + ((GRID_SIZE + SPACING) * shopItem.Position.y);// + (((GRID_SIZE + SPACING) / 2f) * (shopItem.Size.y - 1));
 
-            shopButton.userData         = shopItem;
+            shopButton.userData = shopItem;
 
-            buttonBG.SetWidth   ((GRID_SIZE * shopItem.Size.x) + (SPACING * (shopItem.Size.x - 1)), false, false);
-            buttonBG.SetHeight  ((GRID_SIZE * shopItem.Size.y) + (SPACING * (shopItem.Size.y - 1)), false, false);
-            selBorder.SetWidth  ((GRID_SIZE * shopItem.Size.x) + (SPACING * (shopItem.Size.x - 1)) + SELECTION_BORDER_ADD, false, false);
-            selBorder.SetHeight ((GRID_SIZE * shopItem.Size.y) + (SPACING * (shopItem.Size.y - 1)) + SELECTION_BORDER_ADD, false, false);
+            buttonBG.SetWidth((GRID_SIZE * shopItem.Size.x) + (SPACING * (shopItem.Size.x - 1)), false, false);
+            buttonBG.SetHeight((GRID_SIZE * shopItem.Size.y) + (SPACING * (shopItem.Size.y - 1)), false, false);
+            selBorder.SetWidth((GRID_SIZE * shopItem.Size.x) + (SPACING * (shopItem.Size.x - 1)) + SELECTION_BORDER_ADD, false, false);
+            selBorder.SetHeight((GRID_SIZE * shopItem.Size.y) + (SPACING * (shopItem.Size.y - 1)) + SELECTION_BORDER_ADD, false, false);
 
             nodes.Add(shopButton);
 
-            if (visibleNodes.ContainsKey(shopItem.Position))
+            if (VEsRevealed[shopButton] || shopItem.Position == Vector2.zero)
             {
-                if (visibleNodes[shopItem.Position])
-                {
-                    buttonBG.SetColor(UIManager.instance.GetColor(0));
-                    icon.style
-                        .backgroundImage = shopItem.GetIcon();
-                }
-                else
-                {
-                    buttonBG.SetColor(Color.grey);
-                    icon.style
-                        .backgroundImage = null;
-                }
+                buttonBG.SetColor(UIManager.instance.GetColor(0));
+                icon.style
+                    .backgroundImage = shopItem.GetIcon();
             }
             else
             {
-                Debug.Log("ShopItem " + shopItem.name + " has a Position outside of the shop grid size");
-
                 buttonBG.SetColor(Color.grey);
                 icon.style
                     .backgroundImage = null;
@@ -328,17 +316,58 @@ public class Shop : Page
             shopBoard.Add(shopButton);
         }
 
+        VEsRevealed[VEbyPosition[Vector2Int.zero]] = true;
 
-
-        for (int i = 0; i < ownedNodes.Count; i++)
+        foreach (KeyValuePair<VisualElement, bool> ve in VEsRevealed)
         {
-            SetVisibleNodes(ownedNodes[i]);
+            if (ve.Value)
+                SetVisibiltyOfNeighboringTiles(ve.Key);
         }
-
 
         this.AddObserver(OnItemPurchase, Notifications.ITEM_PURCHASED);
 
         SetupProductLines();
+    }
+
+    private List<VisualElement> SetVisibiltyOfNeighboringTiles(VisualElement ve)
+    {
+        List<Vector2Int> posToCheck = VEbyPosition.Where(x => x.Value == ve).Select(x => x.Key).ToList();
+        List<VisualElement> ret     = new List<VisualElement>();
+
+        for (int i = 0; i < posToCheck.Count; i++)
+        {
+            Vector2Int up           = new Vector2Int(posToCheck[i].x        , posToCheck[i].y - 1);
+            Vector2Int right        = new Vector2Int(posToCheck[i].x + 1    , posToCheck[i].y);
+            Vector2Int down         = new Vector2Int(posToCheck[i].x        , posToCheck[i].y + 1);
+            Vector2Int left         = new Vector2Int(posToCheck[i].x - 1    , posToCheck[i].y);
+
+            if (VEbyPosition.ContainsKey(up))
+                if (!VEsRevealed[VEbyPosition[up]])
+                {
+                    VEsRevealed[VEbyPosition[up]] = true;
+                    ret.Add(VEbyPosition[up]);
+                }
+            if (VEbyPosition.ContainsKey(right))
+                if (!VEsRevealed[VEbyPosition[right]])
+                {
+                    VEsRevealed[VEbyPosition[right]] = true;
+                    ret.Add(VEbyPosition[right]);
+                }
+            if (VEbyPosition.ContainsKey(down))
+                if (!VEsRevealed[VEbyPosition[down]])
+                {
+                    VEsRevealed[VEbyPosition[down]] = true;
+                    ret.Add(VEbyPosition[down]);
+                }
+            if (VEbyPosition.ContainsKey(left))
+                if (!VEsRevealed[VEbyPosition[left]])
+                {
+                    VEsRevealed[VEbyPosition[left]] = true;
+                    ret.Add(VEbyPosition[left]);
+                }
+        }
+
+        return ret;
     }
 
     private void OnItemPurchase(object sender, object info)
@@ -347,12 +376,11 @@ public class Shop : Page
 
         ShopItem boughtItem                     = (ShopItem)sender;
 
-        VisualElement boughtItemNode            = null;
-        VisualElement previousItemNode          = null;
+        VisualElement boughtItemNode            = nodes.Find(x => (ShopItem)x.userData == boughtItem);
         List<VisualElement> newlyOpenedNodes    = new List<VisualElement>();
         List<ProductLine> newlyOpenedPLs        = new List<ProductLine>();
 
-        SetVisibleNodes(boughtItem.Position);
+        newlyOpenedNodes.AddRange(SetVisibiltyOfNeighboringTiles(boughtItemNode));
 
         if (boughtItem is ShopItem_UnlockFeature)
         {
@@ -369,7 +397,9 @@ public class Shop : Page
                     {
                         ProductLine p = productLines[i];
 
-                        SetVisibleNodes(p.StartPosition);
+                        p.StartNode.userData = p;
+
+                        newlyOpenedNodes.AddRange(SetVisibiltyOfNeighboringTiles(p.StartNode));
 
                         newlyOpenedPLs.Add(p);
 
@@ -407,25 +437,6 @@ public class Shop : Page
             }
         }
 
-        for (int i = 0; i < nodes.Count; i++)
-        {
-            ShopItem currentSI      = (ShopItem)nodes[i].userData;
-            VisualElement buttonBG  = nodes[i].Q<VisualElement>("LevelSelectButton");
-
-            if (visibleNodes.ContainsKey(currentSI.Position))
-            {
-                if (visibleNodes[currentSI.Position] && buttonBG.style.backgroundColor.value == Color.grey)
-                {
-                    newlyOpenedNodes.Add(nodes[i]);
-                }
-            }
-
-            if (currentSI == boughtItem)
-                boughtItemNode = nodes[i];
-            else if (currentSI == boughtItem.PreviousItem)
-                previousItemNode = nodes[i];
-        }
-
         float animationLength       = .5f;
         Sequence seq                = DOTween.Sequence();
 
@@ -443,6 +454,14 @@ public class Shop : Page
 
             int colIndex            = boughtItem.Costs[Random.Range(0, boughtItem.Costs.Count - 1)].colorIndex;
 
+
+            Debug.Log(CurrencyManager.instance);
+            Debug.Log(colIndex);
+            Debug.Log(origin);
+            Debug.Log(boughtItemNode);
+            Debug.Log(boughtItemNode.worldBound.center);
+            Debug.Log(animationLength);
+            
             CurrencyManager.instance.SpawnCoin(
                                     colIndex
                                     , origin
@@ -453,7 +472,6 @@ public class Shop : Page
         
         if (!(boughtItem is ShopItem_MultiplePurchaseItem))
         {
-        
             Tween shrinkPurchased   = DOTween.To(
                                         () => boughtItemNode.transform.scale
                                         , x => boughtItemNode.style.scale = x
@@ -502,46 +520,31 @@ public class Shop : Page
                                         .SetEase(Ease.InQuad)
                                         .OnComplete(() =>
                                         {
-                                            VisualElement bg    = node.Q<VisualElement>("LevelSelectButton");
-                                            VisualElement icon  = node.Q<VisualElement>("Icon");
-                                            Color c             = UIManager.instance.GetColor(0);
+                                            VisualElement bg        = node.Q<VisualElement>("LevelSelectButton");
 
-                                            icon.style
-                                                .backgroundImage= ((ShopItem)node.userData).GetIcon();
-                                            bg.SetColor(c);
+                                            if (node.userData is ShopItem)
+                                            { 
+                                                VisualElement icon  = node.Q<VisualElement>("Icon");
+                                                Color c             = UIManager.instance.GetColor(0);
+
+                                                icon.style
+                                                    .backgroundImage= ((ShopItem)node.userData).GetIcon();
+                                                bg.SetColor(c);
+                                            }
+                                            else //Product Line node
+                                            {
+                                                Color c = UIManager.instance.GetColor((((ProductLine)node.userData).ColorIndex));
+
+                                                bg.SetColor(new Color(
+                                                    c.r + (1f - c.r) * .8f
+                                                    , c.g + (1f - c.g) * .8f
+                                                    , c.b + (1f - c.b) * .8f
+                                                    , 1f));
+                                            }
                                         })
                                         .Pause();
 
             if (i == 0)
-                seq.Append(shrinkNode);
-            else
-                seq.Join(shrinkNode);
-        }
-
-        for (int i = 0; i < newlyOpenedPLs.Count; i++)
-        {
-            ProductLine pl          = newlyOpenedPLs[i];
-            
-            Tween shrinkNode        = DOTween.To(
-                                            () => pl.StartNode.transform.scale
-                                            , x => pl.StartNode.style.scale = x
-                                            , Vector3.zero
-                                            , animationLength / 2f)
-                                        .SetEase(Ease.InQuad)
-                                        .OnComplete(() =>
-                                        {
-                                            VisualElement bg = pl.StartNode.Q<VisualElement>("LevelSelectButton");
-                                            Color c = UIManager.instance.GetColor(pl.ColorIndex);
-
-                                            bg.SetColor(new Color(
-                                            c.r + (1f - c.r) * .8f
-                                            , c.g + (1f - c.g) * .8f
-                                            , c.b + (1f - c.b) * .8f
-                                            , 1f));
-                                        })
-                                        .Pause();
-
-            if (i == 0 && newlyOpenedNodes.Count == 0)
                 seq.Append(shrinkNode);
             else
                 seq.Join(shrinkNode);
@@ -557,27 +560,16 @@ public class Shop : Page
                                             , Vector3.one
                                             , animationLength / 2f)
                                         .SetEase(Ease.OutQuad)
+                                        .OnStart(() =>
+                                        {
+                                            if (node.userData is ProductLine)
+                                            {
+                                                DrawProductLineStartPoint(((ProductLine)node.userData));
+                                            }
+                                        })
                                         .Pause();
 
             if (i == 0)
-                seq.Append(resizeNode);
-            else
-                seq.Join(resizeNode);
-        }
-
-        for (int i = 0; i < newlyOpenedPLs.Count; i++)
-        {
-            ProductLine pl          = newlyOpenedPLs[i];
-            Tween resizeNode        = DOTween.To(
-                                            () => pl.StartNode.transform.scale
-                                            , x => pl.StartNode.style.scale = x
-                                            , Vector3.one
-                                            , animationLength / 2f)
-                                        .SetEase(Ease.OutQuad)
-                                        .OnStart(() => DrawProductLineStartPoint(pl))
-                                        .Pause();
-
-            if (i == 0 && newlyOpenedNodes.Count == 0)
                 seq.Append(resizeNode);
             else
                 seq.Join(resizeNode);
@@ -737,7 +729,7 @@ public class Shop : Page
             VisualElement purchasedIcon = shopButton.Q<VisualElement>("CompletedIcon");
             VisualElement selBorder     = shopButton.Q<VisualElement>("SelectionBorder");
             
-            buttonBG.SetMargins(0f); //TEST
+            buttonBG.SetMargins(0f);
             selBorder.SetMargins(0f);
 
             shopButton.style.position   = Position.Absolute;
@@ -754,11 +746,18 @@ public class Shop : Page
             shopBoard.Add(shopButton);
             productLines.Add(productLine);
 
+            ///new v
+            VEbyPosition.Add(productLine.StartPosition, productLine.StartNode);
+            VEsRevealed.Add(productLine.StartNode, productLine.NodeUnlocked);
+            ///new ^
+
             if (productLine.NodeUnlocked)
             {
                 buttonBG.SetColor(UIManager.instance.GetColor(0));
                 
                 DrawProductLineStartPoint(productLine);
+
+                SetVisibiltyOfNeighboringTiles(productLine.StartNode);
             }
             else
             {
@@ -791,23 +790,6 @@ public class Shop : Page
         line.BringToFront();
 
         productLine.Lines.Add(line);
-    }
-
-    private void SetVisibleNodes(Vector2Int position)
-    {
-        Vector2Int up       = new Vector2Int(position.x, position.y + 1);
-        Vector2Int right    = new Vector2Int(position.x + 1, position.y);
-        Vector2Int down     = new Vector2Int(position.x, position.y - 1);
-        Vector2Int left     = new Vector2Int(position.x - 1, position.y);
-
-        if (visibleNodes.ContainsKey(up))
-            visibleNodes[up] = true;
-        if (visibleNodes.ContainsKey(right))
-            visibleNodes[right] = true;
-        if (visibleNodes.ContainsKey(down))
-            visibleNodes[down] = true;
-        if (visibleNodes.ContainsKey(left))
-            visibleNodes[left] = true;
     }
 
     private void OnPointerDownOnShopBoard(PointerDownEvent evt)
@@ -992,7 +974,7 @@ public class Shop : Page
 
         productLineTab.SetBorderColor(item.GetColor());
 
-        if (!visibleNodes[item.Position])
+        if (!VEsRevealed[VEbyPosition[item.Position]]) //TODO: Might be able to just use content here
         {
             productLineTab.SetBorderColor(Color.black);
             costScrollView.Hide();

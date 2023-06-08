@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dd8761b26dc05d149aec4b382434efbb, type: 3}
-  m_Name: PL1 - #03 - Unlock - YellowStar 2
+  m_Name: PL1 - #05 - Unlock - YellowStar 4
   m_EditorClassIdentifier: 
-  shopGridPosition: {x: 1, y: -4}
-  gridSize: {x: 3, y: 3}
+  shopGridPosition: {x: 4, y: -2}
+  gridSize: {x: 1, y: 2}
   productLine: 1
-  previousProductLineItem: {fileID: 11400000, guid: 6aa6b2cd91b2b204c84d9619f247c528, type: 2}
+  previousProductLineItem: {fileID: 11400000, guid: f34bf6f68ccdf454e808e40295cf62ba, type: 2}
   cost:
   - colorIndex: 1
     amount: 5
@@ -28,6 +28,6 @@ MonoBehaviour:
   - colorIndex: 5
     amount: 5
   drawLinesToOutlineOnPurchase: 1
-  lineInPosition: {x: 1, y: -2}
-  lineOutPosition: {x: 3, y: -2}
+  lineInPosition: {x: 4, y: -1}
+  lineOutPosition: {x: 4, y: -2}
   levelCategoryToUnlock: {fileID: 11400000, guid: 935d5c80aa378944a8b6e55adb387757, type: 2}

@@ -9,7 +9,7 @@ public class Shop : Page
 {
     #region Private Structs
     
-    private struct ProductLine
+    private class ProductLine
     {
         public int                  ColorIndex;
         public Vector2Int           StartPosition;
@@ -48,6 +48,8 @@ public class Shop : Page
     #region Private Variables
 
     private bool            canClick;
+
+    private bool            canClickButtons;
 
     private VisualElement   screen;
     private VisualElement   shopBoard;
@@ -94,14 +96,13 @@ public class Shop : Page
         {
             if (selectedShopNode == value)
             {
-                //TODO: If the details panel is closed while a node is selected,
-                //      click it again to close the selection needs to hide the 
-                //      detailsButton
-
                 selectedShopNode.Q<VisualElement>("SelectionBorder").Hide();
                 selectedShopNode = null;
 
+                //TODO: This doesn't set canClick to false/true at the end.
+                //      dont think it causes any issues but might want to review eventually
                 PageManager.instance.StartCoroutine(DetailsPanelOut());
+                PageManager.instance.StartCoroutine(DetailsButtonOut());
 
                 return;
             }
@@ -119,10 +120,6 @@ public class Shop : Page
             {
                 selectedShopNode.Q<VisualElement>("SelectionBorder").Show();
             }
-
-            Debug.Log(string.Format("worldbound: {0}\nBoard: {1}"
-                    , selectedShopNode.worldBound.center
-                    , shopBoard.WorldToLocal(selectedShopNode.worldBound.center)));
 
             PageManager.instance.StartCoroutine(SetDetailsPanel(selectedShopNode));
         }
@@ -167,7 +164,10 @@ public class Shop : Page
 
         detailsButton.RegisterCallback<PointerUpEvent>((evt) =>
         {
-            if (!canClick)
+            //if (!canClick)
+            //    return;
+
+            if (!canClickButtons)
                 return;
 
             PageManager.instance.StartCoroutine(ShowDetailsPanel());
@@ -175,7 +175,10 @@ public class Shop : Page
 
         closeDetails.RegisterCallback<PointerUpEvent>((evt) =>
         {
-            if (!canClick)
+            //if (!canClick)
+            //    return;
+
+            if (!canClickButtons)
                 return;
 
             PageManager.instance.StartCoroutine(CloseDetailsPanel());
@@ -183,7 +186,10 @@ public class Shop : Page
 
         EventCallback<PointerDownEvent> backbuttonAction = (evt) =>
         {
-            if (!canClick)
+            //if (!canClick)
+            //    return;
+
+            if (!canClickButtons)
                 return;
 
             PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<MainMenu>(null, false));
@@ -196,6 +202,7 @@ public class Shop : Page
     {
         VisualElement page  = uiDoc.rootVisualElement;
         canClick            = false;
+        canClickButtons     = false;
 
         page.SetOpacity(0f);
 
@@ -228,12 +235,14 @@ public class Shop : Page
 
         yield return fadein.Play().WaitForCompletion();
 
-        canClick = true;
+        canClick            = true;
+        canClickButtons     = true;
     }
 
     public override IEnumerator AnimateOut()
     {
         canClick            = false;
+        canClickButtons     = false;
 
         VisualElement page  = uiDoc.rootVisualElement;
         Tween fadeout       = DOTween.To(
@@ -311,7 +320,7 @@ public class Shop : Page
             shopButton.style.left       = zeroLocation.x + ((GRID_SIZE + SPACING) * shopItem.Position.x);// + (((GRID_SIZE + SPACING) / 2f) * (shopItem.Size.x - 1));
             shopButton.style.top        = zeroLocation.y + ((GRID_SIZE + SPACING) * shopItem.Position.y);// + (((GRID_SIZE + SPACING) / 2f) * (shopItem.Size.y - 1));
 
-            shopButton.userData = shopItem;
+            shopButton.userData         = shopItem;
 
             buttonBG.SetWidth((GRID_SIZE * shopItem.Size.x) + (SPACING * (shopItem.Size.x - 1)), false, false);
             buttonBG.SetHeight((GRID_SIZE * shopItem.Size.y) + (SPACING * (shopItem.Size.y - 1)), false, false);
@@ -320,7 +329,10 @@ public class Shop : Page
 
             shopButton.RegisterCallback<PointerUpEvent>((evt) =>
             {
-                if (!canClick)
+                //if (!canClick)
+                //    return;
+
+                if (!canClickButtons)
                     return;
 
                 SelectedShopNode = shopButton;
@@ -407,6 +419,8 @@ public class Shop : Page
     private void OnItemPurchase(object sender, object info)
     {
         //sender    -   ShopItem    -   The ShopItem that was purchased
+
+        canClickButtons                         = false;
 
         ShopItem boughtItem                     = (ShopItem)sender;
 
@@ -610,16 +624,18 @@ public class Shop : Page
                 seq.Join(resizeNode);
         }
 
-        seq.Play();
-
-        if (boughtItem.ProductLine != 0)
+        if (boughtItem.ProductLine != 0 && ShopManager.instance.GetNumPurchased(boughtItem) == 1)
         {
-            canClick = false;
+            //canClick = false;
 
-            GetLineDrawingTween(boughtItemNode, animationLength)
-                .Play()
-                .onComplete += () => canClick = true;
+            seq.Join(GetLineDrawingTween(boughtItemNode, animationLength)
+                .Pause());
+                //.Play()
+                //.onComplete += () => canClick = true;
         }
+
+        seq.Play()
+            .onComplete += () => canClickButtons = true;
     }
 
     private Tween GetLineDrawingTween(VisualElement destinationNode, float animationLength)
@@ -630,16 +646,16 @@ public class Shop : Page
 
         Vector2 destination         = AddToProductLineLines(destinationItem);
 
-        Tween draw                      = productLine.LastLine
-                                            .DrawTowardNewPoint_Tween(destination, animationLength)
-                                            .OnComplete(() => {
+        Tween draw                  = productLine.LastLine
+                                        .DrawTowardNewPoint_Tween(destination, animationLength)
+                                        .OnComplete(() => {
 
-                                            if (destinationItem.DrawLinesToOutline)
-                                            {
-                                                buttonBG.SetBorderWidth(20f);
-                                                buttonBG.SetBorderColor(UIManager.instance.GetColor(productLine.ColorIndex));
-                                            }
-                                        });
+                                        if (destinationItem.DrawLinesToOutline)
+                                        {
+                                            buttonBG.SetBorderWidth(20f);
+                                            buttonBG.SetBorderColor(UIManager.instance.GetColor(productLine.ColorIndex));
+                                        }
+                                    });
 
         return draw;
     }
@@ -800,6 +816,17 @@ public class Shop : Page
             VEbyPosition.Add(productLine.StartPosition, productLine.StartNode);
             VEsRevealed.Add(productLine.StartNode, productLine.NodeUnlocked);
 
+            shopButton.RegisterCallback<PointerUpEvent>((evt) =>
+            {
+                //if (!canClick)
+                //    return;
+
+                if (!canClickButtons)
+                    return;
+
+                SelectedShopNode = shopButton;
+            });
+
             if (productLine.NodeUnlocked)
             {
                 yield return null;
@@ -921,6 +948,8 @@ public class Shop : Page
 
         if (Zooming)
         {
+            canClickButtons = false;
+
             if (evt.pointerId == primaryTouchID)
                 primaryOrigin_Screen    = screen.WorldToLocal(shopBoard.LocalToWorld(evt.localPosition));
             else if (evt.pointerId == secondaryTouchID)
@@ -945,6 +974,8 @@ public class Shop : Page
         {
             if (evt.pointerId == primaryTouchID)
             {
+                canClickButtons         = false;
+
                 Vector2 delta           = (Vector2)evt.localPosition - primaryOrigin;
                 delta                   *= shopBoard.transform.scale;
 
@@ -1031,6 +1062,8 @@ public class Shop : Page
                 primaryOrigin           = Vector2.zero;
 
                 primaryOrigin_Screen    = Vector2.zero;
+
+                canClickButtons         = true;
             }
         }
         if (pointerID == secondaryTouchID)
@@ -1047,7 +1080,8 @@ public class Shop : Page
     //      flying out -> updating -> flying in would fix that but its overall a longer wait
     private IEnumerator SetDetailsPanel(VisualElement content)
     {
-        canClick                            = false;
+        //canClick                            = false;
+        canClickButtons                     = false;
 
         VisualElement container             = detailsPanel.Q<VisualElement>("Content");
         VisualElement topIndicator          = costScrollView.Q<VisualElement>("TopArrow");
@@ -1058,20 +1092,40 @@ public class Shop : Page
         container.Clear();
         costScrollView.ClearWithChildBoundIndicators(topIndicator, bottomIndicator);
 
-        ShopItem item                       = content.userData as ShopItem;
+        ShopItem item                       = content.userData is ShopItem ? (ShopItem)(content.userData) : null;
+        ProductLine productLine             = content.userData is ProductLine ? (ProductLine)(content.userData) : null;
 
-        if (ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.PRODUCT_LINE_NUMBER))
-            productLineLabel.text           = item.ProductLine.ToString() + " Product Line - #" + item.ProductLineNumber.ToString();
+        if (item != null)
+        {
+            if (ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.PRODUCT_LINE_NUMBER))
+                productLineLabel.text = item.ProductLine.ToString() + " Product Line - #" + item.ProductLineNumber.ToString();
+            else
+                productLineLabel.text = item.ProductLine.ToString() + " Product Line";
+
+            productLineTab.SetBorderColor(item.GetColor());
+        }
         else
-            productLineLabel.text           = item.ProductLine.ToString() + " Product Line";
+        {
+            if (ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.PRODUCT_LINE_NUMBER))
+                productLineLabel.text = productLine.ToString() + " Product Line - #0";
+            else
+                productLineLabel.text = productLine.ToString() + " Product Line";
 
-        productLineTab.SetBorderColor(item.GetColor());
+            productLineTab.SetBorderColor(UIManager.instance.GetColor(productLine.ColorIndex));
+        }
 
-        if (!VEsRevealed[VEbyPosition[item.Position]]) //TODO: Might be able to just use content here
+        if ((item != null && !VEsRevealed[VEbyPosition[item.Position]]) ||  //TODO: Might be able to just use content here
+            (productLine != null && !VEsRevealed[VEbyPosition[productLine.StartPosition]]))
         {
             productLineTab.SetBorderColor(Color.black);
             costScrollView.Hide();
             SetDetailsMystery();
+        }
+        else if (item == null)
+        {
+            productLineTab.SetBorderColor(UIManager.instance.GetColor(productLine.ColorIndex));
+            costScrollView.Hide();
+            SetDetailsProductLineEnd(productLine);
         }
         else
         {
@@ -1086,7 +1140,7 @@ public class Shop : Page
 
             if (!item.Purchased || item is ShopItem_MultiplePurchaseItem)
             {
-                detailsPanel.Q<VisualElement>("PurchasedIcon").Hide();
+                detailsPanel.Q<VisualElement>("PurchasedIcon").Show(item is ShopItem_MultiplePurchaseItem);
 
                 costScrollView.Show();
                 container.Show();
@@ -1286,6 +1340,29 @@ public class Shop : Page
         purchaseButton.Hide();
     }
 
+    private void SetDetailsProductLineEnd(ProductLine prod)
+    {
+        detailsPanel.Q<VisualElement>("BG").SetBorderColor(UIManager.instance.GetColor(prod.ColorIndex));
+
+        VisualElement purchasedIcon         = detailsPanel.Q<VisualElement>("PurchasedIcon");
+        VisualElement container             = detailsPanel.Q<VisualElement>("Content");
+
+        Label label                         = new Label();
+        label.text                          = "Product Line - Start";
+
+        label.AddToClassList("ShopDescriptionText");
+
+        label.style.flexGrow                = 1f;
+        label.style.alignSelf               = Align.Center;
+        label.style.unityTextAlign          = TextAnchor.MiddleCenter;
+        label.style.color                   = UIManager.instance.GetColor(prod.ColorIndex);
+
+        container.Add(label);
+
+        purchasedIcon.Hide();
+        purchaseButton.Hide();
+    }
+
     private void OnPurchase(ShopItem item, PointerUpEvent evt)
     {
         item.OnPurchase();
@@ -1300,24 +1377,28 @@ public class Shop : Page
 
     private IEnumerator ShowDetailsPanel()
     {
-        canClick = false;
+        //canClick = false;
+        canClickButtons = false;
 
         yield return DetailsButtonOut();
 
         yield return DetailsPanelIn();
 
-        canClick = true;
+        //canClick = true;
+        canClickButtons = true;
     }
 
     private IEnumerator CloseDetailsPanel()
     {
-        canClick = false;
+        //canClick = false;
+        canClickButtons = false;
 
         yield return DetailsPanelOut();
 
         yield return DetailsButtonIn();
 
-        canClick = true;
+        //canClick = true;
+        canClickButtons = true;
     }
 
     private IEnumerator DetailsButtonIn()
@@ -1377,14 +1458,10 @@ public class Shop : Page
 
         if (ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.PRODUCT_LINE_TAB))
         {
-            Label label                     = productLineTab.Q<Label>();
-
-            ShopItem s                      = SelectedShopNode.userData as ShopItem;
-
             Tween tabUp                     =   DOTween.To(
                                                     () => productLineTab.style.top.value.value
                                                     , x => productLineTab.style.top = x
-                                                    , -1 * (productLineTab.resolvedStyle.height - productLineTab.resolvedStyle.borderBottomWidth)//(productLineTab.localBound.height - productLineTab.style.borderBottomWidth.value)
+                                                    , -1 * (productLineTab.resolvedStyle.height - productLineTab.resolvedStyle.borderBottomWidth)
                                                     , .25f)
                                                 .SetEase(Ease.OutQuart);
 
@@ -1401,10 +1478,6 @@ public class Shop : Page
 
         if (ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.PRODUCT_LINE_TAB))
         {
-            //Label label                     = productLineTab.Q<Label>();
-
-            //ShopItem s                      = SelectedShopNode.userData as ShopItem;
-
             Tween tabDown                   =   DOTween.To(
                                                     () => productLineTab.style.top.value.value
                                                     , x => productLineTab.style.top = x

@@ -10,6 +10,7 @@ public class MainMenu : Page
 
     private VisualElement playButton;
     private VisualElement shopButton;
+    private VisualElement settingsButton;
     private bool canClick;
 
     #endregion
@@ -22,11 +23,13 @@ public class MainMenu : Page
 
         UIManager.instance.TopBar.ShowTopBar(false);
 
-        playButton  = uiDoc.rootVisualElement.Q<VisualElement>("PlayButton");
-        shopButton  = uiDoc.rootVisualElement.Q<VisualElement>("ShopButton");
+        playButton      = uiDoc.rootVisualElement.Q<VisualElement>("PlayButton");
+        shopButton      = uiDoc.rootVisualElement.Q<VisualElement>("ShopButton");
+        settingsButton  = uiDoc.rootVisualElement.Q<VisualElement>("SettingsButton");
 
         playButton.RegisterCallback<PointerUpEvent>(PlayButtonClicked);
         shopButton.RegisterCallback<PointerUpEvent>(OpenShop);
+        settingsButton.RegisterCallback<PointerUpEvent>(OpenSettings);
 
         canClick    = true;
     }
@@ -35,6 +38,7 @@ public class MainMenu : Page
     {
         playButton.UnregisterCallback<PointerUpEvent>(PlayButtonClicked);
         shopButton.UnregisterCallback<PointerUpEvent>(OpenShop);
+        settingsButton.UnregisterCallback<PointerUpEvent>(OpenSettings);
     }
 
     public override IEnumerator AnimateIn()
@@ -66,6 +70,8 @@ public class MainMenu : Page
         if (!canClick)
             return;
 
+        canClick = false;
+
         PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<CategorySelect>());
     }
 
@@ -74,7 +80,19 @@ public class MainMenu : Page
         if (!canClick)
             return;
 
+        canClick = false;
+
         PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<Shop>());
+    }
+
+    private void OpenSettings(PointerUpEvent evt)
+    {
+        if (!canClick)
+            return;
+
+        canClick = false;
+
+        PageManager.instance.StartCoroutine(PageManager.instance.AddPageToStack<Settings>());
     }
 
     #endregion

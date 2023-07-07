@@ -68,3 +68,23 @@
     font-size: 55px;
     -unity-text-align: upper-center;
 }
+
+.TextInputContainer {
+    background-color: rgb(204, 204, 204);
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+
+.TextInputTextElement {
+    -unity-font-definition: initial;
+    -unity-font: url('project://database/Assets/GUI%20PRO%20Kit%20-%20Simple%20Casual/Fonts/Quicksand-Bold.ttf?fileID=12800000&guid=8a7ef750b018c41e78d4f8f786ae57e5&type=3#Quicksand-Bold');
+    font-size: 45px;
+    color: rgb(0, 0, 0);
+    -unity-text-align: middle-center;
+}

@@ -99,6 +99,14 @@ public static class VisualElementExtensions
         if(bottomRight) value.style.borderBottomRightRadius   = r;
     }
 
+    public static void ScaleToFit(this VisualElement ve)
+    {
+        ve.style.backgroundPositionX        = new BackgroundPosition(BackgroundPositionKeyword.Center);
+        ve.style.backgroundPositionY        = new BackgroundPosition(BackgroundPositionKeyword.Center);
+        ve.style.backgroundRepeat           = new BackgroundRepeat(Repeat.NoRepeat, Repeat.NoRepeat);
+        ve.style.backgroundSize             = new BackgroundSize(BackgroundSizeType.Contain);
+    }
+
     public static void SetShiftingBGColor(this VisualElement ve, List<Color> colors, float shiftTime = 5f)
     {
         if (shifts.ContainsKey(ve))

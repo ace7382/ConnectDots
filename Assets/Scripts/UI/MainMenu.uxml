@@ -11,6 +11,9 @@
             <ui:VisualElement name="ShopButton" style="width: 300px; height: 80px; background-color: rgb(255, 179, 186); border-top-left-radius: 25px; border-bottom-left-radius: 25px; border-top-right-radius: 25px; border-bottom-right-radius: 25px; margin-left: 15px; margin-right: 15px; margin-top: 15px; margin-bottom: 15px;">
                 <ui:Label text="Shop" display-tooltip-when-elided="true" style="flex-grow: 1; margin-left: 15px; margin-right: 15px; margin-top: 15px; margin-bottom: 15px; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; color: rgb(0, 0, 0); font-size: 45px; -unity-text-align: middle-center;" />
             </ui:VisualElement>
+            <ui:VisualElement name="SettingsButton" style="width: 300px; height: 80px; background-color: rgb(255, 179, 186); border-top-left-radius: 25px; border-bottom-left-radius: 25px; border-top-right-radius: 25px; border-bottom-right-radius: 25px; margin-left: 15px; margin-right: 15px; margin-top: 15px; margin-bottom: 15px;">
+                <ui:Label text="Settings" display-tooltip-when-elided="true" style="flex-grow: 1; margin-left: 15px; margin-right: 15px; margin-top: 15px; margin-bottom: 15px; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; color: rgb(0, 0, 0); font-size: 45px; -unity-text-align: middle-center;" />
+            </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

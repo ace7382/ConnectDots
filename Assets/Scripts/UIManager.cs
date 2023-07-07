@@ -35,7 +35,7 @@ public class UIManager : MonoBehaviour
     [Space]
 
     [Header("Colors")]
-    [SerializeField] private List<Color>            gameColors;
+    [SerializeField] private List<GameColor>        gameColors;
 
     [Space]
 
@@ -47,6 +47,13 @@ public class UIManager : MonoBehaviour
     [Space]
 
     [SerializeField] private List<Texture2D>        powerupIcons;
+
+    [Space]
+
+    [Header("Settings Screen Templates")]
+    [SerializeField] private VisualTreeAsset        settings_ColorList;
+    [SerializeField] private VisualTreeAsset        settings_ColorLine;
+    [SerializeField] private VisualTreeAsset        settings_ColorSetter;
 
     #endregion
 
@@ -70,6 +77,10 @@ public class UIManager : MonoBehaviour
 
     public VisualTreeAsset      TilePrefab_New      { get { return newTilePrefab; } }
     public VisualTreeAsset      RowPrefab_New       { get { return newRowPrefab; } }
+
+    public VisualTreeAsset      Settings_ColorList  { get { return settings_ColorList; } }
+    public VisualTreeAsset      Settings_ColorLine  { get { return settings_ColorLine; } }
+    public VisualTreeAsset      Settings_ColorSetter{ get { return settings_ColorSetter; } }
 
     #endregion
 
@@ -108,6 +119,17 @@ public class UIManager : MonoBehaviour
         return scrollingBackground.Color;
     }
 
+    public GameColor GetGameColor(int index)
+    {
+        if (index > gameColors.Count - 1)
+        {
+            Debug.LogError("UIManager does not have enough colors for this request");
+            return null;
+        }
+
+        return gameColors[index];
+    }
+
     public Color GetColor(int index)
     {
         if (index > gameColors.Count - 1)
@@ -116,7 +138,30 @@ public class UIManager : MonoBehaviour
             return Color.clear;
         }
 
-        return gameColors[index];
+        return gameColors[index].color;
+    }
+    
+    public string GetColorName(int index)
+    {
+        if (index > gameColors.Count - 1)
+        {
+            Debug.LogError("UIManager does not have enough colors for this request");
+            return "ERROR";
+        }
+
+        return gameColors[index].name;
+    }
+
+    public void UpdateColor(int index, string newName, Color newColor)
+    {
+        if (index > gameColors.Count - 1)
+        {
+            Debug.Log("UIManager does not have enough colors for this request");
+            return;
+        }
+
+        gameColors[index].name = newName;
+        gameColors[index].color = newColor;
     }
 
     public Texture2D GetPowerupIcon(PowerupType type)
@@ -135,5 +180,6 @@ public class UIManager : MonoBehaviour
 
         return null;
     }
+
     #endregion
 }

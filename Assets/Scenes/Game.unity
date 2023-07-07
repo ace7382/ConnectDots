@@ -164,6 +164,7 @@ MonoBehaviour:
   - {fileID: 9197481963319205126, guid: e28464476fb99164b8092622975f1e4f, type: 3}
   - {fileID: 9197481963319205126, guid: fad7aed246e45dd4481ffdd2c045fd93, type: 3}
   - {fileID: 9197481963319205126, guid: 5285ac214fb8a4e448f6be587b70fbd1, type: 3}
+  - {fileID: 9197481963319205126, guid: b36fc87149db7ee4ca04e6b1ed52cbc2, type: 3}
 --- !u!4 &413392889
 Transform:
   m_ObjectHideFlags: 0
@@ -457,15 +458,33 @@ MonoBehaviour:
   newTilePrefab: {fileID: 9197481963319205126, guid: 38659655961c28040be60cf492ca075b, type: 3}
   newRowPrefab: {fileID: 9197481963319205126, guid: e995da0b160f669478b07a0af70a6032, type: 3}
   gameColors:
-  - {r: 1, g: 1, b: 1, a: 1}
-  - {r: 1, g: 0, b: 0, a: 1}
-  - {r: 0, g: 1, b: 0, a: 1}
-  - {r: 0, g: 0, b: 1, a: 1}
-  - {r: 1, g: 1, b: 0, a: 1}
-  - {r: 1, g: 0, b: 1, a: 1}
-  - {r: 0, g: 1, b: 1, a: 1}
-  - {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  - {r: 0.8, g: 0.8, b: 0.8, a: 1}
+  - color: {r: 1, g: 1, b: 1, a: 1}
+    name: White
+    category: 0
+  - color: {r: 1, g: 0, b: 0, a: 1}
+    name: Red
+    category: 1
+  - color: {r: 0, g: 1, b: 0, a: 1}
+    name: Green
+    category: 1
+  - color: {r: 0, g: 0, b: 1, a: 1}
+    name: Blue
+    category: 2
+  - color: {r: 1, g: 1, b: 0, a: 1}
+    name: Yellow
+    category: 2
+  - color: {r: 1, g: 0, b: 1, a: 1}
+    name: Pink
+    category: 2
+  - color: {r: 0, g: 1, b: 1, a: 1}
+    name: Light Blue
+    category: 3
+  - color: {r: 1, g: 0.37588555, b: 0, a: 1}
+    name: Orange
+    category: 3
+  - color: {r: 0.36644602, g: 0, b: 1, a: 1}
+    name: Purple
+    category: 3
   bronzeMedal: {fileID: 2800000, guid: 20fcc7f0bf8db4b76881e98a8a42c63c, type: 3}
   silverMedal: {fileID: 2800000, guid: 086e140a14a0044fc8c046e36892c472, type: 3}
   goldMedal: {fileID: 2800000, guid: 817e572d8239f4a75a84952defabc914, type: 3}
@@ -474,6 +493,9 @@ MonoBehaviour:
   - {fileID: 2800000, guid: aa5e772edd10145928ca3f62991c298a, type: 3}
   - {fileID: 2800000, guid: 6618835e7f01f47939c40be0a3cdc1a3, type: 3}
   - {fileID: 2800000, guid: 1c0341ef64ea14e42a7a3dfc7ffe5f73, type: 3}
+  settings_ColorList: {fileID: 9197481963319205126, guid: 0ce183863e12b1940a45f7607b269170, type: 3}
+  settings_ColorLine: {fileID: 9197481963319205126, guid: 56e6e646a2c939c42bd50abe876371f5, type: 3}
+  settings_ColorSetter: {fileID: 9197481963319205126, guid: 7db0be9da4021074682e756b98ef1dda, type: 3}
 --- !u!4 &685428500
 Transform:
   m_ObjectHideFlags: 0

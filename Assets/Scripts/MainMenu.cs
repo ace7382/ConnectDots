@@ -11,11 +11,17 @@ public class MainMenu : Page
     private VisualElement playButton;
     private VisualElement shopButton;
     private VisualElement settingsButton;
+    private VisualElement achievementsButton;
     private bool canClick;
 
     #endregion
 
     #region Inherited Functions
+
+    public override void OnFocusReturnedToPage()
+    {
+        canClick = true;
+    }
 
     public override void ShowPage(object[] args)
     {
@@ -23,13 +29,15 @@ public class MainMenu : Page
 
         UIManager.instance.TopBar.ShowTopBar(false);
 
-        playButton      = uiDoc.rootVisualElement.Q<VisualElement>("PlayButton");
-        shopButton      = uiDoc.rootVisualElement.Q<VisualElement>("ShopButton");
-        settingsButton  = uiDoc.rootVisualElement.Q<VisualElement>("SettingsButton");
+        playButton          = uiDoc.rootVisualElement.Q<VisualElement>("PlayButton");
+        shopButton          = uiDoc.rootVisualElement.Q<VisualElement>("ShopButton");
+        settingsButton      = uiDoc.rootVisualElement.Q<VisualElement>("SettingsButton");
+        achievementsButton  = uiDoc.rootVisualElement.Q<VisualElement>("AchievementsButton");
 
         playButton.RegisterCallback<PointerUpEvent>(PlayButtonClicked);
         shopButton.RegisterCallback<PointerUpEvent>(OpenShop);
         settingsButton.RegisterCallback<PointerUpEvent>(OpenSettings);
+        achievementsButton.RegisterCallback<PointerUpEvent>(OpenAchievements);
 
         canClick    = true;
     }
@@ -93,6 +101,16 @@ public class MainMenu : Page
         canClick = false;
 
         PageManager.instance.StartCoroutine(PageManager.instance.AddPageToStack<Settings>());
+    }
+
+    private void OpenAchievements(PointerUpEvent evt)
+    {
+        if (!canClick)
+            return;
+
+        canClick = false;
+
+        PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<AchievementsPage>());
     }
 
     #endregion

@@ -65,14 +65,24 @@ public class PageManager : MonoBehaviour
     {
         UIManager.instance.TopBar.CanClick = false;
 
+        Page outgoingPage = stack.Cast<DictionaryEntry>().ElementAt(stack.Count - 1).Key as Page;
+
+        //if (animateOut)
+        //    yield return (stack.Cast<DictionaryEntry>().ElementAt(stack.Count - 1).Key as Page).AnimateOut();
+
+        //if (executeHideCall)
+        //    (stack.Cast<DictionaryEntry>().ElementAt(stack.Count - 1).Key as Page).HidePage();
+
         if (animateOut)
-            yield return (stack.Cast<DictionaryEntry>().ElementAt(stack.Count - 1).Key as Page).AnimateOut();
+            yield return outgoingPage.AnimateOut();
 
         if (executeHideCall)
-            (stack.Cast<DictionaryEntry>().ElementAt(stack.Count - 1).Key as Page).HidePage();
+            outgoingPage.HidePage();
 
         GOPages.Push(stack[stack.Count - 1] as GameObject);
         stack.RemoveAt(stack.Count - 1);
+
+        (stack.Cast<DictionaryEntry>().ElementAt(stack.Count -1).Key as Page).OnFocusReturnedToPage();
 
         UIManager.instance.TopBar.CanClick = true;
     }

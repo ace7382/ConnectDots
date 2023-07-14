@@ -11,7 +11,7 @@
 }
 
 .HeaderLabel {
-    -unity-font: url('project://database/Assets/Artwork/Kenney%20Bold.ttf?fileID=12800000&guid=e0c621fdd32557943b6535e37b858c1d&type=3#Kenney Bold');
+    -unity-font: url('project://database/Assets/GUI%20PRO%20Kit%20-%20Simple%20Casual/Fonts/Quicksand-Bold.ttf?fileID=12800000&guid=8a7ef750b018c41e78d4f8f786ae57e5&type=3#Quicksand-Bold');
     -unity-font-definition: initial;
     font-size: 40px;
     -unity-text-align: middle-center;

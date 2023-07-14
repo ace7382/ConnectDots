@@ -12,6 +12,7 @@ public abstract class Objective : ScriptableObject
     [SerializeField] protected Level            level;
     [SerializeField] protected int              progressBarColorIndex;
     [SerializeField] protected Texture2D        icon;
+    [SerializeField] protected bool             isAchievement;
 
     #endregion
 
@@ -40,6 +41,7 @@ public abstract class Objective : ScriptableObject
     public string           Description         { get { return description; } }
     public Texture2D        Icon                { get { return icon; } }
     public Color            ProgressBarColor    { get { return UIManager.instance.GetColor(progressBarColorIndex); } }
+    public bool             IsAchievement       { get { return isAchievement; } }
 
     #endregion
 

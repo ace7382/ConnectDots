@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5814ba4cd01a79f40bbefacf189ab50a, type: 3}
-  m_Name: TestObjectiveGreen
+  m_Name: Achievement
   m_EditorClassIdentifier: 
-  id: 3
-  description: 
-  levelCategory: {fileID: 11400000, guid: 06c4a1a0614cd7d42afb84a183b6e82c, type: 2}
+  id: 7
+  description: 'Leave 1000 white tiles '
+  levelCategory: {fileID: 0}
   level: {fileID: 0}
-  progressBarColorIndex: 2
-  icon: {fileID: 2800000, guid: b73e5a1391c46834ebdaf9cae7a647f4, type: 3}
-  isAchievement: 0
-  isComplete: 1
-  colorIndex: 2
-  goal: 100
-  progress: 100
+  progressBarColorIndex: 0
+  icon: {fileID: 2800000, guid: f540d163eaeb67f42918267b89d1450a, type: 3}
+  isAchievement: 1
+  isComplete: 0
+  colorIndex: 0
+  goal: 1000
+  progress: 80

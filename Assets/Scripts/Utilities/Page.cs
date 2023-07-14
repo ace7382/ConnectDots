@@ -51,5 +51,10 @@ public abstract class Page
         uiDoc.rootVisualElement.style.paddingRight      = safeMargins.Right;
     }
 
+    public virtual void OnFocusReturnedToPage()
+    {
+
+    }
+
     #endregion
 }

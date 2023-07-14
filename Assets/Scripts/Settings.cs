@@ -88,7 +88,7 @@ public class Settings : Page
         showNumsToggle.value                        = true; //TODO: have this set from a saved value
         showNumsToggle.focusable                    = false;
         showNumsToggle.labelElement.AddToClassList("HeaderLabel");
-        showNumsToggle.labelElement.style.fontSize  = 35f;
+        showNumsToggle.labelElement.style.fontSize  = 45f;
         showNumsToggle.SetMargins(0f, false, true, false, true);
         showNumsToggle.style.marginBottom           = 25f;
 
@@ -98,7 +98,7 @@ public class Settings : Page
         check.SetBorderWidth(0f);
         check.SetBorderRadius(20f);
         check.ScaleToFit();
-        check.SetWidth(80f);
+        check.SetWidth(70f);
         check.SetHeight(check.style.width);
 
         colorSettings_ColorNumberLabels             = new List<Label>();

@@ -1368,36 +1368,27 @@ public class Shop : Page
         item.OnPurchase();
 
         PageManager.instance.StartCoroutine(SetDetailsPanel(SelectedShopNode));
-        //VisualElement container = detailsPanel.Q<VisualElement>("Content");
-        //container.Clear();
-        //container.Add(item.GetDisplayContent(item.Purchased));
-
-        //SetDetailsOwned(item);
     }
 
     private IEnumerator ShowDetailsPanel()
     {
-        //canClick = false;
         canClickButtons = false;
 
         yield return DetailsButtonOut();
 
         yield return DetailsPanelIn();
 
-        //canClick = true;
         canClickButtons = true;
     }
 
     private IEnumerator CloseDetailsPanel()
     {
-        //canClick = false;
         canClickButtons = false;
 
         yield return DetailsPanelOut();
 
         yield return DetailsButtonIn();
 
-        //canClick = true;
         canClickButtons = true;
     }
 

@@ -38,6 +38,10 @@ public class ObjectiveManager : MonoBehaviour
             instance = this;
         else if (instance != this)
             Destroy(gameObject);
+
+        for (int i = 0; i < objectives.Count; i++)
+            if (objectives[i].IsComplete)
+                MarkAsComplete(objectives[i]);
     }
 
     private void OnEnable()
@@ -99,6 +103,30 @@ public class ObjectiveManager : MonoBehaviour
         //TODO: Sort?
 
         return retList;
+    }
+
+    public List<Objective> GetAllObjectives()
+    {
+        List<Objective> ret = new List<Objective>();
+
+        ret.AddRange(objectives.FindAll(x => !x.IsAchievement));
+        ret.AddRange(completeObjectives.FindAll(x => !x.IsAchievement));
+
+        //TODO: Sort
+
+        return ret;
+    }
+
+    public List<Objective> GetAllAchievements()
+    {
+        List<Objective> ret = new List<Objective>();
+
+        ret.AddRange(objectives.FindAll(x => x.IsAchievement));
+        ret.AddRange(completeObjectives.FindAll(x => x.IsAchievement));
+
+        //TODO: Sort
+
+        return ret;
     }
 
     #endregion

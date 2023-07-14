@@ -12,12 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5814ba4cd01a79f40bbefacf189ab50a, type: 3}
   m_Name: TileColorObjective
   m_EditorClassIdentifier: 
+  id: 5
   description: 'Leave 1000 white tiles '
   levelCategory: {fileID: 11400000, guid: 06c4a1a0614cd7d42afb84a183b6e82c, type: 2}
   level: {fileID: 0}
   progressBarColorIndex: 0
   icon: {fileID: 2800000, guid: f540d163eaeb67f42918267b89d1450a, type: 3}
-  isComplete: 0
+  isAchievement: 0
+  isComplete: 1
   colorIndex: 0
   goal: 1000
-  progress: 0
+  progress: 1000

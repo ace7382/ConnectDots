@@ -13,6 +13,12 @@ public class ObjectiveCard
 
     #endregion
 
+    #region Public Properties
+
+    public Objective        Objective { get { return objective; } }
+
+    #endregion
+
     #region Constructor
 
     public ObjectiveCard(Objective objective, VisualElement root)

@@ -20,7 +20,8 @@ public static class VisualElementExtensions
 
     public static bool IsShowing(this VisualElement ve)
     {
-        return ve.style.display == DisplayStyle.Flex;
+        //return ve.style.display == DisplayStyle.Flex;
+        return ve.resolvedStyle.display == DisplayStyle.Flex;
     }
 
     public static void SetColor(this VisualElement ve, Color color)
@@ -61,10 +62,18 @@ public static class VisualElementExtensions
 
     public static void SetMargins(this VisualElement ve, float marginSize, bool top = true, bool right = true, bool bottom = true, bool left = true)
     {
-        if (top)    ve.style.marginTop = marginSize;
-        if (right)  ve.style.marginRight = marginSize;
-        if (left)   ve.style.marginLeft = marginSize;
-        if (bottom) ve.style.marginBottom = marginSize;
+        if (top)    ve.style.marginTop      = marginSize;
+        if (right)  ve.style.marginRight    = marginSize;
+        if (left)   ve.style.marginLeft     = marginSize;
+        if (bottom) ve.style.marginBottom   = marginSize;
+    }
+
+    public static void SetMargins(this VisualElement ve, float top, float right, float bottom, float left)
+    {
+        ve.style.marginTop      = top;
+        ve.style.marginRight    = right;
+        ve.style.marginBottom   = bottom;
+        ve.style.marginLeft     = left;
     }
 
     public static void SetPadding(this VisualElement ve, float paddingSize, bool top = true, bool right = true, bool bottom = true, bool left = true)

@@ -165,6 +165,7 @@ MonoBehaviour:
   - {fileID: 9197481963319205126, guid: fad7aed246e45dd4481ffdd2c045fd93, type: 3}
   - {fileID: 9197481963319205126, guid: 5285ac214fb8a4e448f6be587b70fbd1, type: 3}
   - {fileID: 9197481963319205126, guid: b36fc87149db7ee4ca04e6b1ed52cbc2, type: 3}
+  - {fileID: 9197481963319205126, guid: 56894d196cb5ad446b6bf423c3ee7f19, type: 3}
 --- !u!4 &413392889
 Transform:
   m_ObjectHideFlags: 0
@@ -447,6 +448,7 @@ MonoBehaviour:
   topBarControl: {fileID: 1911041857}
   levelSelectButton: {fileID: 9197481963319205126, guid: 33c15d8e480526a46b46edea8e7e16a1, type: 3}
   objectiveCard: {fileID: 9197481963319205126, guid: bab16855fe8431b4aa00d16f346a6afc, type: 3}
+  achievementCard: {fileID: 9197481963319205126, guid: 4c914fa2e493e7e4ea996549ccb2c80c, type: 3}
   coinDisplay: {fileID: 9197481963319205126, guid: afed470b92703424394881c5a3ffb1dd, type: 3}
   requirementDisplay: {fileID: 9197481963319205126, guid: d9d05c636a5ac274f9ed086317f8b3e0, type: 3}
   timeAttackButtonPrefab: {fileID: 9197481963319205126, guid: 29e1dd9b70ed75f41bf1d9ea337e3c2a, type: 3}
@@ -603,9 +605,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectives:
+  - {fileID: 11400000, guid: 4212d926c2adf4e4ea26b5388e888407, type: 2}
+  - {fileID: 11400000, guid: 1ba2e2e954444c54e854240c4bd1acbc, type: 2}
   - {fileID: 11400000, guid: 91a236fafac3001409d6825242e6909f, type: 2}
   - {fileID: 11400000, guid: 5de0903b3bc3018438a6aeaa058ef592, type: 2}
   - {fileID: 11400000, guid: dcfc5ef924d8b03489b36ba4b0e377bf, type: 2}
+  - {fileID: 11400000, guid: 0586fb2caaad31c4db01b87394e38ba4, type: 2}
 --- !u!4 &1125119775
 Transform:
   m_ObjectHideFlags: 0

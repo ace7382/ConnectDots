@@ -51,6 +51,9 @@ public class AchievementsPage : Page
         check.SetWidth(70f);
         check.SetHeight(check.style.width);
 
+        achievementsScroll.contentContainer.SetPadding(0f, 8f, 8f, 0f); //8 is the dropshadow size for objective cards
+        goalsScroll.contentContainer.SetPadding(0f, 8f, 8f, 0f);
+
         hideCompleted.RegisterValueChangedCallback<bool>((evt) => ShowHideCompleted(evt.newValue));
         achievementsButton.RegisterCallback<PointerUpEvent>(ShowAchievementsList);
         goalsButton.RegisterCallback<PointerUpEvent>(ShowGoalsList);
@@ -107,8 +110,8 @@ public class AchievementsPage : Page
         for (int i = 0; i < tempList.Count; i++)
         {
             Objective objective                     = tempList[i];
-            VisualElement achievementCard          = UIManager.instance.ObjectiveCard.Instantiate();
-            achievementCard.name                   = objective.ID + " AchivementCard Card";
+            VisualElement achievementCard           = UIManager.instance.ObjectiveCard.Instantiate();
+            achievementCard.name                    = objective.ID + " AchivementCard Card";
             achievementCard.SetWidth(new StyleLength(new Length(100f, LengthUnit.Percent)));
             achievementCard.SetMargins(10f, i != 0, false, i != tempList.Count - 1, false);
 
@@ -138,7 +141,7 @@ public class AchievementsPage : Page
                 currFold                            = new Foldout {text = "a"};
                 currFold.contentContainer.name      = currCat.name + " foldout content container";
                 currFold.focusable                  = false;
-                currFold.contentContainer.SetMargins(0f, 5f, 0f, 0f); //Remove the tab in, and give space for the card's dropshadow
+                currFold.contentContainer.SetMargins(0f, 0f, 0f, 0f); //Remove the tab in
 
                 int completed                       = ObjectiveManager.instance.GetCompletedObjectivesForCategory(currCat).Count;
                 int total                           = ObjectiveManager.instance.GetObjectivesForCategory(currCat).Count;

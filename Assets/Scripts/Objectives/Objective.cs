@@ -69,7 +69,8 @@ public abstract class Objective : ScriptableObject
 
     public virtual void Reset()
     {
-        rewardClaimed = false;
+        isComplete      = false;
+        rewardClaimed   = false;
     }
 
     public void OnComplete()

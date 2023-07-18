@@ -448,7 +448,6 @@ MonoBehaviour:
   topBarControl: {fileID: 1911041857}
   levelSelectButton: {fileID: 9197481963319205126, guid: 33c15d8e480526a46b46edea8e7e16a1, type: 3}
   objectiveCard: {fileID: 9197481963319205126, guid: bab16855fe8431b4aa00d16f346a6afc, type: 3}
-  achievementCard: {fileID: 9197481963319205126, guid: 4c914fa2e493e7e4ea996549ccb2c80c, type: 3}
   coinDisplay: {fileID: 9197481963319205126, guid: afed470b92703424394881c5a3ffb1dd, type: 3}
   requirementDisplay: {fileID: 9197481963319205126, guid: d9d05c636a5ac274f9ed086317f8b3e0, type: 3}
   timeAttackButtonPrefab: {fileID: 9197481963319205126, guid: 29e1dd9b70ed75f41bf1d9ea337e3c2a, type: 3}

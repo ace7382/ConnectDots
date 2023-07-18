@@ -16,7 +16,6 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TopBarController       topBarControl;
     [SerializeField] private VisualTreeAsset        levelSelectButton;
     [SerializeField] private VisualTreeAsset        objectiveCard;
-    [SerializeField] private VisualTreeAsset        achievementCard;
     [SerializeField] private VisualTreeAsset        coinDisplay;
     [SerializeField] private VisualTreeAsset        requirementDisplay;
     [SerializeField] private VisualTreeAsset        timeAttackButtonPrefab;
@@ -64,7 +63,6 @@ public class UIManager : MonoBehaviour
     public TopBarController     TopBar              { get { return topBarControl; } }
     public VisualTreeAsset      LevelSelectButton   { get { return levelSelectButton; } }
     public VisualTreeAsset      ObjectiveCard       { get { return objectiveCard; } }
-    public VisualTreeAsset      AchievementCard     { get { return achievementCard; } }
     public VisualTreeAsset      CoinDisplay         { get { return coinDisplay; } }
     public VisualTreeAsset      RequirementDisplay  { get { return requirementDisplay; } }
     public VisualTreeAsset      TimeAttackButton    { get { return timeAttackButtonPrefab; } }

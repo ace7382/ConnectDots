@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,8 @@ using UnityEngine.UIElements;
 public class Settings : Page
 {
     #region Private Variables
+
+    private bool            canClick;
 
     private VisualElement   mainContainer;
     private VisualElement   mainRibbon;
@@ -43,7 +46,18 @@ public class Settings : Page
 
     public override IEnumerator AnimateIn()
     {
-        yield return null;
+        VisualElement page  = uiDoc.rootVisualElement;
+
+        page.SetPadding(0f);
+        page.style.opacity  = new StyleFloat(0f);
+
+        Tween fadein        = DOTween.To(() => page.style.opacity.value,
+                                x => page.style.opacity = new StyleFloat(x),
+                                1f, .33f);
+
+        yield return fadein.Play().WaitForCompletion();
+
+        canClick = true;
     }
 
     public override IEnumerator AnimateOut()
@@ -69,6 +83,22 @@ public class Settings : Page
 
         settings_CloseButton.RegisterCallback<PointerUpEvent>((evt) =>
         {
+            canClick = false;
+
+            PageManager.instance.StartCoroutine(PageManager.instance.CloseTopPage());
+        });
+
+        uiDoc.rootVisualElement.Q<VisualElement>("TopBlankSpace").RegisterCallback<PointerUpEvent>((evt) =>
+        {
+            canClick = false;
+
+            PageManager.instance.StartCoroutine(PageManager.instance.CloseTopPage());
+        });
+
+        uiDoc.rootVisualElement.Q<VisualElement>("BottomBlankSpace").RegisterCallback<PointerUpEvent>((evt) =>
+        {
+            canClick = false;
+
             PageManager.instance.StartCoroutine(PageManager.instance.CloseTopPage());
         });
 
@@ -264,6 +294,8 @@ public class Settings : Page
         settings_SFX.Show(!show);
         settings_CloseButton.Show(!show);
         settings_ColorSettingsButton.Show(!show);
+
+        mainContainer.SetHeight(new StyleLength(new Length(show ? 75f : 50f, LengthUnit.Percent)));
 
         colorSettings_ColorListScroll.Show(show);
         colorSettings_CloseButton.Show(show);

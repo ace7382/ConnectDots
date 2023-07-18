@@ -9,9 +9,10 @@ public class LevelSelect : Page
 {
     #region Private Variables
 
-    ScrollView levelScroll, objectiveScroll, timeAttackScroll;
-    VisualElement levelsButton, objectivesButton, timeAttackButton;
-    private bool canClick;
+    private ScrollView      levelScroll, objectiveScroll, timeAttackScroll;
+    private VisualElement   levelsButton, objectivesButton, timeAttackButton;
+    private bool            canClick;
+    private LevelCategory   cat;
 
     #endregion
 
@@ -21,9 +22,8 @@ public class LevelSelect : Page
     {
         //args[0]   -   LevelCategory   - The level category to show levels for
 
-        LevelCategory cat = (LevelCategory)args[0];
-
-        List<Level> levels = cat.GetLevels();
+        cat                 = (LevelCategory)args[0];
+        List<Level> levels  = cat.GetLevels();
 
         levelScroll = uiDoc.rootVisualElement.Q<ScrollView>("LevelScroll");
         levelScroll.contentContainer.style.flexGrow = 1f;
@@ -89,6 +89,10 @@ public class LevelSelect : Page
             }
         }
 
+        SetNotificationBubble(null, null);
+        this.AddObserver(SetNotificationBubble, Notifications.OBJECTIVE_COMPLETE);
+        this.AddObserver(SetNotificationBubble, Notifications.OBJECTIVE_REWARD_CLAIMED);
+
         timeAttackScroll = uiDoc.rootVisualElement.Q<ScrollView>("TimeAttackScroll");
         timeAttackScroll.contentContainer.style.flexGrow = 1f;
         VisualElement timeAttackScrollContent = timeAttackScroll.contentContainer.Q<VisualElement>("TimeAttackScrollContent");
@@ -131,9 +135,9 @@ public class LevelSelect : Page
             }
         }
 
-        levelsButton = uiDoc.rootVisualElement.Q<VisualElement>("LevelsButton");
-        objectivesButton = uiDoc.rootVisualElement.Q<VisualElement>("ObjectivesButton");
-        timeAttackButton = uiDoc.rootVisualElement.Q<VisualElement>("TimeAttackButton");
+        levelsButton        = uiDoc.rootVisualElement.Q<VisualElement>("LevelsButton");
+        objectivesButton    = uiDoc.rootVisualElement.Q<VisualElement>("ObjectivesButton");
+        timeAttackButton    = uiDoc.rootVisualElement.Q<VisualElement>("TimeAttackButton");
 
         levelsButton.RegisterCallback<PointerUpEvent>(ShowLevels);
         objectivesButton.RegisterCallback<PointerUpEvent>(ShowObjectives);
@@ -165,6 +169,9 @@ public class LevelSelect : Page
         levelsButton.UnregisterCallback<PointerUpEvent>(ShowLevels);
         objectivesButton.UnregisterCallback<PointerUpEvent>(ShowObjectives);
         timeAttackButton.UnregisterCallback<PointerUpEvent>(ShowTimeAttacks);
+
+        this.RemoveObserver(SetNotificationBubble, Notifications.OBJECTIVE_COMPLETE);
+        this.RemoveObserver(SetNotificationBubble, Notifications.OBJECTIVE_REWARD_CLAIMED);
     }
 
     public override IEnumerator AnimateIn()
@@ -237,6 +244,14 @@ public class LevelSelect : Page
         timeAttackScroll.Show();
 
         timeAttackScroll.GoToTop();
+    }
+
+    private void SetNotificationBubble(object sender, object info)
+    {
+        int goalsToClaim                    = ObjectiveManager.instance.GetNumberOfUnclaimedAndCompleteObjectives(cat);
+        VisualElement claimableNotDot       = objectivesButton.Q<VisualElement>("Counter");
+        claimableNotDot.Q<Label>().text     = goalsToClaim.ToString();
+        claimableNotDot.Show(goalsToClaim > 0);
     }
 
     #endregion

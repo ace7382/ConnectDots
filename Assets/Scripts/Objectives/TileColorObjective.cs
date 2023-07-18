@@ -48,8 +48,10 @@ public class TileColorObjective : Objective
 
     public override void Reset()
     {
-        Progress = 0;
-        IsComplete = false;
+        base.Reset();
+
+        Progress    = 0;
+        IsComplete  = false;
     }
 
     #endregion

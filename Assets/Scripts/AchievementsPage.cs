@@ -91,6 +91,8 @@ public class AchievementsPage : Page
 
     public override void HidePage()
     {
+        this.RemoveObserver(SetNotificationBubble, Notifications.OBJECTIVE_REWARD_CLAIMED);
+        this.RemoveObserver(SetNotificationBubble, Notifications.OBJECTIVE_COMPLETE);
         return;
     }
 
@@ -136,7 +138,7 @@ public class AchievementsPage : Page
                 currFold                            = new Foldout {text = "a"};
                 currFold.contentContainer.name      = currCat.name + " foldout content container";
                 currFold.focusable                  = false;
-                currFold.SetMargins(0f);
+                currFold.contentContainer.SetMargins(0f, 5f, 0f, 0f); //Remove the tab in, and give space for the card's dropshadow
 
                 int completed                       = ObjectiveManager.instance.GetCompletedObjectivesForCategory(currCat).Count;
                 int total                           = ObjectiveManager.instance.GetObjectivesForCategory(currCat).Count;
@@ -204,6 +206,10 @@ public class AchievementsPage : Page
             cards.Add(goalCard);
             goalGroups.Add(currFold);
         }
+
+        SetNotificationBubble(null, null);
+        this.AddObserver(SetNotificationBubble, Notifications.OBJECTIVE_REWARD_CLAIMED);
+        this.AddObserver(SetNotificationBubble, Notifications.OBJECTIVE_COMPLETE);
     }
 
     private void ShowAchievementsList(PointerUpEvent evt)
@@ -246,6 +252,14 @@ public class AchievementsPage : Page
                 goalGroups[i].Show();
             }
         }
+    }
+
+    private void SetNotificationBubble(object sender, object info)
+    {
+        int goalsToClaim                = ObjectiveManager.instance.GetNumberOfUnclaimedAndCompleteObjectives();
+        VisualElement claimableNotDot   = goalsButton.Q<VisualElement>("Counter");
+        claimableNotDot.Q<Label>().text = goalsToClaim.ToString();
+        claimableNotDot.Show(goalsToClaim > 0);
     }
 
     #endregion

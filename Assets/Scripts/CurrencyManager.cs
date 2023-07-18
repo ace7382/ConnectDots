@@ -25,7 +25,6 @@ public class CurrencyManager : MonoBehaviour
     private VisualElement coinDisplayContainer;
 
     private Dictionary<int, int> ownedColors;
-    private Vector2 coinFlyDestination; //TODO: Make this the UI element's origin? not sure it matters though
     private Dictionary<PowerupType, int> ownedPowerups;
 
     #endregion
@@ -160,8 +159,6 @@ public class CurrencyManager : MonoBehaviour
 
     public void SpawnCoin(int colorIndex, Vector3 origin, Vector2 destination, float animationTime = 0f)
     {
-        coinFlyDestination                  =  destination;
-
         VisualElement coin                  = new VisualElement();
         coin.SetWidth(25f);
         coin.SetHeight(coin.style.width);
@@ -182,7 +179,7 @@ public class CurrencyManager : MonoBehaviour
 
         Tween goToCorner                    = DOTween.To(() => coin.transform.position,
                                                 x => coin.transform.position = x,
-                                                new Vector3(coinFlyDestination.x, coinFlyDestination.y, coin.transform.position.z),
+                                                new Vector3(destination.x, destination.y, coin.transform.position.z),
                                                 animationTime - delay)
                                                 .SetDelay(delay)
                                                 .SetEase(Ease.InBack)
@@ -214,6 +211,43 @@ public class CurrencyManager : MonoBehaviour
         //seq.Join(fade);
         //seq.Join(scaleDown);
         seq.Play();
+    }
+
+    public void SpawnPowerups(PowerupType powerupType, Vector3 origin, Vector2 destination, float animationTime = 0f)
+    {
+        VisualElement coin                  = UIManager.instance.PowerupButton.Instantiate();
+        VisualElement container             = coin.Q<VisualElement>("Container");
+        VisualElement bg                    = container.Q<VisualElement>("BG");
+        VisualElement icon                  = bg.Q<VisualElement>("Icon");
+
+        coin.SetWidth(100f);
+        coin.SetHeight(coin.style.width);
+        container.SetWidth(coin.style.width);
+        container.SetHeight(coin.style.width);
+        bg.SetWidth(80f);
+        bg.SetHeight(bg.style.width);
+        icon.SetMargins(10f);
+
+        coin.Q<VisualElement>("Counter").RemoveFromHierarchy();
+        icon.SetImage(UIManager.instance.GetPowerupIcon(powerupType));
+
+        coin.style.position                 = Position.Absolute;
+        coin.transform.position             = origin;
+
+        coinDisplayContainer.Add(coin);
+
+        animationTime                       = animationTime == 0f ? Random.Range(.75f, 1f) : animationTime;
+        float delay                         = Random.Range(0f, animationTime * .9f);
+
+        Tween goToDestination               = DOTween.To(() => coin.transform.position,
+                                                x => coin.transform.position = x,
+                                                new Vector3(destination.x, destination.y, coin.transform.position.z),
+                                                animationTime - delay)
+                                                .SetDelay(delay)
+                                                .SetEase(Ease.InBack)
+                                                .OnKill(() => coin.RemoveFromHierarchy());
+
+        goToDestination.Play();
     }
 
     public int GetPowerupsOwned(PowerupType type)

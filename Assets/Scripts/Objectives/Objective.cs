@@ -14,6 +14,13 @@ public abstract class Objective : ScriptableObject
     [SerializeField] protected Texture2D        icon;
     [SerializeField] protected bool             isAchievement;
 
+    [Space]
+    [Header("Award Variables")]
+    [SerializeField] protected bool             rewardClaimed;
+    [SerializeField] protected PowerupType      powerupReward;
+    [SerializeField] protected int              segmentRewardColorIndex;
+    [SerializeField] protected int              rewardAmount;
+
     #endregion
 
     #region Private Variables
@@ -43,23 +50,38 @@ public abstract class Objective : ScriptableObject
     public Color            ProgressBarColor    { get { return UIManager.instance.GetColor(progressBarColorIndex); } }
     public bool             IsAchievement       { get { return isAchievement; } }
 
+    public bool             RewardClaimed       { get { return rewardClaimed; } }
+    public PowerupType      PowerupRewardType   { get { return powerupReward; } }
+    public int              RewardColor         { get { return segmentRewardColorIndex; } }
+    public int              RewardAmount        { get { return rewardAmount; } }
+
     #endregion
 
     #region Abstract Functions
 
     public abstract string GetProgressAsString();
     public abstract float GetProgressAsPercentage();
-    public abstract void Reset();
+    //public abstract void Reset();
 
     #endregion
 
     #region Public Functions
+
+    public virtual void Reset()
+    {
+        rewardClaimed = false;
+    }
 
     public void OnComplete()
     {
         ObjectiveManager.instance.MarkAsComplete(this);
 
         Debug.Log("Object Complete " + description);
+    }
+
+    public void ClaimReward()
+    {
+        rewardClaimed = true;
     }
 
     #endregion

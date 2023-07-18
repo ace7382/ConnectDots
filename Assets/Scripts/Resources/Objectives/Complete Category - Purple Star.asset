@@ -19,4 +19,8 @@ MonoBehaviour:
   progressBarColorIndex: 5
   icon: {fileID: 2800000, guid: f540d163eaeb67f42918267b89d1450a, type: 3}
   isAchievement: 0
+  rewardClaimed: 0
+  powerupReward: 0
+  segmentRewardColorIndex: 4
+  rewardAmount: 100
   isComplete: 1

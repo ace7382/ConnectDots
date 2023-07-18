@@ -26,6 +26,8 @@ public class CompleteCategory_Objective : Objective
 
     public override void Reset()
     {
+        base.Reset();
+
         List<Level> allLevels = LevelCategory.GetLevels();
 
         for (int i = 0; i < allLevels.Count; i++)

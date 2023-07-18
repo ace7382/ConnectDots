@@ -27,6 +27,8 @@ public class ShopItem_Powerup : ShopItem_MultiplePurchaseItem
         //      and the spending of coins/updating of shop, bring base code into
         //      here and rearange it vs calling base
 
+        //TODO: Account for more than 1 Powerup purchased
+
         CurrencyManager.instance.AddCurrency(PowerupType, 1);
 
         base.OnPurchase();
@@ -91,7 +93,6 @@ public class ShopItem_Powerup : ShopItem_MultiplePurchaseItem
         container.Add(rightContainer);
 
         return container;
-
     }
 
     public override Texture2D GetIcon()

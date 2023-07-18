@@ -63,6 +63,7 @@ public class ObjectiveManager : MonoBehaviour
     public static void ResetObjectives()
     {
         List<Objective> allobjectives = Resources.LoadAll<Objective>("Objectives").ToList();
+
         for (int i = 0; i < allobjectives.Count; i++)
         {
             allobjectives[i].Reset();
@@ -73,6 +74,8 @@ public class ObjectiveManager : MonoBehaviour
     {
         objectives.Remove(o);
         completeObjectives.Add(o);
+
+        this.PostNotification(Notifications.OBJECTIVE_COMPLETE);
     }
 
     public List<Objective> GetObjectivesForCategory(LevelCategory cat)
@@ -127,6 +130,18 @@ public class ObjectiveManager : MonoBehaviour
         //TODO: Sort
 
         return ret;
+    }
+
+    public int GetNumberOfUnclaimedAndCompleteObjectives()
+    {
+        int ret = completeObjectives.FindAll(x => x.IsComplete && !x.RewardClaimed).Count;
+
+        return ret;
+    }
+
+    public int GetNumberOfUnclaimedAndCompleteObjectives(LevelCategory cat)
+    {
+        return completeObjectives.FindAll(x => x.LevelCategory == cat && x.IsComplete && !x.RewardClaimed).Count;
     }
 
     #endregion

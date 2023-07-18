@@ -555,7 +555,17 @@ public class Shop : Page
                 , c.b + (1f - c.b) * .8f
                 , 1f));
 
-            //TODO: CurrencyMan.spawn powerup coin
+            if (boughtItem is ShopItem_Powerup)
+            {
+                //TODO: Account for more than 1 Powerup purchased
+
+                CurrencyManager.instance.SpawnPowerups(
+                    (boughtItem as ShopItem_Powerup).PowerupType
+                    , boughtItemNode.worldBound.center + new Vector2(-50f, -50f)
+                    , UIManager.instance.TopBar.CoinsButton.worldBound.center
+                    , animationLength * 1.3f
+                    );
+            }
         }
 
         for (int i = 0; i < newlyOpenedNodes.Count; i++)

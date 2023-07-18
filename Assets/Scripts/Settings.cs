@@ -286,6 +286,8 @@ public class Settings : Page
         colorSetter_Container.Q<VisualElement>("CancelButton").RegisterCallback<PointerUpEvent>(CancelColorSetter);
 
         colorSetter_Container.Hide();
+
+        uiDoc.rootVisualElement.Q<VisualElement>("BottomBlankSpace").BringToFront();
     }
 
     private void ShowHideColorSettings(PointerUpEvent evt, bool show)

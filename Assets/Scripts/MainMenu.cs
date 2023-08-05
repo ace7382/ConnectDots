@@ -14,6 +14,8 @@ public class MainMenu : Page
     private VisualElement achievementsButton;
     private bool canClick;
 
+    private VisualElement dailyTrackerBox1;
+
     #endregion
 
     #region Inherited Functions
@@ -34,12 +36,14 @@ public class MainMenu : Page
         settingsButton      = uiDoc.rootVisualElement.Q<VisualElement>("SettingsButton");
         achievementsButton  = uiDoc.rootVisualElement.Q<VisualElement>("AchievementsButton");
 
+        dailyTrackerBox1    = uiDoc.rootVisualElement.Q<VisualElement>("DailyTrackerBox1");
+
         playButton.RegisterCallback<PointerUpEvent>(PlayButtonClicked);
         shopButton.RegisterCallback<PointerUpEvent>(OpenShop);
         settingsButton.RegisterCallback<PointerUpEvent>(OpenSettings);
         achievementsButton.RegisterCallback<PointerUpEvent>(OpenAchievements);
 
-        canClick    = true;
+        canClick            = true;
     }
 
     public override void HidePage()
@@ -51,20 +55,26 @@ public class MainMenu : Page
 
     public override IEnumerator AnimateIn()
     {
+        Vector2 origin                              = new Vector2(0f, 50f);//, dailyTrackerBox1.resolvedStyle.height / 2f);
+        UIToolkitCircle dailyTrackerZeroEndPoint    = new UIToolkitCircle(origin, 30f, Color.green);
+        dailyTrackerZeroEndPoint.name               = "DAILY TRACKER END POINT";
+
+        dailyTrackerBox1.Add(dailyTrackerZeroEndPoint);
+
         return null;
     }
 
     public override IEnumerator AnimateOut()
     {
-        canClick = false;
+        canClick            = false;
 
-        VisualElement page = uiDoc.rootVisualElement;
+        VisualElement page  = uiDoc.rootVisualElement;
 
-        page.style.opacity = new StyleFloat(1f);
+        page.style.opacity  = new StyleFloat(1f);
 
-        Tween fadeout = DOTween.To(() => page.style.opacity.value,
-                x => page.style.opacity = new StyleFloat(x),
-                0f, .33f);
+        Tween fadeout       = DOTween.To(() => page.style.opacity.value,
+                                x => page.style.opacity = new StyleFloat(x),
+                                0f, .33f);
 
         yield return fadeout.Play().WaitForCompletion();
     }

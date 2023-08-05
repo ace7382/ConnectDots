@@ -14,7 +14,7 @@
         </ui:VisualElement>
         <ui:VisualElement name="ScrollPanel" style="flex-grow: 1; background-color: rgb(255, 255, 255); border-top-left-radius: 30px; border-bottom-left-radius: 30px; border-top-right-radius: 30px; border-bottom-right-radius: 30px; width: 90%; max-width: 90%; min-width: 90%; margin-bottom: 15px; min-height: auto; flex-shrink: 0; align-self: auto;">
             <ui:Toggle label="Hide Completed" name="HideCompletedToggle" style="align-self: center;" />
-            <ui:ScrollView name="GoalsScroll" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" style="margin-left: 15px; margin-right: 15px; margin-top: 15px; margin-bottom: 15px; width: 90%; align-self: center; display: none;" />
+            <ui:ScrollView name="GoalsScroll" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" touch-scroll-type="Clamped" style="margin-left: 15px; margin-right: 15px; margin-top: 15px; margin-bottom: 15px; width: 90%; align-self: center; display: none;" />
             <ui:ScrollView name="AchievementsScroll" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" style="margin-left: 15px; margin-right: 15px; margin-top: 15px; margin-bottom: 15px; width: 90%; align-self: center; display: none;" />
         </ui:VisualElement>
     </ui:VisualElement>

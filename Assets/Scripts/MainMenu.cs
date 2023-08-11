@@ -40,22 +40,22 @@ public class MainMenu : Page
 
         dailyTrackerBox1    = uiDoc.rootVisualElement.Q<VisualElement>("DailyTrackerBox1");
 
-        playButton.RegisterCallback<PointerUpEvent>(PlayButtonClicked);
-        shopButton.RegisterCallback<PointerUpEvent>(OpenShop);
-        settingsButton.RegisterCallback<PointerUpEvent>(OpenSettings);
-        achievementsButton.RegisterCallback<PointerUpEvent>(OpenAchievements);
-        profileCard.RegisterCallback<PointerUpEvent>(OpenProfile);
+        playButton.RegisterCallback<ClickEvent>(PlayButtonClicked);
+        shopButton.RegisterCallback<ClickEvent>(OpenShop);
+        settingsButton.RegisterCallback<ClickEvent>(OpenSettings);
+        achievementsButton.RegisterCallback<ClickEvent>(OpenAchievements);
+        profileCard.RegisterCallback<ClickEvent>(OpenProfile);
 
         canClick            = true;
     }
 
     public override void HidePage()
     {
-        playButton.UnregisterCallback<PointerUpEvent>(PlayButtonClicked);
-        shopButton.UnregisterCallback<PointerUpEvent>(OpenShop);
-        settingsButton.UnregisterCallback<PointerUpEvent>(OpenSettings);
-        achievementsButton.UnregisterCallback<PointerUpEvent>(OpenAchievements);
-        profileCard.UnregisterCallback<PointerUpEvent>(OpenProfile);
+        playButton.UnregisterCallback<ClickEvent>(PlayButtonClicked);
+        shopButton.UnregisterCallback<ClickEvent>(OpenShop);
+        settingsButton.UnregisterCallback<ClickEvent>(OpenSettings);
+        achievementsButton.UnregisterCallback<ClickEvent>(OpenAchievements);
+        profileCard.UnregisterCallback<ClickEvent>(OpenProfile);
     }
 
     public override IEnumerator AnimateIn()
@@ -88,7 +88,7 @@ public class MainMenu : Page
 
     #region Private Functions
 
-    private void PlayButtonClicked(PointerUpEvent evt)
+    private void PlayButtonClicked(ClickEvent evt)
     {
         if (!canClick)
             return;
@@ -98,7 +98,7 @@ public class MainMenu : Page
         PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<CategorySelect>());
     }
 
-    private void OpenShop(PointerUpEvent evt)
+    private void OpenShop(ClickEvent evt)
     {
         if (!canClick)
             return;
@@ -108,7 +108,7 @@ public class MainMenu : Page
         PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<Shop>());
     }
 
-    private void OpenSettings(PointerUpEvent evt)
+    private void OpenSettings(ClickEvent evt)
     {
         if (!canClick)
             return;
@@ -118,7 +118,7 @@ public class MainMenu : Page
         PageManager.instance.StartCoroutine(PageManager.instance.AddPageToStack<Settings>());
     }
 
-    private void OpenAchievements(PointerUpEvent evt)
+    private void OpenAchievements(ClickEvent evt)
     {
         if (!canClick)
             return;
@@ -128,7 +128,7 @@ public class MainMenu : Page
         PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<AchievementsPage>());
     }
 
-    private void OpenProfile(PointerUpEvent evt)
+    private void OpenProfile(ClickEvent evt)
     {
         if (!canClick)
             return;

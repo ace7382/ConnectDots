@@ -5,31 +5,57 @@ using UnityEngine.UIElements;
 
 public class ProfilePage : Page
 {
+    #region Private Variables
+
+    private bool canClick;
+
+    #endregion
+
     #region Inherited Functions
 
     public override void ShowPage(object[] args)
     {
-        
+        EventCallback<PointerDownEvent> backbuttonAction = (evt) =>
+        {
+            if (!canClick)
+                return;
+
+            PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<MainMenu>(null, false));
+        };
+
+        UIManager.instance.TopBar.UpdateBackButtonOnClick(backbuttonAction);
+        UIManager.instance.TopBar.ShowCoinButton(false);
     }
 
     public override IEnumerator AnimateIn()
     {
+        if (!UIManager.instance.TopBar.IsShowing)
+            UIManager.instance.TopBar.ShowTopBar();
+
         yield return null;
 
-        //DrawEXPGraph();
         DrawEXPBars();
 
         yield return null;
+
+        //Set the viewport height so that the content can scroll in the "full" screen area that it should be using
+        VisualElement viewport      = uiDoc.rootVisualElement.Q<ScrollView>().Q<VisualElement>("unity-content-viewport");
+        RectOffsetFloat safeArea    = viewport.panel.GetSafeArea();
+        viewport.SetHeight(Screen.height - (uiDoc.rootVisualElement.Q<VisualElement>("Page").resolvedStyle.paddingTop + safeArea.Bottom + safeArea.Top));
+
+        yield return null;
+
+        canClick = true;
     }
 
     public override IEnumerator AnimateOut()
     {
-        throw new System.NotImplementedException();
+        yield return null;
     }
 
     public override void HidePage()
     {
-        throw new System.NotImplementedException();
+        UIManager.instance.TopBar.ShowCoinButton(false);
     }
 
     #endregion
@@ -45,8 +71,8 @@ public class ProfilePage : Page
         Label bwNextLabel               = bwEXPBar.Q<Label>("NextLevel");
         Label bwProgressLabel           = bwEXPBar.Q<Label>("CurrentProgress");
 
-        Vector2 bwLeftOrigin            = new Vector2(bwEXPBar.WorldToLocal(bwCurrentLabel.worldBound.center).x, -10f);
-        Vector2 bwRightOrigin           = new Vector2(bwEXPBar.WorldToLocal(bwNextLabel.worldBound.center).x, -10f);
+        Vector2 bwLeftOrigin            = new Vector2(bwEXPBar.WorldToLocal(bwCurrentLabel.worldBound.center).x, 0f);
+        Vector2 bwRightOrigin           = new Vector2(bwEXPBar.WorldToLocal(bwNextLabel.worldBound.center).x, 0f);
 
         bwCurrentLabel.text             = ProfileManager.instance.GetEXPLevel(ProfileManager.EXPColor.BLACK_AND_WHITE).ToString();
         bwNextLabel.text                = (ProfileManager.instance.GetEXPLevel(ProfileManager.EXPColor.BLACK_AND_WHITE) + 1).ToString();
@@ -78,8 +104,8 @@ public class ProfilePage : Page
         Label redNextLabel              = redEXPBar.Q<Label>("NextLevel");
         Label redProgressLabel          = redEXPBar.Q<Label>("CurrentProgress");
 
-        Vector2 redLeftOrigin           = new Vector2(redEXPBar.WorldToLocal(redCurrentLabel.worldBound.center).x, -10f);
-        Vector2 redRightOrigin          = new Vector2(redEXPBar.WorldToLocal(redNextLabel.worldBound.center).x, -10f);
+        Vector2 redLeftOrigin           = new Vector2(redEXPBar.WorldToLocal(redCurrentLabel.worldBound.center).x, 0f);
+        Vector2 redRightOrigin          = new Vector2(redEXPBar.WorldToLocal(redNextLabel.worldBound.center).x, 0f);
 
         redCurrentLabel.text            = ProfileManager.instance.GetEXPLevel(ProfileManager.EXPColor.RED).ToString();
         redNextLabel.text               = (ProfileManager.instance.GetEXPLevel(ProfileManager.EXPColor.RED) + 1).ToString();
@@ -111,8 +137,8 @@ public class ProfilePage : Page
         Label purpleNextLabel           = purpleEXPBar.Q<Label>("NextLevel");
         Label purpleProgressLabel       = purpleEXPBar.Q<Label>("CurrentProgress");
 
-        Vector2 purpleLeftOrigin        = new Vector2(purpleEXPBar.WorldToLocal(purpleCurrentLabel.worldBound.center).x, -10f);
-        Vector2 purpleRightOrigin       = new Vector2(purpleEXPBar.WorldToLocal(purpleNextLabel.worldBound.center).x, -10f);
+        Vector2 purpleLeftOrigin        = new Vector2(purpleEXPBar.WorldToLocal(purpleCurrentLabel.worldBound.center).x, 0f);
+        Vector2 purpleRightOrigin       = new Vector2(purpleEXPBar.WorldToLocal(purpleNextLabel.worldBound.center).x, 0f);
 
         purpleCurrentLabel.text         = ProfileManager.instance.GetEXPLevel(ProfileManager.EXPColor.PURPLE).ToString();
         purpleNextLabel.text            = (ProfileManager.instance.GetEXPLevel(ProfileManager.EXPColor.PURPLE) + 1).ToString();
@@ -144,8 +170,8 @@ public class ProfilePage : Page
         Label blueNextLabel             = blueEXPBar.Q<Label>("NextLevel");
         Label blueProgressLabel         = blueEXPBar.Q<Label>("CurrentProgress");
 
-        Vector2 blueLeftOrigin          = new Vector2(blueEXPBar.WorldToLocal(blueCurrentLabel.worldBound.center).x, -10f);
-        Vector2 blueRightOrigin         = new Vector2(blueEXPBar.WorldToLocal(blueNextLabel.worldBound.center).x, -10f);
+        Vector2 blueLeftOrigin          = new Vector2(blueEXPBar.WorldToLocal(blueCurrentLabel.worldBound.center).x, 0f);
+        Vector2 blueRightOrigin         = new Vector2(blueEXPBar.WorldToLocal(blueNextLabel.worldBound.center).x, 0f);
 
         blueCurrentLabel.text           = ProfileManager.instance.GetEXPLevel(ProfileManager.EXPColor.BLUE).ToString();
         blueNextLabel.text              = (ProfileManager.instance.GetEXPLevel(ProfileManager.EXPColor.BLUE) + 1).ToString();
@@ -177,8 +203,8 @@ public class ProfilePage : Page
         Label greenNextLabel            = greenEXPBar.Q<Label>("NextLevel");
         Label greenProgressLabel        = greenEXPBar.Q<Label>("CurrentProgress");
 
-        Vector2 greenLeftOrigin         = new Vector2(greenEXPBar.WorldToLocal(greenCurrentLabel.worldBound.center).x, -10f);
-        Vector2 greenRightOrigin        = new Vector2(greenEXPBar.WorldToLocal(greenNextLabel.worldBound.center).x, -10f);
+        Vector2 greenLeftOrigin         = new Vector2(greenEXPBar.WorldToLocal(greenCurrentLabel.worldBound.center).x, 0f);
+        Vector2 greenRightOrigin        = new Vector2(greenEXPBar.WorldToLocal(greenNextLabel.worldBound.center).x, 0f);
 
         greenCurrentLabel.text          = ProfileManager.instance.GetEXPLevel(ProfileManager.EXPColor.GREEN).ToString();
         greenNextLabel.text             = (ProfileManager.instance.GetEXPLevel(ProfileManager.EXPColor.GREEN) + 1).ToString();
@@ -210,8 +236,8 @@ public class ProfilePage : Page
         Label yellowNextLabel           = yellowEXPBar.Q<Label>("NextLevel");
         Label yellowProgressLabel       = yellowEXPBar.Q<Label>("CurrentProgress");
 
-        Vector2 yellowLeftOrigin        = new Vector2(yellowEXPBar.WorldToLocal(yellowCurrentLabel.worldBound.center).x, -10f);
-        Vector2 yellowRightOrigin       = new Vector2(yellowEXPBar.WorldToLocal(yellowNextLabel.worldBound.center).x, -10f);
+        Vector2 yellowLeftOrigin        = new Vector2(yellowEXPBar.WorldToLocal(yellowCurrentLabel.worldBound.center).x, 0f);
+        Vector2 yellowRightOrigin       = new Vector2(yellowEXPBar.WorldToLocal(yellowNextLabel.worldBound.center).x, 0f);
 
         yellowCurrentLabel.text         = ProfileManager.instance.GetEXPLevel(ProfileManager.EXPColor.YELLOW).ToString();
         yellowNextLabel.text            = (ProfileManager.instance.GetEXPLevel(ProfileManager.EXPColor.YELLOW) + 1).ToString();
@@ -243,8 +269,8 @@ public class ProfilePage : Page
         Label orangeNextLabel           = orangeEXPBar.Q<Label>("NextLevel");
         Label orangeProgressLabel       = orangeEXPBar.Q<Label>("CurrentProgress");
 
-        Vector2 orangeLeftOrigin        = new Vector2(orangeEXPBar.WorldToLocal(orangeCurrentLabel.worldBound.center).x, -10f);
-        Vector2 orangeRightOrigin       = new Vector2(orangeEXPBar.WorldToLocal(orangeNextLabel.worldBound.center).x, -10f);
+        Vector2 orangeLeftOrigin        = new Vector2(orangeEXPBar.WorldToLocal(orangeCurrentLabel.worldBound.center).x, 0f);
+        Vector2 orangeRightOrigin       = new Vector2(orangeEXPBar.WorldToLocal(orangeNextLabel.worldBound.center).x, 0f);
 
         orangeCurrentLabel.text         = ProfileManager.instance.GetEXPLevel(ProfileManager.EXPColor.ORANGE).ToString();
         orangeNextLabel.text            = (ProfileManager.instance.GetEXPLevel(ProfileManager.EXPColor.ORANGE) + 1).ToString();
@@ -270,47 +296,6 @@ public class ProfilePage : Page
         orangeEXPBar.Add(orangeLeftDot);
         orangeEXPBar.Add(orangeRightDot);
         orangeEXPBar.Add(orangeProgLine);
-    }
-
-    private void DrawEXPGraph()
-    {
-        VisualElement lineChart     = uiDoc.rootVisualElement.Q<VisualElement>("LineGraphContainer").Q<VisualElement>("BG");
-        float lineChartHeight       = lineChart.resolvedStyle.height;
-
-        float minYValue             = lineChartHeight / 2f - 100f;
-        float maxYValue             = lineChartHeight / 2f - 700f; //These values are from the chart's lines' position.bottom values
-        float chartYRange           = minYValue - maxYValue;
-
-        Debug.Log(string.Format("Min Y: {0} | Max Y: {1} | Diff: {2}", minYValue, maxYValue, chartYRange));
-
-        int maxLineValue            = Mathf.Max(ProfileManager.instance.HighestEXPColorLevel, 10);
-        int increment               = maxLineValue / 5;
-
-        lineChart.Q<VisualElement>("Row1").Q<Label>().text = increment.ToString();
-        lineChart.Q<VisualElement>("Row2").Q<Label>().text = (increment * 2).ToString();
-        lineChart.Q<VisualElement>("Row3").Q<Label>().text = (increment * 3).ToString();
-        lineChart.Q<VisualElement>("Row4").Q<Label>().text = (increment * 4).ToString();
-        lineChart.Q<VisualElement>("Row5").Q<Label>().text = (increment * 5).ToString();
-
-        VisualElement bwCol         = lineChart.Q<VisualElement>("MarkingLine1");
-        Vector2 bwOrigin            = new Vector2(lineChart.WorldToLocal(bwCol.worldBound.center).x
-                                                 , lineChartHeight / 2f - 100f - (chartYRange * ProfileManager.instance.GetEXPLevel(ProfileManager.EXPColor.BLACK_AND_WHITE) / maxLineValue));
-        UIToolkitCircle bwCircle    = new UIToolkitCircle(bwOrigin, 30f, Color.black); //TODO: Use UIManager colors
-        Label bwLabel = new Label(ProfileManager.instance.GetEXPLevel(ProfileManager.EXPColor.BLACK_AND_WHITE).ToString());
-        bwLabel.AddToClassList("HeaderLabel");
-        bwLabel.style.position = Position.Absolute;
-        bwLabel.style.fontSize = 20f;
-        bwLabel.style.color = Color.white;
-        bwLabel.style.alignSelf = Align.Center;
-        bwCircle.Add(bwLabel);
-
-        VisualElement redCol        = lineChart.Q<VisualElement>("MarkingLine2");
-        Vector2 redOrigin           = new Vector2(lineChart.WorldToLocal(redCol.worldBound.center).x
-                                                 , lineChartHeight / 2f - 100f - (chartYRange * ProfileManager.instance.GetEXPLevel(ProfileManager.EXPColor.RED) / maxLineValue));
-        UIToolkitCircle redCircle   = new UIToolkitCircle(redOrigin, 30f, Color.red);
-
-        lineChart.Add(bwCircle);
-        lineChart.Add(redCircle);
     }
 
     #endregion

@@ -115,6 +115,11 @@ public class TopBarController : MonoBehaviour
         }
     }
 
+    public void ShowCoinButton(bool show)
+    {
+        coinsButton.Show(show);
+    }
+
     #endregion
 
     #region Private Functions

@@ -46,7 +46,29 @@ public class MainMenu : Page
         achievementsButton.RegisterCallback<ClickEvent>(OpenAchievements);
         profileCard.RegisterCallback<ClickEvent>(OpenProfile);
 
-        canClick            = true;
+        Color g                         = new Color(.85f, .85f, .85f, 1f);
+
+        ButtonStateChanger playBSC      = new ButtonStateChanger(playButton.Q<VisualElement>("BG"), Color.white, g);
+        ButtonStateChanger shopBSC      = new ButtonStateChanger(shopButton.Q<VisualElement>("BG"), Color.white, g);
+        ButtonStateChanger achieveBSC   = new ButtonStateChanger(achievementsButton.Q<VisualElement>("BG"), Color.white, g);
+        ButtonStateChanger settingsBSC  = new ButtonStateChanger(settingsButton.Q<VisualElement>("BG"), Color.white, g);
+
+        playButton.RegisterCallback<PointerDownEvent>(playBSC.OnPointerDown);
+        shopButton.RegisterCallback<PointerDownEvent>(shopBSC.OnPointerDown);
+        achievementsButton.RegisterCallback<PointerDownEvent>(achieveBSC.OnPointerDown);
+        settingsButton.RegisterCallback<PointerDownEvent>(settingsBSC.OnPointerDown);
+
+        VisualElement p                 = uiDoc.rootVisualElement.Q<VisualElement>("Page");
+        p.RegisterCallback<PointerUpEvent>(playBSC.OnPointerUp);
+        p.RegisterCallback<PointerUpEvent>(shopBSC.OnPointerUp);
+        p.RegisterCallback<PointerUpEvent>(achieveBSC.OnPointerUp);
+        p.RegisterCallback<PointerUpEvent>(settingsBSC.OnPointerUp);
+        p.RegisterCallback<PointerLeaveEvent>(playBSC.OnPointerOff);
+        p.RegisterCallback<PointerLeaveEvent>(shopBSC.OnPointerOff);
+        p.RegisterCallback<PointerLeaveEvent>(achieveBSC.OnPointerOff);
+        p.RegisterCallback<PointerLeaveEvent>(settingsBSC.OnPointerOff);
+
+        canClick                        = true;
     }
 
     public override void HidePage()

@@ -165,7 +165,6 @@ public static class VisualElementExtensions
         shifts.Add(ve, seq);
     }
 
-
     //TODO: finish writing this so it can be used.
     //Not high priority at all, so not finishing it rn
 

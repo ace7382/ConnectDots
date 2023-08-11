@@ -44,8 +44,8 @@ public class CurrencyManager : MonoBehaviour
         else if (instance != this)
             Destroy(gameObject);
 
-        ownedColors = new Dictionary<int, int>();
-        ownedPowerups = new Dictionary<PowerupType, int>();
+        ownedColors     = new Dictionary<int, int>();
+        ownedPowerups   = new Dictionary<PowerupType, int>();
 
         //TODO: Remove this///
         CurrencyManager.instance.AddCurrency(PowerupType.HINT, 20);

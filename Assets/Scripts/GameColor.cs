@@ -4,10 +4,13 @@ using UnityEngine;
 
 public enum ColorCategory
 { 
-    [EnumName("System Colors")] SYSTEM,
-    [EnumName("Reds")]          REDS,
-    [EnumName("Greens")]        GREENS,
-    [EnumName("Blues")]         BLUES,
+    [EnumName("Blacks/Whites")] BLACK_AND_WHITE     = 0,
+    [EnumName("Reds")]          RED                 = 1,
+    [EnumName("Purples")]       PURPLE              = 2,
+    [EnumName("Blues")]         BLUE                = 3,
+    [EnumName("Greens")]        GREEN               = 4,
+    [EnumName("Yellows")]       YELLOW              = 5,
+    [EnumName("Oranges")]       ORANGE              = 6
 }
 
 [System.Serializable]

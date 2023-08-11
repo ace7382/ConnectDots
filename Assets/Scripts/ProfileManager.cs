@@ -6,21 +6,6 @@ using UnityEngine;
 
 public class ProfileManager : MonoBehaviour
 {
-    #region Enum
-
-    public enum EXPColor
-    {
-        BLACK_AND_WHITE     = 0,
-        RED                 = 1,
-        PURPLE              = 2,
-        BLUE                = 3,
-        GREEN               = 4,
-        YELLOW              = 5,
-        ORANGE              = 6
-    }
-
-    #endregion
-
     #region Singleton
 
     public static ProfileManager instance;
@@ -65,12 +50,12 @@ public class ProfileManager : MonoBehaviour
         return neededEXP[currentLevel];
     }
     
-    public int GetEXPLevel(EXPColor color)
+    public int GetEXPLevel(ColorCategory color)
     {
         return expLevelsPerColor[(int)color];
     }
 
-    public int GetCurrentEXP(EXPColor color)
+    public int GetCurrentEXP(ColorCategory color)
     {
         return currentEXPPerColor[(int)color];
     }

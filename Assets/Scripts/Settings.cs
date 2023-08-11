@@ -132,7 +132,7 @@ public class Settings : Page
         check.SetHeight(check.style.width);
 
         colorSettings_ColorNumberLabels             = new List<Label>();
-        ColorCategory prevCat                       = ColorCategory.SYSTEM;
+        ColorCategory prevCat                       = ColorCategory.BLACK_AND_WHITE;
 
         for (int i = 0; i < UIManager.instance.ColorCount; i++)
         {

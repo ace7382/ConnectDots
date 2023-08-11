@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:VisualElement name="ProfileBox" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); height: 250px; max-height: 250px; min-height: 250px; width: 800px; max-width: 800px; min-width: 800px; position: relative;">
+        <ui:VisualElement name="ProfileIcon" style="flex-grow: 1; background-color: rgb(84, 84, 84); width: 250px; max-width: 250px; min-width: 250px;" />
+        <ui:Label tabindex="-1" text="SquiggleBucket" display-tooltip-when-elided="true" name="ProfileName" class="HeaderLabel" style="position: absolute; left: 275px; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; font-size: 55px; text-overflow: ellipsis; max-width: 525px; -unity-text-align: middle-left;" />
+        <ui:Label tabindex="-1" text="Profile Title" display-tooltip-when-elided="true" name="ProfileTitle" enable-rich-text="false" class="HeaderLabel" style="position: absolute; left: 275px; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; font-size: 55px; text-overflow: ellipsis; max-width: 525px; -unity-text-align: middle-left; top: 80px;" />
+        <ui:Label tabindex="-1" text="LVL - 100" display-tooltip-when-elided="true" name="ProfileLevel" class="HeaderLabel" style="position: absolute; left: 275px; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; font-size: 70px; text-overflow: ellipsis; max-width: 525px; -unity-text-align: middle-left; bottom: 0;" />
+    </ui:VisualElement>
+</ui:UXML>

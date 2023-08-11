@@ -40,8 +40,7 @@ public class AchievementCard
         icon.SetImage(achievement.Icon);
 
         Vector2 origin              = card.WorldToLocal(icon.worldBound.center);
-        UIToolkitCircle radial = new UIToolkitCircle(origin, 100f, Color.green);
-        //UIToolkitRadialFill radial  = new UIToolkitRadialFill(new Vector2(0,0), 100f, Color.green, 80f);
+        UIToolkitCircle radial      = new UIToolkitCircle(origin, 100f, Color.green);
 
         card.Add(radial);
         radial.BringToFront();

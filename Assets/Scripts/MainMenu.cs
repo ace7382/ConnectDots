@@ -12,6 +12,7 @@ public class MainMenu : Page
     private VisualElement shopButton;
     private VisualElement settingsButton;
     private VisualElement achievementsButton;
+    private VisualElement profileCard;
     private bool canClick;
 
     private VisualElement dailyTrackerBox1;
@@ -35,6 +36,7 @@ public class MainMenu : Page
         shopButton          = uiDoc.rootVisualElement.Q<VisualElement>("ShopButton");
         settingsButton      = uiDoc.rootVisualElement.Q<VisualElement>("SettingsButton");
         achievementsButton  = uiDoc.rootVisualElement.Q<VisualElement>("AchievementsButton");
+        profileCard         = uiDoc.rootVisualElement.Q<VisualElement>("ProfileCard");
 
         dailyTrackerBox1    = uiDoc.rootVisualElement.Q<VisualElement>("DailyTrackerBox1");
 
@@ -42,6 +44,7 @@ public class MainMenu : Page
         shopButton.RegisterCallback<PointerUpEvent>(OpenShop);
         settingsButton.RegisterCallback<PointerUpEvent>(OpenSettings);
         achievementsButton.RegisterCallback<PointerUpEvent>(OpenAchievements);
+        profileCard.RegisterCallback<PointerUpEvent>(OpenProfile);
 
         canClick            = true;
     }
@@ -51,6 +54,8 @@ public class MainMenu : Page
         playButton.UnregisterCallback<PointerUpEvent>(PlayButtonClicked);
         shopButton.UnregisterCallback<PointerUpEvent>(OpenShop);
         settingsButton.UnregisterCallback<PointerUpEvent>(OpenSettings);
+        achievementsButton.UnregisterCallback<PointerUpEvent>(OpenAchievements);
+        profileCard.UnregisterCallback<PointerUpEvent>(OpenProfile);
     }
 
     public override IEnumerator AnimateIn()
@@ -121,6 +126,16 @@ public class MainMenu : Page
         canClick = false;
 
         PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<AchievementsPage>());
+    }
+
+    private void OpenProfile(PointerUpEvent evt)
+    {
+        if (!canClick)
+            return;
+
+        canClick = false;
+
+        PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<ProfilePage>());
     }
 
     #endregion

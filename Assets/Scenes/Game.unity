@@ -466,44 +466,149 @@ MonoBehaviour:
   - color: {r: 0, g: 0, b: 0, a: 1}
     name: Black
     category: 0
+  - color: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
+    name: Gray
+    category: 0
+  - color: {r: 0.33333334, g: 0.33333334, b: 0.33333334, a: 1}
+    name: Dark Gray
+    category: 0
+  - color: {r: 0.827451, g: 0.827451, b: 0.827451, a: 1}
+    name: Light Gray
+    category: 0
   - color: {r: 1, g: 0, b: 0, a: 1}
     name: Red
     category: 1
-  - color: {r: 0.5, g: 0, b: 0, a: 1}
-    name: Dark Red
+  - color: {r: 0.8627451, g: 0.078431375, b: 0.23529412, a: 1}
+    name: Crimson
     category: 1
-  - color: {r: 0.7490196, g: 0, b: 0.26176357, a: 1}
+  - color: {r: 0.5019608, g: 0, b: 0, a: 1}
+    name: Maroon
+    category: 1
+  - color: {r: 1, g: 0.03137255, b: 0, a: 1}
+    name: Candy Apple
+    category: 1
+  - color: {r: 0.8901961, g: 0.25882354, b: 0.20392157, a: 1}
+    name: Vermillion
+    category: 1
+  - color: {r: 1, g: 0.7529412, b: 0.79607844, a: 1}
     name: Pink
     category: 1
-  - color: {r: 1, g: 0, b: 1, a: 1}
+  - color: {r: 1, g: 0.078431375, b: 0.5764706, a: 1}
+    name: Bright Pink
+    category: 1
+  - color: {r: 0.98039216, g: 0.85490197, b: 0.8666667, a: 1}
+    name: Pastel Pink
+    category: 1
+  - color: {r: 0.5019608, g: 0, b: 0.5019608, a: 1}
     name: Purple
     category: 2
-  - color: {r: 1, g: 0, b: 0.36542606, a: 1}
-    name: Dark Purple
+  - color: {r: 0.7294118, g: 0.33333334, b: 0.827451, a: 1}
+    name: Orchid
+    category: 2
+  - color: {r: 0.84705883, g: 0.7490196, b: 0.84705883, a: 1}
+    name: Pastel Purple
+    category: 2
+  - color: {r: 0.9019608, g: 0.9019608, b: 0.98039216, a: 1}
+    name: Lavender
+    category: 2
+  - color: {r: 0.29411766, g: 0, b: 0.50980395, a: 1}
+    name: Indigo
+    category: 2
+  - color: {r: 0.7490196, g: 0, b: 1, a: 1}
+    name: Neon Purple
+    category: 2
+  - color: {r: 0.7019608, g: 0.61960787, b: 0.70980394, a: 1}
+    name: Muted Purple
     category: 2
   - color: {r: 0, g: 0, b: 1, a: 1}
     name: Blue
     category: 3
-  - color: {r: 0, g: 1, b: 0.9023998, a: 1}
-    name: SKy Blue
+  - color: {r: 0, g: 0.7490196, b: 1, a: 1}
+    name: Sky Blue
     category: 3
-  - color: {r: 0, g: 1, b: 0, a: 1}
+  - color: {r: 0.27450982, g: 0.50980395, b: 0.7058824, a: 1}
+    name: Cobalt
+    category: 3
+  - color: {r: 0.39215687, g: 0.58431375, b: 0.92941177, a: 1}
+    name: Cornflower
+    category: 3
+  - color: {r: 0.6901961, g: 0.76862746, b: 0.87058824, a: 1}
+    name: Gray Blue
+    category: 3
+  - color: {r: 0.09803922, g: 0.09803922, b: 0.4392157, a: 1}
+    name: Navy
+    category: 3
+  - color: {r: 0.5372549, g: 0.8117647, b: 0.9411765, a: 1}
+    name: Baby Blue
+    category: 3
+  - color: {r: 0.759434, g: 0.98997635, b: 1, a: 1}
+    name: Pastel Blue
+    category: 3
+  - color: {r: 0.44554472, g: 0, b: 1, a: 1}
+    name: Light Blue
+    category: 3
+  - color: {r: 0, g: 0.5019608, b: 0, a: 1}
     name: Green
     category: 4
-  - color: {r: 0.35553858, g: 0.5566038, b: 0.2546725, a: 1}
-    name: Olive Green
+  - color: {r: 0, g: 1, b: 0, a: 1}
+    name: Lime
     category: 4
-  - color: {r: 0, g: 0.5, b: 0, a: 1}
+  - color: {r: 0.59607846, g: 0.9843137, b: 0.59607846, a: 1}
+    name: Pastel Green
+    category: 4
+  - color: {r: 0.6196867, g: 0.9716981, b: 0.2704254, a: 1}
+    name: Chartreuse
+    category: 4
+  - color: {r: 0, g: 0.98039216, b: 0.6039216, a: 1}
+    name: Seafoam
+    category: 4
+  - color: {r: 0, g: 0.39215687, b: 0, a: 1}
     name: Dark Green
     category: 4
-  - color: {r: 0.9914521, g: 1, b: 0, a: 1}
+  - color: {r: 0.5529412, g: 0.7137255, b: 0, a: 1}
+    name: Meadow
+    category: 4
+  - color: {r: 0.22352941, g: 1, b: 0.39, a: 1}
+    name: Neon Green
+    category: 4
+  - color: {r: 1, g: 1, b: 0, a: 1}
     name: Yellow
     category: 5
-  - color: {r: 1, g: 0.27701277, b: 0, a: 1}
+  - color: {r: 0.9411765, g: 0.9019608, b: 0.54901963, a: 1}
+    name: Khaki
+    category: 5
+  - color: {r: 1, g: 0.8745098, b: 0, a: 1}
+    name: Goldenrod
+    category: 5
+  - color: {r: 1, g: 0.98039216, b: 0.8039216, a: 1}
+    name: Pastel Yellow
+    category: 5
+  - color: {r: 0.78428084, g: 1, b: 0.10588235, a: 1}
+    name: Yellow Green
+    category: 5
+  - color: {r: 0.9411765, g: 0.88235295, b: 0.1882353, a: 1}
+    name: Dandelion
+    category: 5
+  - color: {r: 1, g: 0.64705884, b: 0, a: 1}
     name: Orange
     category: 6
-  - color: {r: 1, g: 0.5989302, b: 0, a: 1}
-    name: Pumpkin
+  - color: {r: 1, g: 0.49803922, b: 0.3137255, a: 1}
+    name: Coral
+    category: 6
+  - color: {r: 1, g: 0.7490196, b: 0, a: 1}
+    name: Neon Orange
+    category: 6
+  - color: {r: 0.8679245, g: 0.5337431, b: 0.12691349, a: 1}
+    name: Carrot
+    category: 6
+  - color: {r: 1, g: 0.7682897, b: 0.33490568, a: 1}
+    name: Pastel Orange
+    category: 6
+  - color: {r: 1, g: 0.8, b: 0.6, a: 1}
+    name: Peach
+    category: 6
+  - color: {r: 0.8862745, g: 0.44705883, b: 0.35686275, a: 1}
+    name: Salmon
     category: 6
   bronzeMedal: {fileID: 2800000, guid: 20fcc7f0bf8db4b76881e98a8a42c63c, type: 3}
   silverMedal: {fileID: 2800000, guid: 086e140a14a0044fc8c046e36892c472, type: 3}

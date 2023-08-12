@@ -8,7 +8,7 @@ public class CoinDrawer : Page
 {
     #region Private Varuables
 
-    private EventCallback<PointerDownEvent> previousBackButtonAction;
+    private EventCallback<ClickEvent> previousBackButtonAction;
     private bool canClick;
 
     #endregion
@@ -19,12 +19,12 @@ public class CoinDrawer : Page
     {
         previousBackButtonAction = UIManager.instance.TopBar.GetCurrentBackButtonEvent();
 
-        EventCallback<PointerDownEvent> backButtonAction = (evt) =>
+        EventCallback<ClickEvent> backButtonAction = (evt) =>
         {
             if (!canClick)
                 return;
 
-            UIManager.instance.TopBar.CoinButtonClicked(evt);
+            UIManager.instance.TopBar.CoinButtonClicked(null);
         };
 
         UIManager.instance.TopBar.UpdateBackButtonOnClick(backButtonAction);

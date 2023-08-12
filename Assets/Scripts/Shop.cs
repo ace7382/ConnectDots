@@ -29,6 +29,11 @@ public class Shop : Page
             EndNode             = null;
             Lines               = new List<UIToolkitLine>();
         }
+
+        public override string ToString()
+        {
+            return UIManager.instance.GetColorName(ColorIndex) + " Product Line";
+        }
     }
 
     #endregion
@@ -184,7 +189,7 @@ public class Shop : Page
             PageManager.instance.StartCoroutine(CloseDetailsPanel());
         });
 
-        EventCallback<PointerDownEvent> backbuttonAction = (evt) =>
+        EventCallback<ClickEvent> backbuttonAction = (evt) =>
         {
             //if (!canClick)
             //    return;
@@ -1105,21 +1110,23 @@ public class Shop : Page
         ShopItem item                       = content.userData is ShopItem ? (ShopItem)(content.userData) : null;
         ProductLine productLine             = content.userData is ProductLine ? (ProductLine)(content.userData) : null;
 
+        //TODO: If the product line panel is shown and the start node of a PL is clicked it
+        //      should show the name of the product line's color "RED product line" but doesn't currently
         if (item != null)
         {
             if (ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.PRODUCT_LINE_NUMBER))
-                productLineLabel.text = item.ProductLine.ToString() + " Product Line - #" + item.ProductLineNumber.ToString();
+                productLineLabel.text = UIManager.instance.GetColorName(item.ProductLine) + " Product Line - #" + item.ProductLineNumber.ToString();
             else
-                productLineLabel.text = item.ProductLine.ToString() + " Product Line";
+                productLineLabel.text = UIManager.instance.GetColorName(item.ProductLine) + " Product Line";
 
             productLineTab.SetBorderColor(item.GetColor());
         }
         else
         {
             if (ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.PRODUCT_LINE_NUMBER))
-                productLineLabel.text = productLine.ToString() + " Product Line - #0";
+                productLineLabel.text = productLine.ToString() + " - #0";
             else
-                productLineLabel.text = productLine.ToString() + " Product Line";
+                productLineLabel.text = productLine.ToString();
 
             productLineTab.SetBorderColor(UIManager.instance.GetColor(productLine.ColorIndex));
         }

@@ -58,7 +58,7 @@ public class AchievementsPage : Page
         achievementsButton.RegisterCallback<PointerUpEvent>(ShowAchievementsList);
         goalsButton.RegisterCallback<PointerUpEvent>(ShowGoalsList);
 
-        EventCallback<PointerDownEvent> backbuttonAction = (evt) =>
+        EventCallback<ClickEvent> backbuttonAction = (evt) =>
         {
             if (!canClick)
                 return;

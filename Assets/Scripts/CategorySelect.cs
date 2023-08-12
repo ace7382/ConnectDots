@@ -81,7 +81,7 @@ public class CategorySelect : Page
 
     public override void ShowPage(object[] args)
     {
-        EventCallback<PointerDownEvent> backbuttonAction = (evt) =>
+        EventCallback<ClickEvent> backbuttonAction = (evt) =>
         {
             if (!canClick)
                 return;
@@ -90,6 +90,7 @@ public class CategorySelect : Page
         };
 
         UIManager.instance.TopBar.UpdateBackButtonOnClick(backbuttonAction);
+        UIManager.instance.TopBar.ShowCoinButton(true);
 
         ScrollView scroll                           = uiDoc.rootVisualElement.Q<ScrollView>("CategoryScroll");
         scroll.contentContainer.style.flexGrow      = 1f;

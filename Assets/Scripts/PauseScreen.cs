@@ -10,7 +10,7 @@ public class PauseScreen : Page
 
     private bool canClick;
 
-    private EventCallback<PointerDownEvent> previousBackButtonAction;
+    private EventCallback<ClickEvent> previousBackButtonAction;
 
     #endregion
 
@@ -38,7 +38,7 @@ public class PauseScreen : Page
 
         previousBackButtonAction    = UIManager.instance.TopBar.GetCurrentBackButtonEvent();
 
-        EventCallback<PointerDownEvent> backButtonAction = (evt) =>
+        EventCallback<ClickEvent> backButtonAction = (evt) =>
         {
             if (!canClick)
                 return;
@@ -47,7 +47,7 @@ public class PauseScreen : Page
         };
 
         UIManager.instance.TopBar.UpdateBackButtonOnClick(backButtonAction);
-        returnButton.RegisterCallback<PointerDownEvent>(backButtonAction);
+        returnButton.RegisterCallback<ClickEvent>(backButtonAction);
 
         VisualElement page = uiDoc.rootVisualElement.Q<VisualElement>("Page");
         page.transform.position = new Vector3(0f, Screen.height, page.transform.position.z);

@@ -167,7 +167,7 @@ public class CategoryUnlockPopup : Page
             reqScroll.contentContainer.Add(req);
         }
 
-        EventCallback<PointerDownEvent> backButtonAction = (evt) =>
+        EventCallback<ClickEvent> backButtonAction = (evt) =>
         {
             if (!canClick)
                 return;

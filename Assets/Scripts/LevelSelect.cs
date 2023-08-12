@@ -182,7 +182,7 @@ public class LevelSelect : Page
 
         ShowLevels(null);
 
-        EventCallback<PointerDownEvent> backbuttonAction = (evt) =>
+        EventCallback<ClickEvent> backbuttonAction = (evt) =>
         {
             if (!canClick)
                 return;

@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,12 +16,12 @@ public class ProfilePage : Page
 
     public override void ShowPage(object[] args)
     {
-        EventCallback<PointerDownEvent> backbuttonAction = (evt) =>
+        EventCallback<ClickEvent> backbuttonAction = (evt) =>
         {
             if (!canClick)
                 return;
 
-            PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<MainMenu>(null, false));
+            PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<MainMenu>());
         };
 
         UIManager.instance.TopBar.UpdateBackButtonOnClick(backbuttonAction);
@@ -51,12 +52,23 @@ public class ProfilePage : Page
 
     public override IEnumerator AnimateOut()
     {
-        yield return null;
+        canClick            = false;
+
+        VisualElement page  = uiDoc.rootVisualElement;
+
+        page.style.opacity  = new StyleFloat(1f);
+
+        Tween fadeout       = DOTween.To(() => page.style.opacity.value,
+                                x => page.style.opacity = new StyleFloat(x),
+                                0f, .33f);
+
+        UIManager.instance.TopBar.ShowTopBar(false);
+        yield return fadeout.Play().WaitForCompletion();
     }
 
     public override void HidePage()
     {
-        UIManager.instance.TopBar.ShowCoinButton(true);
+
     }
 
     #endregion

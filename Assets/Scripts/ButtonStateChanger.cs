@@ -7,14 +7,20 @@ public class ButtonStateChanger
 {
     private bool            pressed;
     private VisualElement   button;
-    private Color           originalColor;
-    private Color           pressedColor;
+    private Color           originalColor   = Color.white;
+    private Color           pressedColor    = new Color(.85f, .85f, .85f, 1f);
 
     public ButtonStateChanger(VisualElement button, Color originalColor, Color pressedColor)
     {
         this.button         = button;
         this.originalColor  = originalColor;
         this.pressedColor   = pressedColor;
+        pressed             = false;
+    }
+
+    public ButtonStateChanger(VisualElement button)
+    {
+        this.button         = button;
         pressed             = false;
     }
 

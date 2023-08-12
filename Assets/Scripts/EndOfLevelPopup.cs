@@ -152,7 +152,7 @@ public class EndOfLevelPopup : Page
 
         homeButton.RegisterCallback<PointerUpEvent>(GoHome);
 
-        EventCallback<PointerDownEvent> backButtonAction = (evt) =>
+        EventCallback<ClickEvent> backButtonAction = (evt) =>
         {
             if (!canClick)
                 return;

@@ -85,7 +85,7 @@ public class TimedModePage : Page
         currentBoard        = new Board(levelsRemaining[levelsRemaining.Count - 1], uiDoc.rootVisualElement);
         this.AddObserver(BoardComplete, Notifications.BOARD_COMPLETE, currentBoard);
 
-        EventCallback<PointerDownEvent> backbuttonAction = (evt) =>
+        EventCallback<ClickEvent> backbuttonAction = (evt) =>
         {
             if (!currentBoard.CanClick || !canClick)
                 return;

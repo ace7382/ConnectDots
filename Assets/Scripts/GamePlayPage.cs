@@ -24,7 +24,7 @@ public class GamePlayPage : Page
 
         currentBoard = new Board(currentLevel, uiDoc.rootVisualElement);
 
-        EventCallback<PointerDownEvent> backbuttonAction = (evt) =>
+        EventCallback<ClickEvent> backbuttonAction = (evt) =>
         {
             if (!currentBoard.CanClick)
                 return;

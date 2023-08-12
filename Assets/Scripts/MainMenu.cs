@@ -46,12 +46,10 @@ public class MainMenu : Page
         achievementsButton.RegisterCallback<ClickEvent>(OpenAchievements);
         profileCard.RegisterCallback<ClickEvent>(OpenProfile);
 
-        Color g                         = new Color(.85f, .85f, .85f, 1f);
-
-        ButtonStateChanger playBSC      = new ButtonStateChanger(playButton.Q<VisualElement>("BG"), Color.white, g);
-        ButtonStateChanger shopBSC      = new ButtonStateChanger(shopButton.Q<VisualElement>("BG"), Color.white, g);
-        ButtonStateChanger achieveBSC   = new ButtonStateChanger(achievementsButton.Q<VisualElement>("BG"), Color.white, g);
-        ButtonStateChanger settingsBSC  = new ButtonStateChanger(settingsButton.Q<VisualElement>("BG"), Color.white, g);
+        ButtonStateChanger playBSC      = new ButtonStateChanger(playButton.Q<VisualElement>("BG"));
+        ButtonStateChanger shopBSC      = new ButtonStateChanger(shopButton.Q<VisualElement>("BG"));
+        ButtonStateChanger achieveBSC   = new ButtonStateChanger(achievementsButton.Q<VisualElement>("BG"));
+        ButtonStateChanger settingsBSC  = new ButtonStateChanger(settingsButton.Q<VisualElement>("BG"));
 
         playButton.RegisterCallback<PointerDownEvent>(playBSC.OnPointerDown);
         shopButton.RegisterCallback<PointerDownEvent>(shopBSC.OnPointerDown);

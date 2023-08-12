@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shopGridPosition: {x: 0, y: -5}
   gridSize: {x: 1, y: 2}
-  productLine: 4
+  productLine: 12
   previousProductLineItem: {fileID: 11400000, guid: 9eeba4c95a526ba468051ab10c904bce, type: 2}
   cost:
-  - colorIndex: 0
+  - colorCategory: 0
     amount: 50
   drawLinesToOutlineOnPurchase: 1
   lineInPosition: {x: 0, y: -4}

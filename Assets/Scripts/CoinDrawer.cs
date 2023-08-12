@@ -35,19 +35,19 @@ public class CoinDrawer : Page
         VisualElement coinsScrollContent = coinsScroll.contentContainer.Q<VisualElement>("CoinsScrollContent");
         Label emptyLabel = coinsScrollContent.Q<Label>("EmptyLabel");
 
-        if (CurrencyManager.instance.TotalTokens > 0)
+        if (CurrencyManager.instance.TotalSegments > 0)
         {
             emptyLabel.Hide();
 
-            for (int i = 0; i < UIManager.instance.ColorCount; i++)
+            for (int i = 0; i < CurrencyManager.instance.SegmentColorCount; i++)
             {
-                int amount = CurrencyManager.instance.GetCoinsForColorIndex(i);
+                int amount = CurrencyManager.instance.GetCoinsForColorIndex((ColorCategory)i);
 
                 if (amount != 0)
                 {
                     VisualElement display = UIManager.instance.CoinDisplay.Instantiate();
 
-                    display.Q<VisualElement>("CoinSquare").SetColor(UIManager.instance.GetColor(i));
+                    display.Q<VisualElement>("CoinSquare").SetColor(UIManager.instance.GetColor((ColorCategory)i));
                     display.Q<Label>("AmountLabel").text = amount.ToString();
 
                     coinsScrollContent.Add(display);

@@ -10,28 +10,28 @@ public class CurrencyManager : MonoBehaviour
 {
     #region Singleton
 
-    public static CurrencyManager instance;
+    public static CurrencyManager           instance;
 
     #endregion
 
     #region Inspector Variables
 
-    [SerializeField] private UIDocument uiDoc;
+    [SerializeField] private UIDocument     uiDoc;
 
     #endregion
 
     #region Private Variables
 
-    private VisualElement coinDisplayContainer;
-
-    private Dictionary<int, int> ownedColors;
-    private Dictionary<PowerupType, int> ownedPowerups;
+    private VisualElement                   coinDisplayContainer;
+    private Dictionary<PowerupType, int>    ownedPowerups;
+    private int[]                           ownedSegments;
 
     #endregion
 
     #region Public Properties
 
-    public int TotalTokens { get { return ownedColors.Sum(x => x.Value); } }
+    public int                              SegmentColorCount   { get { return System.Enum.GetNames(typeof(ColorCategory)).Length; } }
+    public int                              TotalSegments       { get { return ownedSegments.Sum(); } }
 
     #endregion
 
@@ -44,17 +44,17 @@ public class CurrencyManager : MonoBehaviour
         else if (instance != this)
             Destroy(gameObject);
 
-        ownedColors     = new Dictionary<int, int>();
         ownedPowerups   = new Dictionary<PowerupType, int>();
+        ownedSegments   = new int[SegmentColorCount];
 
         //TODO: Remove this///
         CurrencyManager.instance.AddCurrency(PowerupType.HINT, 20);
         CurrencyManager.instance.AddCurrency(PowerupType.REMOVE_SPECIAL_TILE, 20);
         CurrencyManager.instance.AddCurrency(PowerupType.FILL_EMPTY, 20);
 
-        for (int i = 0; i < UIManager.instance.ColorCount; i++)
+        for (int i = 0; i < SegmentColorCount; i++)
         {
-            CurrencyManager.instance.AddCurrency(i, Random.Range(50, 12000));
+            CurrencyManager.instance.AddCurrency((ColorCategory)i, Random.Range(50, 12000));
         }
         //////////////////////
     }
@@ -68,83 +68,24 @@ public class CurrencyManager : MonoBehaviour
 
     #region Public Functions
 
-    public void AddCurrency(int colorIndex, int amount)
+    public void AddCurrency(ColorCategory colorCategory, int amount)
     {
-        if (!ownedColors.ContainsKey(colorIndex))
-            ownedColors.Add(colorIndex, 0);
-
-        ownedColors[colorIndex] += amount;
+        ownedSegments[(int)colorCategory] += amount;
     }
 
-    public void SpendCurrency(int colorIndex, int amount)
+    public void SpendCurrency(ColorCategory colorCategory, int amount)
     {
-        if (!ownedColors.ContainsKey(colorIndex))
+        if (amount > ownedSegments[(int)colorCategory])
         {
-            Debug.Log("Trying to spend a currency that you do not have");
-        }
-
-        if (amount > ownedColors[colorIndex])
-        {
-            Debug.Log(string.Format("Trying to spend {0} of color {1}. Only have {2} though"
-                , amount.ToString(), colorIndex.ToString(), ownedColors[colorIndex].ToString()));
-
             return;
         }
 
-        ownedColors[colorIndex] -= amount;
+        ownedSegments[(int)colorCategory] -= amount;
     }
 
-    public override string ToString()
+    public int GetCoinsForColorIndex(ColorCategory colorCategory)
     {
-        string ret = "***Current Currency***";
-
-        foreach (KeyValuePair<int, int> color in ownedColors)
-            ret += "\n" + color.Key.ToString() + ": " + color.Value.ToString();
-
-        return ret;
-    }
-
-    public int GetCoinsForColorIndex(int index)
-    {
-        if (!ownedColors.ContainsKey(index))
-            return 0;
-
-        return ownedColors[index];
-    }
-
-    public Dictionary<int, int> AwardCoins(List<Tile> tiles)
-    {
-        //Return is Dictionary<ColorIndex, NumberAwarded>
-
-        Dictionary<int, int> ret = new Dictionary<int, int>();
-
-        for (int i = 0; i < tiles.Count; i++)
-        {
-            Tile t = tiles[i];
-
-            if (t.State == TileState.BLANK || t.LineCancelled)
-                continue;
-
-            if (t.Line != null)
-            {
-                if (ret.ContainsKey(t.Line.colorIndex))
-                    ret[t.Line.colorIndex] += t.Multiplier;
-                else
-                    ret.Add(t.Line.colorIndex, t.Multiplier);
-            }
-            else
-            {
-                if (ret.ContainsKey(0)) //White Tiles
-                    ret[0] += t.Multiplier;
-                else
-                    ret.Add(0, t.Multiplier);
-            }
-        }
-
-        foreach (KeyValuePair<int,int> award in ret)
-            AddCurrency(award.Key, award.Value);
-
-        return ret;
+        return ownedSegments[(int)colorCategory];
     }
 
     public int AwardCoins(Tile tile)
@@ -152,17 +93,19 @@ public class CurrencyManager : MonoBehaviour
         if (tile.State == TileState.BLANK || tile.LineCancelled)
             return 0;
 
-        AddCurrency(tile.Line == null ? 0 : tile.Line.colorIndex, tile.Multiplier);
+        int numToAdd = tile.Multiplier;
 
-        return tile.Multiplier;
+        AddCurrency(tile.Line == null ? 0 : UIManager.instance.GetGameColor(tile.Line.ColorIndex).category, numToAdd);
+
+        return numToAdd;
     }
 
-    public void SpawnCoin(int colorIndex, Vector3 origin, Vector2 destination, float animationTime = 0f)
+    public void SpawnCoin(ColorCategory colorCategory, Vector3 origin, Vector2 destination, float animationTime = 0f)
     {
         VisualElement coin                  = new VisualElement();
         coin.SetWidth(25f);
         coin.SetHeight(coin.style.width);
-        coin.SetColor(UIManager.instance.GetColor(colorIndex));
+        coin.SetColor(UIManager.instance.GetColor(colorCategory));
         coin.SetBorderColor(Color.black);
         coin.SetBorderWidth(3f);
         coin.SetBorderRadius(10f);
@@ -292,7 +235,7 @@ public class CurrencyManager : MonoBehaviour
         //if index == 0+ -> cannot afford (return false)
         //if index == -1 (doesn't exist) -> can afford (return true)
 
-        return item.Costs.FindIndex(x => GetCoinsForColorIndex(x.colorIndex) < x.amount) == -1;
+        return item.Costs.FindIndex(x => GetCoinsForColorIndex(x.colorCategory) < x.amount) == -1;
     }
 
     #endregion
@@ -313,8 +256,8 @@ public class CurrencyManager : MonoBehaviour
             return;
         }
 
-        for (int i = 0; i < UIManager.instance.ColorCount; i++)
-            CurrencyManager.instance.AddCurrency(i, 1000);
+        for (int i = 0; i < System.Enum.GetNames(typeof(ColorCategory)).Length; i++)
+            CurrencyManager.instance.AddCurrency((ColorCategory)i, 1000);
     }
 
     [MenuItem("Dev Commands/Give 20 of Each Powerup")]

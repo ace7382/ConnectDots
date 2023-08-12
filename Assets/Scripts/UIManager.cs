@@ -152,15 +152,15 @@ public class UIManager : MonoBehaviour
             case ColorCategory.RED:
                 return gameColors[2].color;
             case ColorCategory.PURPLE:
-                return gameColors[3].color;
-            case ColorCategory.BLUE:
-                return gameColors[4].color;
-            case ColorCategory.GREEN:
                 return gameColors[5].color;
+            case ColorCategory.BLUE:
+                return gameColors[7].color;
+            case ColorCategory.GREEN:
+                return gameColors[9].color;
             case ColorCategory.YELLOW:
-                return gameColors[6].color;
+                return gameColors[12].color;
             default: //Orange
-                return gameColors[0].color;
+                return gameColors[13].color;
         }
     }
     

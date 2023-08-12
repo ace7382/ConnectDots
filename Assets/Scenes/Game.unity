@@ -463,30 +463,48 @@ MonoBehaviour:
   - color: {r: 1, g: 1, b: 1, a: 1}
     name: White
     category: 0
+  - color: {r: 0, g: 0, b: 0, a: 1}
+    name: Black
+    category: 0
   - color: {r: 1, g: 0, b: 0, a: 1}
     name: Red
     category: 1
-  - color: {r: 0, g: 1, b: 0, a: 1}
-    name: Green
+  - color: {r: 0.5, g: 0, b: 0, a: 1}
+    name: Dark Red
     category: 1
+  - color: {r: 0.7490196, g: 0, b: 0.26176357, a: 1}
+    name: Pink
+    category: 1
+  - color: {r: 1, g: 0, b: 1, a: 1}
+    name: Purple
+    category: 2
+  - color: {r: 1, g: 0, b: 0.36542606, a: 1}
+    name: Dark Purple
+    category: 2
   - color: {r: 0, g: 0, b: 1, a: 1}
     name: Blue
-    category: 2
-  - color: {r: 1, g: 1, b: 0, a: 1}
+    category: 3
+  - color: {r: 0, g: 1, b: 0.9023998, a: 1}
+    name: SKy Blue
+    category: 3
+  - color: {r: 0, g: 1, b: 0, a: 1}
+    name: Green
+    category: 4
+  - color: {r: 0.35553858, g: 0.5566038, b: 0.2546725, a: 1}
+    name: Olive Green
+    category: 4
+  - color: {r: 0, g: 0.5, b: 0, a: 1}
+    name: Dark Green
+    category: 4
+  - color: {r: 0.9914521, g: 1, b: 0, a: 1}
     name: Yellow
-    category: 2
-  - color: {r: 1, g: 0, b: 1, a: 1}
-    name: Pink
-    category: 2
-  - color: {r: 0, g: 1, b: 1, a: 1}
-    name: Light Blue
-    category: 3
-  - color: {r: 1, g: 0.37588555, b: 0, a: 1}
+    category: 5
+  - color: {r: 1, g: 0.27701277, b: 0, a: 1}
     name: Orange
-    category: 3
-  - color: {r: 0.36644602, g: 0, b: 1, a: 1}
-    name: Purple
-    category: 3
+    category: 6
+  - color: {r: 1, g: 0.5989302, b: 0, a: 1}
+    name: Pumpkin
+    category: 6
   bronzeMedal: {fileID: 2800000, guid: 20fcc7f0bf8db4b76881e98a8a42c63c, type: 3}
   silverMedal: {fileID: 2800000, guid: 086e140a14a0044fc8c046e36892c472, type: 3}
   goldMedal: {fileID: 2800000, guid: 817e572d8239f4a75a84952defabc914, type: 3}

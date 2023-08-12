@@ -7,6 +7,8 @@ using UnityEngine.UIElements;
 //TODO: After closing the category unlock popup,
 //      the back button doesn't return the player to the main menu
 
+//TODO: REMOVE THIS CLASS/FUNCTIONALITY. UNLOCK HANDLED BY SHOP NOW
+
 public class CategoryUnlockPopup : Page
 {
     #region Private Variables
@@ -71,7 +73,7 @@ public class CategoryUnlockPopup : Page
             VisualElement incompleteIcon = req.Q<VisualElement>("IncompleteIcon");
             VisualElement reqIcon = req.Q<VisualElement>("ReqIcon");
             Label details = req.Q<Label>();
-            int coins = CurrencyManager.instance.GetCoinsForColorIndex(cat.REQS_Purchase[i].colorIndex);
+            int coins = 0; // CurrencyManager.instance.GetCoinsForColorIndex(cat.REQS_Purchase[i].colorIndex);
 
             details.text = string.Format("{0} / {1}"
                 , coins

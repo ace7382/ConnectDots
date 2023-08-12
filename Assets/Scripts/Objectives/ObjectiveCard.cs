@@ -79,7 +79,7 @@ public class ObjectiveCard
                     awardIcon.ScaleToFit();
                     awardIcon.SetBorderWidth(0f);
                 }
-                else if (objective.RewardColor > -1)
+                else //if (objective.RewardColor != ColorCategory.NONE)
                 {
                     awardIcon.SetColor(UIManager.instance.GetColor(objective.RewardColor));
 
@@ -152,7 +152,7 @@ public class ObjectiveCard
 
             CurrencyManager.instance.AddCurrency(objective.PowerupRewardType, objective.RewardAmount);
         }
-        else if (objective.RewardColor > -1)
+        else //if (objective.RewardColor != ColorCategory.NONE)
         {
             int maxCoins                = Mathf.Min(100, objective.RewardAmount);
 

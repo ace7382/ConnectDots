@@ -56,7 +56,7 @@ public class ProfilePage : Page
 
     public override void HidePage()
     {
-        UIManager.instance.TopBar.ShowCoinButton(false);
+        UIManager.instance.TopBar.ShowCoinButton(true);
     }
 
     #endregion
@@ -317,7 +317,7 @@ public class ProfilePage : Page
             VisualElement current = coinDisplays[i];
 
             current.Q<VisualElement>("CoinSquare").SetColor(UIManager.instance.GetColor((ColorCategory)i));
-            current.Q<Label>("AmountLabel").text = CurrencyManager.instance.GetCoinsForColorIndex(i).ToString();
+            current.Q<Label>("AmountLabel").text = CurrencyManager.instance.GetCoinsForColorIndex((ColorCategory)i).ToString();
         }
         
     }

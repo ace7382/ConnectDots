@@ -31,7 +31,7 @@ public class TimedModePage : Page
 
     private double                          lowTimeThreshold;
 
-    private Dictionary<int, int>            coinsWon;
+    private Dictionary<ColorCategory, int>  coinsWon;
 
     private PowerupController               powerups;
 
@@ -68,21 +68,21 @@ public class TimedModePage : Page
         //args[0]   -   LevelCategory   -   The category to play in timed mode
         //args[1]   -   int             -   The index of the TimeAttackStats in the category
 
-        currentCategory = (LevelCategory)args[0];
-        settingsIndex = (int)args[1];
+        currentCategory     = (LevelCategory)args[0];
+        settingsIndex       = (int)args[1];
 
-        settings = currentCategory.TimeAttacks[settingsIndex];
+        settings            = currentCategory.TimeAttacks[settingsIndex];
 
-        List<Level> temp = new List<Level>(currentCategory.GetLevels());
+        List<Level> temp    = new List<Level>(currentCategory.GetLevels());
         temp.Shuffle();
 
-        levelsRemaining = new List<Level>();
-        completedLevels = new List<Level>();
+        levelsRemaining     = new List<Level>();
+        completedLevels     = new List<Level>();
 
         for (int i = 0; i < settings.numberOfPuzzles; i++)
             levelsRemaining.Add(temp[i]);
 
-        currentBoard = new Board(levelsRemaining[levelsRemaining.Count - 1], uiDoc.rootVisualElement);
+        currentBoard        = new Board(levelsRemaining[levelsRemaining.Count - 1], uiDoc.rootVisualElement);
         this.AddObserver(BoardComplete, Notifications.BOARD_COMPLETE, currentBoard);
 
         EventCallback<PointerDownEvent> backbuttonAction = (evt) =>
@@ -90,26 +90,24 @@ public class TimedModePage : Page
             if (!currentBoard.CanClick || !canClick)
                 return;
 
-            object[] data = new object[1] { currentCategory };
+            object[] data   = new object[1] { currentCategory };
 
             PageManager.instance.StartCoroutine(PageManager.instance.AddPageToStack<PauseScreen>(data));
         };
 
         UIManager.instance.TopBar.UpdateBackButtonOnClick(backbuttonAction);
 
-        boardCounter = uiDoc.rootVisualElement.Q<Label>("BoardCounter");
+        boardCounter        = uiDoc.rootVisualElement.Q<Label>("BoardCounter");
         SetBoardCounter();
 
-        timeRemaining = TimeSpan.FromSeconds(settings.totalTimeInSeconds);
-        lowTimeThreshold = settings.totalTimeInSeconds <= 30f ? 10f : 30f;
+        timeRemaining       = TimeSpan.FromSeconds(settings.totalTimeInSeconds);
+        lowTimeThreshold    = settings.totalTimeInSeconds <= 30f ? 10f : 30f;
 
-        timerLabel = uiDoc.rootVisualElement.Q<Label>("Timer");
+        timerLabel          = uiDoc.rootVisualElement.Q<Label>("Timer");
+        timerLabel.text     = timeRemaining.TotalSeconds > 10d ? timeRemaining.ToString("mm\\:ss") : timeRemaining.ToString("mm\\:ss\\.fff");
 
-        timerLabel.text = timeRemaining.TotalSeconds > 10d ? timeRemaining.ToString("mm\\:ss") : timeRemaining.ToString("mm\\:ss\\.fff");
-
-        coinsWon = new Dictionary<int, int>();
-
-        powerups = new PowerupController(uiDoc.rootVisualElement.Q<VisualElement>("PowerupUI"), true, currentBoard);
+        coinsWon            = new Dictionary<ColorCategory, int>();
+        powerups            = new PowerupController(uiDoc.rootVisualElement.Q<VisualElement>("PowerupUI"), true, currentBoard);
 
         this.AddObserver(PauseGame, Notifications.PAUSE_GAME);
 
@@ -293,7 +291,7 @@ public class TimedModePage : Page
 
     private IEnumerator BoardComplete()
     {
-        foreach(KeyValuePair<int, int> award in currentBoard.SpawnCoinsOnBoardComplete())
+        foreach(KeyValuePair<ColorCategory, int> award in currentBoard.SpawnCoinsOnBoardComplete())
         {
             if (coinsWon.ContainsKey(award.Key))
                 coinsWon[award.Key] += award.Value;
@@ -391,14 +389,14 @@ public class TimedModePage : Page
 
         powerups.SlideOut().Play();
 
-        object[] data = new object[7];
-        data[0] = coinsWon;
-        data[1] = null; //This indicates that it's a post a timed mode round
-        data[2] = currentCategory;
-        data[3] = settingsIndex;
-        data[4] = won;
-        data[5] = timeRemaining;
-        data[6] = completedLevels.Count;
+        object[] data   = new object[7];
+        data[0]         = coinsWon;
+        data[1]         = null; //This indicates that it's a post a timed mode round
+        data[2]         = currentCategory;
+        data[3]         = settingsIndex;
+        data[4]         = won;
+        data[5]         = timeRemaining;
+        data[6]         = completedLevels.Count;
 
         PageManager.instance.StartCoroutine(PageManager.instance.AddPageToStack<EndOfLevelPopup>(data));
     }

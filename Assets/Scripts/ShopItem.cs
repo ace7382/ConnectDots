@@ -10,8 +10,8 @@ public abstract class ShopItem : ScriptableObject
     [System.Serializable]
     public class PurchaseCost
     {
-        public int colorIndex;
-        public int amount;
+        public ColorCategory    colorCategory;
+        public int              amount;
     }
 
     #endregion
@@ -60,7 +60,7 @@ public abstract class ShopItem : ScriptableObject
     {
         for (int i = 0; i < cost.Count; i++)
         {
-            CurrencyManager.instance.SpendCurrency(cost[i].colorIndex, cost[i].amount);
+            CurrencyManager.instance.SpendCurrency(cost[i].colorCategory, cost[i].amount);
         }
 
         ShopManager.instance.ItemPurchased(this);

@@ -38,20 +38,21 @@ public class EndOfLevelPopup : Page
     public override void ShowPage(object[] args)
     {
         //Normal Mode
-        //args[0]   -   Dictionary<int, int>    -   The coins awarded from the level
-        //args[1]   -   Level                   -   The level that was just completed
-        //args[2]   -   TimeSpan                -   The time it took to finish the level
+        //args[0]   -   Dictionary<ColorCategory, int>  -   The coins awarded from the level
+        //args[1]   -   Level                           -   The level that was just completed
+        //args[2]   -   TimeSpan                        -   The time it took to finish the level
 
         //Timed Mode
-        //args[0]   -   Dictionary<int, int>    -   The coins awarded from the level
-        //args[1]   -   null                    -   This null signifies that it was timed mode in the logic below
-        //args[2]   -   LevelCategory           -   The category to play in timed mode
-        //args[3]   -   int                     -   The index of the TimeAttackStats in the category
-        //args[4]   -   bool                    -   Indicats if Timed Mode was won or not
-        //args[5]   -   TimeSpan                -   The TimeRemaining object from the played timed mode
-        //args[6]   -   int                     -   The number of levels completed in timed mode
+        //args[0]   -   Dictionary<int, int>            -   The coins awarded from the level
+        //args[1]   -   null                            -   This null signifies that it was timed mode in the logic below
+        //args[2]   -   LevelCategory                   -   The category to play in timed mode
+        //args[3]   -   int                             -   The index of the TimeAttackStats in the category
+        //args[4]   -   bool                            -   Indicats if Timed Mode was won or not
+        //args[5]   -   TimeSpan                        -   The TimeRemaining object from the played timed mode
+        //args[6]   -   int                             -   The number of levels completed in timed mode
 
-        Dictionary<int, int> coinsWon   = (Dictionary<int, int>)args[0];
+        Dictionary<ColorCategory, int> 
+            coinsWon                    = (Dictionary<ColorCategory, int>)args[0];
 
         homeButton                      = uiDoc.rootVisualElement.Q<VisualElement>("HomeButton");
         replayButton                    = uiDoc.rootVisualElement.Q<VisualElement>("ReplayButton");
@@ -68,7 +69,7 @@ public class EndOfLevelPopup : Page
         if (coinsWon.Count == 0)
             coinScroll.Hide();
         else
-            foreach (KeyValuePair<int, int> award in coinsWon)
+            foreach (KeyValuePair<ColorCategory, int> award in coinsWon)
             {
                 VisualElement display = UIManager.instance.CoinDisplay.Instantiate();
                 display.Q<VisualElement>("CoinSquare").SetColor(UIManager.instance.GetColor(award.Key));

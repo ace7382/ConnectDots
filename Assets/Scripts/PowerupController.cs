@@ -196,7 +196,7 @@ public class PowerupController
         Line line       = (Line)sender;
         bool completed  = (bool)info;
 
-        Level.LineDefinitions def = currentBoard.LevelsLineDefs.Find(x => x.colorIndex == line.colorIndex);
+        Level.LineDefinitions def = currentBoard.LevelsLineDefs.Find(x => x.colorIndex == line.ColorIndex);
         
         linesAvaiableForHint[def] = !completed;
     }

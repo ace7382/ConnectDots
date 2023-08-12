@@ -244,7 +244,7 @@ public class Board
             return;
 
         for (int i = 0; i < lines.Count; i++)
-            if (!lines[i].isCompleted)
+            if (!lines[i].IsCompleted)
                 return;
 
         timeEnd = DateTime.Now.Ticks;
@@ -484,7 +484,7 @@ public class Board
 
         yield return seq.WaitForCompletion();
 
-        Dictionary<int, int> coinsAwarded = SpawnCoinsOnBoardComplete();
+        Dictionary<ColorCategory, int> coinsAwarded = SpawnCoinsOnBoardComplete();
 
         yield return new WaitForSeconds(.75f);
 
@@ -499,9 +499,9 @@ public class Board
         PageManager.instance.StartCoroutine(PageManager.instance.AddPageToStack<EndOfLevelPopup>(data));
     }
 
-    public Dictionary<int, int> SpawnCoinsOnBoardComplete()
+    public Dictionary<ColorCategory, int> SpawnCoinsOnBoardComplete()
     {
-        Dictionary<int, int> ret = new Dictionary<int, int>();
+        Dictionary<ColorCategory, int> ret = new Dictionary<ColorCategory, int>();
 
         for (int i = 0; i < tiles.Count; i++)
         {
@@ -511,18 +511,23 @@ public class Board
 
                 if (awardedCoins != 0)
                 {
-                    int colIndex = tiles[i][j].Line == null ? 0 : tiles[i][j].Line.colorIndex;
-                    
+                    ColorCategory cat = UIManager.instance.GetGameColor(
+                                            tiles[i][j].Line == null ? 0
+                                            : tiles[i][j].Line.ColorIndex)
+                                        .category;
+
                     for (int am = 0; am < awardedCoins; am++)
                     {
-                        CurrencyManager.instance.SpawnCoin(colIndex, tiles[i][j].Container.worldBound.center
+                        CurrencyManager.instance.SpawnCoin(
+                            cat
+                            , tiles[i][j].Container.worldBound.center
                             , UIManager.instance.TopBar.CoinsButton.worldBound.center); //TODO: This might need to be updated on screen change?
                     }
 
-                    if (ret.ContainsKey(colIndex))
-                        ret[colIndex] += awardedCoins;
+                    if (ret.ContainsKey(cat))
+                        ret[cat] += awardedCoins;
                     else
-                        ret.Add(colIndex, awardedCoins);
+                        ret.Add(cat, awardedCoins);
                 }
             }
         }
@@ -639,7 +644,7 @@ public class Board
             {
                 Tile currentTile = tilesToDraw[i];
 
-                if (currentTile.Line != null && currentTile.Line.colorIndex != lineToDraw.colorIndex)
+                if (currentTile.Line != null && currentTile.Line.ColorIndex != lineToDraw.colorIndex)
                 {
                     Tile first = currentTile.Line.FirstTile;
                     currentTile.Line.ClearTilesAndAdd(first);
@@ -911,7 +916,7 @@ public class Board
         startTile.hCost = CalculateDistance(startTile, endTile);
         startTile.CalcFCost();
 
-        int lineColorIndex = startTile.Line.colorIndex;
+        int lineColorIndex = startTile.Line.ColorIndex;
 
         while (openList.Count > 0)
         {

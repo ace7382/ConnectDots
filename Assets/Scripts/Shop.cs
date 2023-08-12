@@ -500,10 +500,10 @@ public class Shop : Page
             Vector2 origin          = new Vector2(Random.Range(spawnBoundsX.x, spawnBoundsX.y)
                                     , Random.Range(spawnBoundsY.x, spawnBoundsY.y));
 
-            int colIndex            = boughtItem.Costs[Random.Range(0, boughtItem.Costs.Count - 1)].colorIndex;
+            ColorCategory cat       = boughtItem.Costs[Random.Range(0, boughtItem.Costs.Count - 1)].colorCategory;
 
             CurrencyManager.instance.SpawnCoin(
-                                    colIndex
+                                    cat
                                     , origin
                                     , boughtItemNode.worldBound.center
                                     , animationLength * 1.3f);
@@ -787,8 +787,8 @@ public class Shop : Page
         {
             new     ProductLine(1   , new Vector2Int(1, 0)  , ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.UNLOCK_SHOP))
             , new   ProductLine(2   , new Vector2Int(-1, 0) , ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.UNLOCK_SHOP))
-            , new   ProductLine(3   , new Vector2Int(0, 1)  , ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.UNLOCK_SHOP))
-            , new   ProductLine(4   , new Vector2Int(0, -1) , ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.UNLOCK_SHOP))
+            , new   ProductLine(7   , new Vector2Int(0, 1)  , ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.UNLOCK_SHOP))
+            , new   ProductLine(12  , new Vector2Int(0, -1) , ShopManager.instance.FeatureUnlocked(ShopItem_UnlockFeature.Feature.UNLOCK_SHOP))
         };
 
         Vector2 zeroLocation            = new Vector2(shopBoard.resolvedStyle.width / 2f, shopBoard.resolvedStyle.height / 2f);
@@ -1186,9 +1186,9 @@ public class Shop : Page
 
                     Label amountLabel           = costLine.Q<Label>("AmountLabel");
                     amountLabel.style.position  = Position.Relative;
-                    amountLabel.text            = CurrencyManager.instance.GetCoinsForColorIndex(item.Costs[i].colorIndex).ToString()
+                    amountLabel.text            = CurrencyManager.instance.GetCoinsForColorIndex(item.Costs[i].colorCategory).ToString()
                                                             + " / " + item.Costs[i].amount.ToString();
-                    costLine.Q<VisualElement>("CoinSquare").SetColor(UIManager.instance.GetColor(item.Costs[i].colorIndex));
+                    costLine.Q<VisualElement>("CoinSquare").SetColor(UIManager.instance.GetColor(item.Costs[i].colorCategory));
 
                     costObjs.Add(costLine);
                 }

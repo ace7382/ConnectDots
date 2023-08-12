@@ -338,7 +338,7 @@ public class Tile
         {
             object[] data   = new object[3];
             data[0]         = levelCompleted;
-            data[1]         = line == null ? 0 : line.colorIndex;
+            data[1]         = line == null ? 0 : line.ColorIndex;
             data[2]         = 1;
 
             this.PostNotification(Notifications.TILES_COLORED, data);

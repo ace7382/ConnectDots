@@ -18,7 +18,7 @@ public abstract class Objective : ScriptableObject
     [Header("Award Variables")]
     [SerializeField] protected bool             rewardClaimed;
     [SerializeField] protected PowerupType      powerupReward;
-    [SerializeField] protected int              segmentRewardColorIndex;
+    [SerializeField] protected ColorCategory    segmentRewardCategory;
     [SerializeField] protected int              rewardAmount;
 
     #endregion
@@ -52,7 +52,7 @@ public abstract class Objective : ScriptableObject
 
     public bool             RewardClaimed       { get { return rewardClaimed; } }
     public PowerupType      PowerupRewardType   { get { return powerupReward; } }
-    public int              RewardColor         { get { return segmentRewardColorIndex; } }
+    public ColorCategory    RewardColor         { get { return segmentRewardCategory; } }
     public int              RewardAmount        { get { return rewardAmount; } }
 
     #endregion

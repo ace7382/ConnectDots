@@ -17,15 +17,15 @@ MonoBehaviour:
   productLine: 1
   previousProductLineItem: {fileID: 0}
   cost:
-  - colorIndex: 1
+  - colorCategory: 0
     amount: 5
-  - colorIndex: 2
+  - colorCategory: 1
     amount: 5
-  - colorIndex: 3
+  - colorCategory: 2
     amount: 5
-  - colorIndex: 4
+  - colorCategory: 5
     amount: 5
-  - colorIndex: 5
+  - colorCategory: 6
     amount: 5
   drawLinesToOutlineOnPurchase: 0
   lineInPosition: {x: 1, y: 1}

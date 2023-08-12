@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public enum ColorCategory
 { 
     [EnumName("Blacks/Whites")] BLACK_AND_WHITE     = 0,

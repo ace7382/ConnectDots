@@ -11,6 +11,18 @@ public class UIManager : MonoBehaviour
 
     #endregion
 
+    #region Private Consts
+
+    private const int BW_INDEX          = 0;
+    private const int RED_INDEX         = 5;
+    private const int PURPLE_INDEX      = 13;
+    private const int BLUE_INDEX        = 20;
+    private const int GREEN_INDEX       = 29;
+    private const int YELLOW_INDEX      = 37;
+    private const int ORANGE_INDEX      = 43;
+
+    #endregion
+
     #region Inspector Variables
 
     [SerializeField] private TopBarController       topBarControl;
@@ -148,19 +160,19 @@ public class UIManager : MonoBehaviour
         switch (colorCategory)
         {
             case ColorCategory.BLACK_AND_WHITE:
-                return gameColors[0].color;
+                return gameColors[BW_INDEX].color;
             case ColorCategory.RED:
-                return gameColors[5].color;
+                return gameColors[RED_INDEX].color;
             case ColorCategory.PURPLE:
-                return gameColors[13].color;
+                return gameColors[PURPLE_INDEX].color;
             case ColorCategory.BLUE:
-                return gameColors[20].color;
+                return gameColors[BLUE_INDEX].color;
             case ColorCategory.GREEN:
-                return gameColors[29].color;
+                return gameColors[GREEN_INDEX].color;
             case ColorCategory.YELLOW:
-                return gameColors[37].color;
+                return gameColors[YELLOW_INDEX].color;
             default: //Orange
-                return gameColors[43].color;
+                return gameColors[ORANGE_INDEX].color;
         }
     }
     
@@ -173,6 +185,28 @@ public class UIManager : MonoBehaviour
         }
 
         return gameColors[index].name;
+    }
+
+    public string GetColorName(ColorCategory colorCategory)
+    {
+        switch (colorCategory)
+        {
+            case ColorCategory.BLACK_AND_WHITE:
+                return "Black and White";
+                //return gameColors[BW_INDEX].name;
+            case ColorCategory.RED:
+                return gameColors[RED_INDEX].name;
+            case ColorCategory.PURPLE:
+                return gameColors[PURPLE_INDEX].name;
+            case ColorCategory.BLUE:
+                return gameColors[BLUE_INDEX].name;
+            case ColorCategory.GREEN:
+                return gameColors[GREEN_INDEX].name;
+            case ColorCategory.YELLOW:
+                return gameColors[YELLOW_INDEX].name;
+            default: //Orange
+                return gameColors[ORANGE_INDEX].name;
+        }
     }
 
     public void UpdateColor(int index, string newName, Color newColor)

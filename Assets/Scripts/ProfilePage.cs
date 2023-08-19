@@ -77,238 +77,62 @@ public class ProfilePage : Page
 
     private void DrawEXPBars()
     {
-        //TODO - Use colors from UIManager for dots/progress lines
-        
-        VisualElement bwEXPBar          = uiDoc.rootVisualElement.Q<VisualElement>("BlackAndWhiteEXP").Q<VisualElement>("BG");
-        Label bwCurrentLabel            = bwEXPBar.Q<Label>("CurrentLevel");
-        Label bwNextLabel               = bwEXPBar.Q<Label>("NextLevel");
-        Label bwProgressLabel           = bwEXPBar.Q<Label>("CurrentProgress");
+        //TODO - Turn this into a loop lollllllll
 
-        Vector2 bwLeftOrigin            = new Vector2(bwEXPBar.WorldToLocal(bwCurrentLabel.worldBound.center).x, 0f);
-        Vector2 bwRightOrigin           = new Vector2(bwEXPBar.WorldToLocal(bwNextLabel.worldBound.center).x, 0f);
+        List<VisualElement> expBars = new List<VisualElement>()
+        {
+            uiDoc.rootVisualElement.Q<VisualElement>("BlackAndWhiteEXP")
+            , uiDoc.rootVisualElement.Q<VisualElement>("RedEXP")
+            , uiDoc.rootVisualElement.Q<VisualElement>("PurpleEXP")
+            , uiDoc.rootVisualElement.Q<VisualElement>("BlueEXP")
+            , uiDoc.rootVisualElement.Q<VisualElement>("GreenEXP")
+            , uiDoc.rootVisualElement.Q<VisualElement>("YellowEXP")
+            , uiDoc.rootVisualElement.Q<VisualElement>("OrangeEXP")
+        };
 
-        bwCurrentLabel.text             = ProfileManager.instance.GetEXPLevel(ColorCategory.BLACK_AND_WHITE).ToString();
-        bwNextLabel.text                = (ProfileManager.instance.GetEXPLevel(ColorCategory.BLACK_AND_WHITE) + 1).ToString();
-        bwProgressLabel.text            = ProfileManager.instance.GetCurrentEXP(ColorCategory.BLACK_AND_WHITE).ToString() + " / "
-                                        + ProfileManager.instance.GetNeededEXP(ProfileManager.instance.GetEXPLevel(ColorCategory.BLACK_AND_WHITE)).ToString();
+        for (int i = 0; i < expBars.Count; i++)
+        {
+            VisualElement currentBar        = expBars[i];
+            ColorCategory currentCC         = (ColorCategory)i;
 
-        UIToolkitCircle bwLeftDot       = new UIToolkitCircle(bwLeftOrigin, 35f, Color.black);
-        UIToolkitCircle bwRightDot      = new UIToolkitCircle(bwRightOrigin, 35f, Color.black);
+            Label label                     = currentBar.Q<Label>("Label");
+            Label currentLabel              = currentBar.Q<Label>("CurrentLevel");
+            Label nextLabel                 = currentBar.Q<Label>("NextLevel");
+            Label progressLabel             = currentBar.Q<Label>("CurrentProgress");
+            VisualElement parentVE          = currentBar.Q<VisualElement>("BG");
 
-        float bwDotDistance             = bwRightOrigin.x - bwLeftOrigin.x;
-        Vector2 bwProgressStop          = new Vector2(
-                                            bwLeftOrigin.x + (
-                                                (float)ProfileManager.instance.GetCurrentEXP(ColorCategory.BLACK_AND_WHITE) /
-                                                (float)ProfileManager.instance.GetNeededEXP(ProfileManager.instance.GetEXPLevel(ColorCategory.BLACK_AND_WHITE))
-                                                * bwDotDistance)
-                                            , bwLeftOrigin.y);
+            Vector2 leftOrigin              = new Vector2(parentVE.WorldToLocal(currentLabel.worldBound.center).x, 0f);
+            Vector2 rightOrigin             = new Vector2(parentVE.WorldToLocal(nextLabel.worldBound.center).x, 0f);
 
-        List<Vector2> bwProgPoints      = new List<Vector2>()
-                                            { bwLeftOrigin, bwProgressStop };
+            label.text                      = currentCC.Name();
+            currentLabel.text               = ProfileManager.instance.GetEXPLevel(currentCC).ToString();
+            nextLabel.text                  = ProfileManager.instance.GetNextEXPLevel(currentCC).ToString();
+            progressLabel.text              = ProfileManager.instance.GetCurrentEXP(currentCC).ToString() + " / "
+                                            + ProfileManager.instance.GetNeededEXP(ProfileManager.instance.GetEXPLevel(currentCC)).ToString();
 
-        UIToolkitLine bwProgLine        = new UIToolkitLine(bwProgPoints, 30f, Color.black, LineCap.Round);
+            Color progressBarColor          = currentCC == ColorCategory.BLACK_AND_WHITE ?
+                                                Color.black : UIManager.instance.GetColor(currentCC);
 
-        bwEXPBar.Add(bwLeftDot);
-        bwEXPBar.Add(bwRightDot);
-        bwEXPBar.Add(bwProgLine);
+            UIToolkitCircle leftDot         = new UIToolkitCircle(leftOrigin, 35f, progressBarColor);
+            UIToolkitCircle rightDot        = new UIToolkitCircle(rightOrigin, 35f, progressBarColor);
 
-        VisualElement redEXPBar         = uiDoc.rootVisualElement.Q<VisualElement>("RedEXP").Q<VisualElement>("BG");
-        Label redCurrentLabel           = redEXPBar.Q<Label>("CurrentLevel");
-        Label redNextLabel              = redEXPBar.Q<Label>("NextLevel");
-        Label redProgressLabel          = redEXPBar.Q<Label>("CurrentProgress");
+            float dotDistance               = rightOrigin.x - leftOrigin.x;
+            Vector2 progressStop            = new Vector2(
+                                                leftOrigin.x + (
+                                                    (float)ProfileManager.instance.GetCurrentEXP(currentCC) /
+                                                    (float)ProfileManager.instance.GetNeededEXP(ProfileManager.instance.GetEXPLevel(currentCC))
+                                                    * dotDistance)
+                                                , leftOrigin.y);
 
-        Vector2 redLeftOrigin           = new Vector2(redEXPBar.WorldToLocal(redCurrentLabel.worldBound.center).x, 0f);
-        Vector2 redRightOrigin          = new Vector2(redEXPBar.WorldToLocal(redNextLabel.worldBound.center).x, 0f);
+            List<Vector2> progPoints        = new List<Vector2>()
+                                                { leftOrigin, progressStop };
 
-        redCurrentLabel.text            = ProfileManager.instance.GetEXPLevel(ColorCategory.RED).ToString();
-        redNextLabel.text               = (ProfileManager.instance.GetEXPLevel(ColorCategory.RED) + 1).ToString();
-        redProgressLabel.text           = ProfileManager.instance.GetCurrentEXP(ColorCategory.RED).ToString() + " / "
-                                        + ProfileManager.instance.GetNeededEXP(ProfileManager.instance.GetEXPLevel(ColorCategory.RED)).ToString();
+            UIToolkitLine progLine          = new UIToolkitLine(progPoints, 30f, progressBarColor, LineCap.Round);
 
-        UIToolkitCircle redLeftDot      = new UIToolkitCircle(redLeftOrigin, 35f, Color.red);
-        UIToolkitCircle redRightDot     = new UIToolkitCircle(redRightOrigin, 35f, Color.red);
-
-        float redDotDistance            = redRightOrigin.x - redLeftOrigin.x;
-        Vector2 redProgressStop         = new Vector2(
-                                            redLeftOrigin.x + (
-                                                (float)ProfileManager.instance.GetCurrentEXP(ColorCategory.RED) /
-                                                (float)ProfileManager.instance.GetNeededEXP(ProfileManager.instance.GetEXPLevel(ColorCategory.RED))
-                                                * redDotDistance)
-                                            , redLeftOrigin.y);
-
-        List<Vector2> redProgPoints     = new List<Vector2>()
-                                            { redLeftOrigin, redProgressStop };
-
-        UIToolkitLine redProgLine       = new UIToolkitLine(redProgPoints, 30f, Color.red, LineCap.Round);
-
-        redEXPBar.Add(redLeftDot);
-        redEXPBar.Add(redRightDot);
-        redEXPBar.Add(redProgLine);
-
-        VisualElement purpleEXPBar      = uiDoc.rootVisualElement.Q<VisualElement>("PurpleEXP").Q<VisualElement>("BG");
-        Label purpleCurrentLabel        = purpleEXPBar.Q<Label>("CurrentLevel");
-        Label purpleNextLabel           = purpleEXPBar.Q<Label>("NextLevel");
-        Label purpleProgressLabel       = purpleEXPBar.Q<Label>("CurrentProgress");
-
-        Vector2 purpleLeftOrigin        = new Vector2(purpleEXPBar.WorldToLocal(purpleCurrentLabel.worldBound.center).x, 0f);
-        Vector2 purpleRightOrigin       = new Vector2(purpleEXPBar.WorldToLocal(purpleNextLabel.worldBound.center).x, 0f);
-
-        purpleCurrentLabel.text         = ProfileManager.instance.GetEXPLevel(ColorCategory.PURPLE).ToString();
-        purpleNextLabel.text            = (ProfileManager.instance.GetEXPLevel(ColorCategory.PURPLE) + 1).ToString();
-        purpleProgressLabel.text        = ProfileManager.instance.GetCurrentEXP(ColorCategory.PURPLE).ToString() + " / "
-                                        + ProfileManager.instance.GetNeededEXP(ProfileManager.instance.GetEXPLevel(ColorCategory.PURPLE)).ToString();
-
-        UIToolkitCircle purpleLeftDot   = new UIToolkitCircle(purpleLeftOrigin, 35f, Color.cyan);
-        UIToolkitCircle purpleRightDot  = new UIToolkitCircle(purpleRightOrigin, 35f, Color.cyan);
-
-        float purpleDotDistance         = purpleRightOrigin.x - purpleLeftOrigin.x;
-        Vector2 purpleProgressStop      = new Vector2(
-                                            purpleLeftOrigin.x + (
-                                                (float)ProfileManager.instance.GetCurrentEXP(ColorCategory.PURPLE) /
-                                                (float)ProfileManager.instance.GetNeededEXP(ProfileManager.instance.GetEXPLevel(ColorCategory.PURPLE))
-                                                * purpleDotDistance)
-                                            , purpleLeftOrigin.y);
-
-        List<Vector2> purpleProgPoints  = new List<Vector2>()
-                                            { purpleLeftOrigin, purpleProgressStop };
-
-        UIToolkitLine purpleProgLine    = new UIToolkitLine(purpleProgPoints, 30f, Color.cyan, LineCap.Round);
-
-        purpleEXPBar.Add(purpleLeftDot);
-        purpleEXPBar.Add(purpleRightDot);
-        purpleEXPBar.Add(purpleProgLine);
-
-        VisualElement blueEXPBar        = uiDoc.rootVisualElement.Q<VisualElement>("BlueEXP").Q<VisualElement>("BG");
-        Label blueCurrentLabel          = blueEXPBar.Q<Label>("CurrentLevel");
-        Label blueNextLabel             = blueEXPBar.Q<Label>("NextLevel");
-        Label blueProgressLabel         = blueEXPBar.Q<Label>("CurrentProgress");
-
-        Vector2 blueLeftOrigin          = new Vector2(blueEXPBar.WorldToLocal(blueCurrentLabel.worldBound.center).x, 0f);
-        Vector2 blueRightOrigin         = new Vector2(blueEXPBar.WorldToLocal(blueNextLabel.worldBound.center).x, 0f);
-
-        blueCurrentLabel.text           = ProfileManager.instance.GetEXPLevel(ColorCategory.BLUE).ToString();
-        blueNextLabel.text              = (ProfileManager.instance.GetEXPLevel(ColorCategory.BLUE) + 1).ToString();
-        blueProgressLabel.text          = ProfileManager.instance.GetCurrentEXP(ColorCategory.BLUE).ToString() + " / "
-                                        + ProfileManager.instance.GetNeededEXP(ProfileManager.instance.GetEXPLevel(ColorCategory.BLUE)).ToString();
-
-        UIToolkitCircle blueLeftDot     = new UIToolkitCircle(blueLeftOrigin, 35f, Color.blue);
-        UIToolkitCircle blueRightDot    = new UIToolkitCircle(blueRightOrigin, 35f, Color.blue);
-
-        float blueDotDistance           = blueRightOrigin.x - blueLeftOrigin.x;
-        Vector2 blueProgressStop        = new Vector2(
-                                            blueLeftOrigin.x + (
-                                                (float)ProfileManager.instance.GetCurrentEXP(ColorCategory.BLUE) /
-                                                (float)ProfileManager.instance.GetNeededEXP(ProfileManager.instance.GetEXPLevel(ColorCategory.BLUE))
-                                                * blueDotDistance)
-                                            , blueLeftOrigin.y);
-
-        List<Vector2> blueProgPoints    = new List<Vector2>()
-                                            { blueLeftOrigin, blueProgressStop };
-
-        UIToolkitLine blueProgLine      = new UIToolkitLine(blueProgPoints, 30f, Color.blue, LineCap.Round);
-
-        blueEXPBar.Add(blueLeftDot);
-        blueEXPBar.Add(blueRightDot);
-        blueEXPBar.Add(blueProgLine);
-
-        VisualElement greenEXPBar       = uiDoc.rootVisualElement.Q<VisualElement>("GreenEXP").Q<VisualElement>("BG");
-        Label greenCurrentLabel         = greenEXPBar.Q<Label>("CurrentLevel");
-        Label greenNextLabel            = greenEXPBar.Q<Label>("NextLevel");
-        Label greenProgressLabel        = greenEXPBar.Q<Label>("CurrentProgress");
-
-        Vector2 greenLeftOrigin         = new Vector2(greenEXPBar.WorldToLocal(greenCurrentLabel.worldBound.center).x, 0f);
-        Vector2 greenRightOrigin        = new Vector2(greenEXPBar.WorldToLocal(greenNextLabel.worldBound.center).x, 0f);
-
-        greenCurrentLabel.text          = ProfileManager.instance.GetEXPLevel(ColorCategory.GREEN).ToString();
-        greenNextLabel.text             = (ProfileManager.instance.GetEXPLevel(ColorCategory.GREEN) + 1).ToString();
-        greenProgressLabel.text         = ProfileManager.instance.GetCurrentEXP(ColorCategory.GREEN).ToString() + " / "
-                                        + ProfileManager.instance.GetNeededEXP(ProfileManager.instance.GetEXPLevel(ColorCategory.GREEN)).ToString();
-
-        UIToolkitCircle greenLeftDot    = new UIToolkitCircle(greenLeftOrigin, 35f, Color.green);
-        UIToolkitCircle greenRightDot   = new UIToolkitCircle(greenRightOrigin, 35f, Color.green);
-
-        float greenDotDistance          = greenRightOrigin.x - greenLeftOrigin.x;
-        Vector2 greenProgressStop       = new Vector2(
-                                            greenLeftOrigin.x + (
-                                                (float)ProfileManager.instance.GetCurrentEXP(ColorCategory.GREEN) /
-                                                (float)ProfileManager.instance.GetNeededEXP(ProfileManager.instance.GetEXPLevel(ColorCategory.GREEN))
-                                                * greenDotDistance)
-                                            , greenLeftOrigin.y);
-
-        List<Vector2> greenProgPoints   = new List<Vector2>()
-                                            { greenLeftOrigin, greenProgressStop };
-
-        UIToolkitLine greenProgLine     = new UIToolkitLine(greenProgPoints, 30f, Color.green, LineCap.Round);
-
-        greenEXPBar.Add(greenLeftDot);
-        greenEXPBar.Add(greenRightDot);
-        greenEXPBar.Add(greenProgLine);
-
-        VisualElement yellowEXPBar      = uiDoc.rootVisualElement.Q<VisualElement>("YellowEXP").Q<VisualElement>("BG");
-        Label yellowCurrentLabel        = yellowEXPBar.Q<Label>("CurrentLevel");
-        Label yellowNextLabel           = yellowEXPBar.Q<Label>("NextLevel");
-        Label yellowProgressLabel       = yellowEXPBar.Q<Label>("CurrentProgress");
-
-        Vector2 yellowLeftOrigin        = new Vector2(yellowEXPBar.WorldToLocal(yellowCurrentLabel.worldBound.center).x, 0f);
-        Vector2 yellowRightOrigin       = new Vector2(yellowEXPBar.WorldToLocal(yellowNextLabel.worldBound.center).x, 0f);
-
-        yellowCurrentLabel.text         = ProfileManager.instance.GetEXPLevel(ColorCategory.YELLOW).ToString();
-        yellowNextLabel.text            = (ProfileManager.instance.GetEXPLevel(ColorCategory.YELLOW) + 1).ToString();
-        yellowProgressLabel.text        = ProfileManager.instance.GetCurrentEXP(ColorCategory.YELLOW).ToString() + " / "
-                                        + ProfileManager.instance.GetNeededEXP(ProfileManager.instance.GetEXPLevel(ColorCategory.YELLOW)).ToString();
-
-        UIToolkitCircle yellowLeftDot   = new UIToolkitCircle(yellowLeftOrigin, 35f, Color.yellow);
-        UIToolkitCircle yellowRightDot  = new UIToolkitCircle(yellowRightOrigin, 35f, Color.yellow);
-
-        float yellowDotDistance         = yellowRightOrigin.x - yellowLeftOrigin.x;
-        Vector2 yellowProgressStop      = new Vector2(
-                                            yellowLeftOrigin.x + (
-                                                (float)ProfileManager.instance.GetCurrentEXP(ColorCategory.YELLOW) /
-                                                (float)ProfileManager.instance.GetNeededEXP(ProfileManager.instance.GetEXPLevel(ColorCategory.YELLOW))
-                                                * yellowDotDistance)
-                                            , yellowLeftOrigin.y);
-
-        List<Vector2> yellowProgPoints  = new List<Vector2>()
-                                            { yellowLeftOrigin, yellowProgressStop };
-
-        UIToolkitLine yellowProgLine    = new UIToolkitLine(yellowProgPoints, 30f, Color.yellow, LineCap.Round);
-
-        yellowEXPBar.Add(yellowLeftDot);
-        yellowEXPBar.Add(yellowRightDot);
-        yellowEXPBar.Add(yellowProgLine);
-
-        VisualElement orangeEXPBar      = uiDoc.rootVisualElement.Q<VisualElement>("OrangeEXP").Q<VisualElement>("BG");
-        Label orangeCurrentLabel        = orangeEXPBar.Q<Label>("CurrentLevel");
-        Label orangeNextLabel           = orangeEXPBar.Q<Label>("NextLevel");
-        Label orangeProgressLabel       = orangeEXPBar.Q<Label>("CurrentProgress");
-
-        Vector2 orangeLeftOrigin        = new Vector2(orangeEXPBar.WorldToLocal(orangeCurrentLabel.worldBound.center).x, 0f);
-        Vector2 orangeRightOrigin       = new Vector2(orangeEXPBar.WorldToLocal(orangeNextLabel.worldBound.center).x, 0f);
-
-        orangeCurrentLabel.text         = ProfileManager.instance.GetEXPLevel(ColorCategory.ORANGE).ToString();
-        orangeNextLabel.text            = (ProfileManager.instance.GetEXPLevel(ColorCategory.ORANGE) + 1).ToString();
-        orangeProgressLabel.text        = ProfileManager.instance.GetCurrentEXP(ColorCategory.ORANGE).ToString() + " / "
-                                        + ProfileManager.instance.GetNeededEXP(ProfileManager.instance.GetEXPLevel(ColorCategory.ORANGE)).ToString();
-
-        UIToolkitCircle orangeLeftDot   = new UIToolkitCircle(orangeLeftOrigin, 35f, Color.magenta);
-        UIToolkitCircle orangeRightDot  = new UIToolkitCircle(orangeRightOrigin, 35f, Color.magenta);
-
-        float orangeDotDistance         = orangeRightOrigin.x - orangeLeftOrigin.x;
-        Vector2 orangeProgressStop      = new Vector2(
-                                            orangeLeftOrigin.x + (
-                                                (float)ProfileManager.instance.GetCurrentEXP(ColorCategory.ORANGE) /
-                                                (float)ProfileManager.instance.GetNeededEXP(ProfileManager.instance.GetEXPLevel(ColorCategory.ORANGE))
-                                                * orangeDotDistance)
-                                            , orangeLeftOrigin.y);
-
-        List<Vector2> orangeProgPoints  = new List<Vector2>()
-                                            { orangeLeftOrigin, orangeProgressStop };
-
-        UIToolkitLine orangeProgLine    = new UIToolkitLine(orangeProgPoints, 30f, Color.magenta, LineCap.Round);
-
-        orangeEXPBar.Add(orangeLeftDot);
-        orangeEXPBar.Add(orangeRightDot);
-        orangeEXPBar.Add(orangeProgLine);
+            parentVE.Add(leftDot);
+            parentVE.Add(rightDot);
+            parentVE.Add(progLine);
+        }
     }
 
     public void ShowOwnedSegments()

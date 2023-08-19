@@ -31,19 +31,19 @@ public class PowerupController
 
     public PowerupController(VisualElement root, bool timedMode, Board initialBoard)
     {
-        this.root = root;
+        this.root                                   = root;
 
-        hintButton = this.root.Q<VisualElement>("HintButton");
-        removeSpecialTilesButton = this.root.Q<VisualElement>("RemoveSpecialTileButton");
-        fillEmptyButton = this.root.Q<VisualElement>("FillEmptyButton");
+        hintButton                                  = this.root.Q<VisualElement>("HintButton");
+        removeSpecialTilesButton                    = this.root.Q<VisualElement>("RemoveSpecialTileButton");
+        fillEmptyButton                             = this.root.Q<VisualElement>("FillEmptyButton");
 
-        PowerupButtonController hintControl = new PowerupButtonController(PowerupType.HINT, hintButton);
-        PowerupButtonController removeSpecialControl = new PowerupButtonController(PowerupType.REMOVE_SPECIAL_TILE, removeSpecialTilesButton);
-        PowerupButtonController fillControl = new PowerupButtonController(PowerupType.FILL_EMPTY, fillEmptyButton);
+        PowerupButtonController hintControl         = new PowerupButtonController(PowerupType.HINT, hintButton);
+        PowerupButtonController removeSpecialControl= new PowerupButtonController(PowerupType.REMOVE_SPECIAL_TILE, removeSpecialTilesButton);
+        PowerupButtonController fillControl         = new PowerupButtonController(PowerupType.FILL_EMPTY, fillEmptyButton);
 
-        hintButton.userData = hintControl;
-        removeSpecialTilesButton.userData = removeSpecialControl;
-        fillEmptyButton.userData = fillControl;
+        hintButton.userData                         = hintControl;
+        removeSpecialTilesButton.userData           = removeSpecialControl;
+        fillEmptyButton.userData                    = fillControl;
 
         instructions = root.Q<Label>("Instructions");
         instructions.Hide();

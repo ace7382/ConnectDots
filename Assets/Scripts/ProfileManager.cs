@@ -26,8 +26,8 @@ public class ProfileManager : MonoBehaviour
 
     #region Private variables
 
-    [SerializeField] private int[]   expLevelsPerColor; //TODO: Remove SerializeField and don't set from inspector, just for testing atm
-    [SerializeField] private int[]   currentEXPPerColor;
+    private int[]   expLevelsPerColor; //TODO: Remove SerializeField and don't set from inspector, just for testing atm
+    private int[]   currentEXPPerColor;
 
     #endregion
 
@@ -39,6 +39,9 @@ public class ProfileManager : MonoBehaviour
             instance = this;
         else if (instance != this)
             Destroy(gameObject);
+
+        expLevelsPerColor   = new int[7] { 0, 0, 0, 0, 0, 0, 0 };
+        currentEXPPerColor  = new int[7] { 0, 0, 0, 0, 0, 0, 0 };
     }
 
     #endregion
@@ -55,9 +58,44 @@ public class ProfileManager : MonoBehaviour
         return expLevelsPerColor[(int)color];
     }
 
+    public int GetNextEXPLevel(ColorCategory color)
+    {
+        //TODO: Set a max level probably
+
+        return GetEXPLevel(color) + 1;
+    }
+
     public int GetCurrentEXP(ColorCategory color)
     {
         return currentEXPPerColor[(int)color];
+    }
+
+    public bool AddEXP(ColorCategory color, int amount)
+    {
+        int index                       = (int)color;
+        int nextLevel                   = GetNeededEXP(GetEXPLevel(color));
+        bool leveledUp                  = false;
+
+        currentEXPPerColor[index]       += amount;
+        
+        while (currentEXPPerColor[index] >= nextLevel)
+        {
+            leveledUp                   = true;
+            currentEXPPerColor[index]   -= nextLevel;
+            expLevelsPerColor[index]++;
+            nextLevel                   = GetNeededEXP(GetEXPLevel(color));
+        }
+
+        return leveledUp;
+    }
+
+    #endregion
+
+    #region Private Functions
+
+    private void LevelUp(ColorCategory color)
+    {
+        //TODO: Handle max level
     }
 
     #endregion

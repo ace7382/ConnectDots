@@ -46,6 +46,9 @@ public class MainMenu : Page
         achievementsButton.RegisterCallback<ClickEvent>(OpenAchievements);
         profileCard.RegisterCallback<ClickEvent>(OpenProfile);
 
+        ProfileCardController pcControl = new ProfileCardController(profileCard);
+        profileCard.userData            = pcControl;
+
         ButtonStateChanger playBSC      = new ButtonStateChanger(playButton.Q<VisualElement>("BG"));
         ButtonStateChanger shopBSC      = new ButtonStateChanger(shopButton.Q<VisualElement>("BG"));
         ButtonStateChanger achieveBSC   = new ButtonStateChanger(achievementsButton.Q<VisualElement>("BG"));

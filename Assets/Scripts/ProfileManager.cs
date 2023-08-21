@@ -21,6 +21,7 @@ public class ProfileManager : MonoBehaviour
     #region Public Properties
 
     public int HighestEXPColorLevel { get { return expLevelsPerColor.Max(); } }
+    public int TotalLevel           { get { return expLevelsPerColor.Sum(); } }
 
     #endregion
 

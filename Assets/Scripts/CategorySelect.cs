@@ -11,28 +11,27 @@ public class CategorySelect : Page
 
     //TODO: Put these in UIManager or a Style Class
     private Color BUTTONACTIVE = new Color(0.3490196f, 0.8117647f, 0.5490196f, 1f);
-    private Color BUTTONINACTIVE = Color.grey;
 
     #endregion
 
     #region Private Variables
 
-    private VisualElement header_Instructions;
-    private VisualElement header_CategoryIcon;
-    private VisualElement header_LeftPanel;
-    private VisualElement header_RightPanel;
-    private VisualElement header_PlayUnlockButton;
+    private VisualElement   header_Instructions;
+    private VisualElement   header_CategoryIcon;
+    private VisualElement   header_LeftPanel;
+    private VisualElement   header_RightPanel;
+    private VisualElement   header_PlayUnlockButton;
 
-    private Label header_CategoryTitle;
-    private Label header_LevelsCompletedLabel;
-    private Label header_ObjectivesCompletedLabel;
-    private Label header_BronzeTTLabel;
-    private Label header_SilverTTLabel;
-    private Label header_GoldTTLabel;
-    private Label header_StarTTLabel;
+    private Label           header_CategoryTitle;
+    private Label           header_LevelsCompletedLabel;
+    private Label           header_ObjectivesCompletedLabel;
+    private Label           header_BronzeTTLabel;
+    private Label           header_SilverTTLabel;
+    private Label           header_GoldTTLabel;
+    private Label           header_StarTTLabel;
 
-    private VisualElement selectedButton;
-    private bool canClick;
+    private VisualElement   selectedButton;
+    private bool            canClick;
 
     #endregion
 
@@ -117,18 +116,14 @@ public class CategorySelect : Page
             if (!canClick)
                 return;
 
-            if ((SelectedCategoryButton.userData as LevelCategory).Unlocked)
-            {
-                PlayButtonClicked();
-            }
-            else
-            {
-                UnlockButtonClicked();
-            }
+            PlayButtonClicked();
         });
 
         for (int i = 0; i < cats.Count; i++)
         {
+            if (!cats[i].Unlocked) //Don't show locked categories
+                continue;
+
             VisualElement button    = UIManager.instance.LevelSelectButton.Instantiate();
             LevelCategory lCat      = cats[i];
 
@@ -165,8 +160,8 @@ public class CategorySelect : Page
             scrollContent.Add(button);
         }
 
-        canClick = true;
-        SelectedCategoryButton = null;
+        canClick                    = true;
+        SelectedCategoryButton      = null;
         ShowCategoryDetails();
 
         this.AddObserver(ShowCategoryDetails, Notifications.CATEGORY_UNLOCKED);
@@ -179,35 +174,41 @@ public class CategorySelect : Page
 
     public override IEnumerator AnimateIn()
     {
-        canClick = false;
+        canClick                = false;
 
-        VisualElement page = uiDoc.rootVisualElement;
+        VisualElement page      = uiDoc.rootVisualElement;
 
-        page.style.opacity = new StyleFloat(0f);
+        page.style.opacity      = new StyleFloat(0f);
 
-        Tween fadein = DOTween.To(() => page.style.opacity.value,
-                x => page.style.opacity = new StyleFloat(x),
-                1f, .33f);
+        Tween fadein            = DOTween.To(() => 
+                                    page.style.opacity.value
+                                    , x => page.style.opacity = new StyleFloat(x)
+                                    , 1f
+                                    , .33f
+                                );
 
         if (!UIManager.instance.TopBar.IsShowing)
             UIManager.instance.TopBar.ShowTopBar();
 
         yield return fadein.Play().WaitForCompletion();
 
-        canClick = true;
+        canClick                = true;
     }
 
     public override IEnumerator AnimateOut()
     {
-        canClick = false;
+        canClick                = false;
 
-        VisualElement page = uiDoc.rootVisualElement;
+        VisualElement page      = uiDoc.rootVisualElement;
 
-        page.style.opacity = new StyleFloat(1f);
+        page.style.opacity      = new StyleFloat(1f);
 
-        Tween fadeout = DOTween.To(() => page.style.opacity.value,
-                x => page.style.opacity = new StyleFloat(x),
-                0f, .33f);
+        Tween fadeout           = DOTween.To(() => 
+                                    page.style.opacity.value
+                                    , x => page.style.opacity = new StyleFloat(x)
+                                    , 0f
+                                    , .33f
+                                );
 
         yield return fadeout.Play().WaitForCompletion();
     }
@@ -234,7 +235,7 @@ public class CategorySelect : Page
         }
         else
         {
-            LevelCategory cat = SelectedCategoryButton.userData as LevelCategory;
+            LevelCategory cat                       = SelectedCategoryButton.userData as LevelCategory;
 
             header_Instructions.Hide();
 
@@ -265,16 +266,8 @@ public class CategorySelect : Page
             header_GoldTTLabel.text                 = "x " + cat.GoldTimeMedals.ToString("000");
             header_StarTTLabel.text                 = "x " + cat.StarTimeMedals.ToString("000");
 
-            if (cat.Unlocked)
-            {
-                ((Label)header_PlayUnlockButton).text = "Play";
-                header_PlayUnlockButton.SetColor(BUTTONACTIVE);
-            }
-            else
-            {
-                ((Label)header_PlayUnlockButton).text = "Unlock Category";
-                header_PlayUnlockButton.SetColor(BUTTONINACTIVE);
-            }
+            ((Label)header_PlayUnlockButton).text = "Play";
+            header_PlayUnlockButton.SetColor(BUTTONACTIVE);
         }
     }
 
@@ -284,14 +277,6 @@ public class CategorySelect : Page
         data[0] = SelectedCategoryButton.userData as LevelCategory;
 
         PageManager.instance.StartCoroutine(PageManager.instance.OpenPageOnAnEmptyStack<LevelSelect>(data));
-    }
-
-    private void UnlockButtonClicked()
-    {
-        object[] data = new object[1];
-        data[0] = SelectedCategoryButton.userData as LevelCategory;
-
-        PageManager.instance.StartCoroutine(PageManager.instance.AddPageToStack<CategoryUnlockPopup>(data));
     }
 
     #endregion

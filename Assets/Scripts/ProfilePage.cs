@@ -9,6 +9,7 @@ public class ProfilePage : Page
     #region Private Variables
 
     private bool canClick;
+    private VisualElement profileCard;
 
     #endregion
 
@@ -26,6 +27,10 @@ public class ProfilePage : Page
 
         UIManager.instance.TopBar.UpdateBackButtonOnClick(backbuttonAction);
         UIManager.instance.TopBar.ShowCoinButton(false);
+
+        profileCard                     = uiDoc.rootVisualElement.Q<VisualElement>("ProfileCard");
+        ProfileCardController pcControl = new ProfileCardController(profileCard);
+        profileCard.userData            = pcControl;
     }
 
     public override IEnumerator AnimateIn()

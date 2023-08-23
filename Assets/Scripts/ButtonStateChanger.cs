@@ -6,22 +6,25 @@ using UnityEngine.UIElements;
 public class ButtonStateChanger
 {
     private bool            pressed;
+    private bool            setBackgroundColor; //false = set image tint instead
     private VisualElement   button;
     private Color           originalColor   = Color.white;
     private Color           pressedColor    = new Color(.85f, .85f, .85f, 1f);
 
-    public ButtonStateChanger(VisualElement button, Color originalColor, Color pressedColor)
+    public ButtonStateChanger(VisualElement button, Color originalColor, Color pressedColor, bool setBGColor = true)
     {
         this.button         = button;
         this.originalColor  = originalColor;
         this.pressedColor   = pressedColor;
         pressed             = false;
+        setBackgroundColor  = setBGColor;
     }
 
-    public ButtonStateChanger(VisualElement button)
+    public ButtonStateChanger(VisualElement button, bool setBGColor = true)
     {
         this.button         = button;
         pressed             = false;
+        setBackgroundColor  = setBGColor;
     }
 
     public void OnPointerDown(PointerDownEvent evt)
@@ -29,7 +32,10 @@ public class ButtonStateChanger
         button.style.right  = -4f;
         button.style.bottom = -4f;
 
-        button.SetColor(pressedColor);
+        if (setBackgroundColor)
+            button.SetColor(pressedColor);
+        else
+            button.style.unityBackgroundImageTintColor = new StyleColor(pressedColor);
 
         pressed             = true;
     }
@@ -39,7 +45,10 @@ public class ButtonStateChanger
         if (pressed == false)
             return;
 
-        button.SetColor(originalColor);
+        if (setBackgroundColor)
+            button.SetColor(originalColor);
+        else
+            button.style.unityBackgroundImageTintColor = new StyleColor(originalColor);
 
         StyleLength s       = new StyleLength(StyleKeyword.Auto);
         button.style.right  = s;

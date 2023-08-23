@@ -8,16 +8,23 @@ public class ProfilePage : Page
 {
     #region Private Variables
 
-    private bool canClick;
-    private VisualElement profileCard;
+    private bool                        canClick;
+    private VisualElement               profileCard;
+    private EventCallback<ClickEvent>   backbuttonAction;
 
     #endregion
 
     #region Inherited Functions
 
+    public override void OnFocusReturnedToPage()
+    {
+        canClick = true;
+        UIManager.instance.TopBar.UpdateBackButtonOnClick(backbuttonAction);
+    }
+
     public override void ShowPage(object[] args)
     {
-        EventCallback<ClickEvent> backbuttonAction = (evt) =>
+        backbuttonAction = (evt) =>
         {
             if (!canClick)
                 return;
@@ -42,6 +49,7 @@ public class ProfilePage : Page
 
         DrawEXPBars();
         ShowOwnedSegments();
+        ShowRewardChests();
 
         yield return null;
 
@@ -82,8 +90,6 @@ public class ProfilePage : Page
 
     private void DrawEXPBars()
     {
-        //TODO - Turn this into a loop lollllllll
-
         List<VisualElement> expBars = new List<VisualElement>()
         {
             uiDoc.rootVisualElement.Q<VisualElement>("BlackAndWhiteEXP")
@@ -140,7 +146,7 @@ public class ProfilePage : Page
         }
     }
 
-    public void ShowOwnedSegments()
+    private void ShowOwnedSegments()
     {
         VisualElement[] coinDisplays = new VisualElement[7]
         {
@@ -161,6 +167,50 @@ public class ProfilePage : Page
             current.Q<Label>("AmountLabel").text = CurrencyManager.instance.GetCoinsForColorIndex((ColorCategory)i).ToString();
         }
         
+    }
+
+    private void ShowRewardChests()
+    {
+        VisualElement page                      = uiDoc.rootVisualElement.Q<VisualElement>("Page");
+        VisualElement rewardChestContainer      = uiDoc.rootVisualElement
+                                                .Q<VisualElement>("RewardChestsContainer")
+                                                .Q<VisualElement>("BG");
+        
+        for (int i = 0; i < CurrencyManager.instance.TotalRewardChests; i++)
+        {
+            VisualElement rewardChestButton     = UIManager.instance.RewardChestButton.Instantiate();
+            VisualElement bg                    = rewardChestButton.Q<VisualElement>("BG");
+            RewardChest currentChest            = CurrencyManager.instance.GetRewardChest(i);
+            rewardChestButton.userData          = currentChest;
+
+            StyleBackground chestImage          = new StyleBackground(UIManager.instance.GetRewardChestIcon(currentChest.ChestType));
+            rewardChestButton.Q<VisualElement>("Shadow")
+                .style.backgroundImage          = chestImage;
+            bg.style.backgroundImage            = chestImage;
+
+            rewardChestButton.SetMargins(15f);
+
+            rewardChestContainer.Add(rewardChestButton);
+
+            rewardChestButton.RegisterCallback<ClickEvent>((evt) =>
+            {
+                if (!canClick)
+                    return;
+
+                canClick                        = false;
+
+                object[] data                   = new object[1];
+                data[0]                         = currentChest;
+
+                PageManager.instance.StartCoroutine(PageManager.instance.AddPageToStack<RewardChestDetails>(data));
+            });
+
+            ButtonStateChanger chestBSC         = new ButtonStateChanger(bg, false);
+
+            rewardChestButton.RegisterCallback<PointerDownEvent>(chestBSC.OnPointerDown);
+            page.RegisterCallback<PointerUpEvent>(chestBSC.OnPointerUp);
+            page.RegisterCallback<PointerLeaveEvent>(chestBSC.OnPointerOff);
+        }
     }
 
     #endregion

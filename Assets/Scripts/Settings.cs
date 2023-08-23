@@ -46,6 +46,7 @@ public class Settings : Page
 
     public override IEnumerator AnimateIn()
     {
+        canClick            = false;
         VisualElement page  = uiDoc.rootVisualElement;
 
         page.SetPadding(0f);
@@ -103,6 +104,8 @@ public class Settings : Page
         });
 
         settings_ColorSettingsButton.RegisterCallback<PointerUpEvent>(evt => ShowHideColorSettings(evt, true));
+
+        //TODO: Show top bar's back button as a close option
     }
 
     private void SetupColorList()

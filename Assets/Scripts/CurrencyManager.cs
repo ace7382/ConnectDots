@@ -25,6 +25,7 @@ public class CurrencyManager : MonoBehaviour
     private VisualElement                   coinDisplayContainer;
     private Dictionary<PowerupType, int>    ownedPowerups;
     private int[]                           ownedSegments;
+    private List<RewardChest>               ownedRewardChests;
 
     #endregion
 
@@ -32,6 +33,7 @@ public class CurrencyManager : MonoBehaviour
 
     public int                              SegmentColorCount   { get { return System.Enum.GetNames(typeof(ColorCategory)).Length; } }
     public int                              TotalSegments       { get { return ownedSegments.Sum(); } }
+    public int                              TotalRewardChests   { get { return ownedRewardChests.Count; } }
 
     #endregion
 
@@ -44,8 +46,9 @@ public class CurrencyManager : MonoBehaviour
         else if (instance != this)
             Destroy(gameObject);
 
-        ownedPowerups   = new Dictionary<PowerupType, int>();
-        ownedSegments   = new int[SegmentColorCount];
+        ownedPowerups       = new Dictionary<PowerupType, int>();
+        ownedSegments       = new int[SegmentColorCount];
+        ownedRewardChests   = new List<RewardChest>();
 
         //TODO: Remove this///
         CurrencyManager.instance.AddCurrency(PowerupType.HINT, 20);
@@ -56,6 +59,10 @@ public class CurrencyManager : MonoBehaviour
         {
             CurrencyManager.instance.AddCurrency((ColorCategory)i, Random.Range(50, 12000));
         }
+
+        CurrencyManager.instance.AddRewardChest(RewardChest.GetChest(RewardChestType.LEVELUP));
+        CurrencyManager.instance.AddRewardChest(RewardChest.GetChest(RewardChestType.LEVELUP));
+        CurrencyManager.instance.AddRewardChest(RewardChest.GetChest(RewardChestType.LEVELUP));
         //////////////////////
     }
 
@@ -236,6 +243,23 @@ public class CurrencyManager : MonoBehaviour
         //if index == -1 (doesn't exist) -> can afford (return true)
 
         return item.Costs.FindIndex(x => GetCoinsForColorIndex(x.colorCategory) < x.amount) == -1;
+    }
+
+    public RewardChest GetRewardChest(int index)
+    {
+        return ownedRewardChests[index];
+    }
+
+    public void AddRewardChest(RewardChest chestToAdd)
+    {
+        ownedRewardChests.Add(chestToAdd);
+    }
+    
+    public void OpenRewardChest(RewardChest chest)
+    {
+
+
+
     }
 
     #endregion

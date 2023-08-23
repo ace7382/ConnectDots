@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:VisualElement name="RewardChestDetails_RewardLine" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); flex-direction: row; min-width: auto; min-height: auto; width: auto; max-width: none; height: auto; max-height: none; align-items: center; justify-content: space-between; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0;">
+        <ui:Label tabindex="-1" text="Make this really long  &#10; so we can see how it works with multiple lijnes" display-tooltip-when-elided="true" name="Details" class="HeaderLabel" style="margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; -unity-text-align: middle-left; max-width: 85%; font-size: 35px; -unity-font-style: normal; white-space: normal;" />
+        <ui:Label tabindex="-1" text="99%" display-tooltip-when-elided="true" name="Chance" class="HeaderLabel" style="-unity-text-align: middle-right; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
+    </ui:VisualElement>
+</ui:UXML>

@@ -67,6 +67,13 @@ public class UIManager : MonoBehaviour
     [SerializeField] private VisualTreeAsset        settings_ColorLine;
     [SerializeField] private VisualTreeAsset        settings_ColorSetter;
 
+    [Space]
+
+    [Header("Reward Chests")]
+    [SerializeField] private VisualTreeAsset        rewardChestButton;
+    [SerializeField] private VisualTreeAsset        rewardChestDetails_RewardLine;
+    [SerializeField] private List<Texture2D>        rewardChestSprites;
+
     #endregion
 
     #region Public Properties
@@ -93,6 +100,9 @@ public class UIManager : MonoBehaviour
     public VisualTreeAsset      Settings_ColorList  { get { return settings_ColorList; } }
     public VisualTreeAsset      Settings_ColorLine  { get { return settings_ColorLine; } }
     public VisualTreeAsset      Settings_ColorSetter{ get { return settings_ColorSetter; } }
+
+    public VisualTreeAsset      RewardChestButton   { get { return rewardChestButton; } }
+    public VisualTreeAsset      RewardLine          { get { return rewardChestDetails_RewardLine; } }
 
     #endregion
 
@@ -234,6 +244,16 @@ public class UIManager : MonoBehaviour
         }
 
         Debug.LogError("Can't find powerup Icon");
+
+        return null;
+    }
+
+    public Texture2D GetRewardChestIcon(RewardChestType type)
+    {
+        switch (type)
+        {
+            case RewardChestType.LEVELUP: return rewardChestSprites[0];
+        }
 
         return null;
     }

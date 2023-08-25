@@ -48,7 +48,7 @@ public class RewardChestDetails : Page
             Label details               = rewardLine.Q<Label>("Details");
             Label chance                = rewardLine.Q<Label>("Chance");
 
-            details.text                = potentialRewards[i].GetRewardLineText();
+            details.text                = potentialRewards[i].GetPotentialRewardLineText();
             chance.text                 = potentialRewards[i].Chance.ToString("0.00") + "%";
 
             rewardLine.SetMargins(10f, 0f, 10f, 0f);
@@ -125,16 +125,6 @@ public class RewardChestDetails : Page
             , chestContentsScroll.contentContainer.parent
         );
 
-
-        //VisualElement page  = uiDoc.rootVisualElement.Q<VisualElement>("Page");
-        //VisualElement page  = uiDoc.rootVisualElement.Q<VisualElement>("Container");
-        //Tween flyIn         = DOTween.To(() => page.transform.position,
-        //                        x => page.transform.position = x,
-        //                        new Vector3(0f, 0f, page.transform.position.z), .65f)
-        //                        .SetEase(Ease.OutQuart);
-
-        //yield return flyIn.WaitForCompletion();
-
         yield return ModalInOut(true).WaitForCompletion();
 
         canClick            = true;
@@ -176,12 +166,53 @@ public class RewardChestDetails : Page
         for (int i = 0; i < rewardLines.Count; i++)
             rewardLines[i].RemoveFromHierarchy();
 
-        List<(RewardChest.RewardType type, int amount)> prizes = chest.GetPrizes();
+        List<RewardChest.Reward> prizes = chest.GetPrizes();
+        List<(RewardChest.Reward, int)> 
+            prizesWithAmounts           = new List<(RewardChest.Reward, int)>();
 
         for (int i = 0; i < prizes.Count; i++)
         {
-            Debug.Log(string.Format("{0} - {1}", prizes[i].type, prizes[i].amount.ToString()));
+            int prizeAmount             = prizes[i].RewardRoll;
+
+            Debug.Log(string.Format("{0} - {1}", prizes[i].Type, prizeAmount.ToString()));
+
+            VisualElement rewardLine    = UIManager.instance.RewardLine.Instantiate();
+
+            rewardLine.name             = "RewardLine";
+            Label details               = rewardLine.Q<Label>("Details");
+            Label chance                = rewardLine.Q<Label>("Chance");
+
+            details.text                = prizes[i].GetPrizeLineText();
+
+            if (prizeAmount == -1)
+            {
+                chance.RemoveFromHierarchy();
+            }
+            else
+            {
+                chance.text             = "x" + prizeAmount.ToString();
+            }
+
+            rewardLine.SetMargins(10f, 0f, 10f, 0f);
+
+            contentScroll.Add(rewardLine);
+
+            (RewardChest.Reward, int)
+                prizeWithAmount         = (prizes[i], prizeAmount);
+
+            prizesWithAmounts.Add(prizeWithAmount);
         }
+
+        GiveRewards(prizesWithAmounts);
+
+        modal.Q<VisualElement>("BackButton").RemoveFromHierarchy();
+
+        modal.Q<Label>("Header").text   = "Chest Contents";
+        VisualElement claimButton       = modal.Q<VisualElement>("OpenButton");
+        claimButton.Q<Label>().text     = "Claim";
+
+        claimButton.UnregisterCallback<ClickEvent>(OpenChest);
+        claimButton.RegisterCallback<ClickEvent>((evt) => SpawnRewards(evt, prizesWithAmounts));
 
         yield return ModalInOut(true).WaitForCompletion();
 
@@ -210,6 +241,120 @@ public class RewardChestDetails : Page
                 )
                 .SetEase(Ease.OutQuart);
         }
+    }
+
+    private void GiveRewards(List<(RewardChest.Reward reward, int amount)> prizes)
+    {
+        for (int i = 0; i < prizes.Count; i++)
+        {
+            switch(prizes[i].reward.Type)
+            {
+                case RewardChest.RewardType.BW_SEGMENTS:
+                    CurrencyManager.instance.AddCurrency(ColorCategory.BLACK_AND_WHITE, prizes[i].amount);
+                    break;
+                case RewardChest.RewardType.BW_EXP:
+                    ProfileManager.instance.AddEXP(ColorCategory.BLACK_AND_WHITE, prizes[i].amount);
+                    break;
+                case RewardChest.RewardType.POWERUP_HINT:
+                    CurrencyManager.instance.AddCurrency(PowerupType.HINT, prizes[i].amount);
+                    break;
+                case RewardChest.RewardType.POWERUP_FILLEMPTY:
+                    CurrencyManager.instance.AddCurrency(PowerupType.FILL_EMPTY, prizes[i].amount);
+                    break;
+                case RewardChest.RewardType.POWERUP_REMOVESPECIALTILE:
+                    CurrencyManager.instance.AddCurrency(PowerupType.REMOVE_SPECIAL_TILE, prizes[i].amount);
+                    break;
+            }
+        }
+    }
+
+    private void SpawnRewards(ClickEvent evt, List<(RewardChest.Reward reward, int amount)> prizes)
+    {
+        if (!canClick)
+            return;
+
+        canClick                                = false;
+
+        VisualElement modalBG                   = modal.Q<VisualElement>("BG");
+        Vector2 xLimits                         = new Vector2(
+                                                    modalBG.worldBound.center.x - ((modalBG.worldBound.width / 2f) * .8f)
+                                                    , modalBG.worldBound.center.x + ((modalBG.worldBound.width / 2f) * .8f)
+                                                );
+
+        Vector2 yLimits                         = new Vector2(
+                                                    modalBG.worldBound.center.y - ((modalBG.worldBound.height / 2f) * .8f)
+                                                    , modalBG.worldBound.center.y + ((modalBG.worldBound.height / 2f) * .8f)
+                                                );
+
+        //TODO: Add exp/categories/etc as spawns
+        int coinsToSpawn                        = 0;
+        int powerupsToSpawn                     = 0;
+        List<ColorCategory> colorsCoinsToSpawn  = new List<ColorCategory>();
+        List<PowerupType> powerupTypesToSpawn   = new List<PowerupType>();
+
+        for (int i = 0; i < prizes.Count; i++)
+        {
+            switch (prizes[i].reward.Type)
+            {
+                case RewardChest.RewardType.BW_SEGMENTS:
+                    coinsToSpawn                += prizes[i].amount;
+                    colorsCoinsToSpawn.Add(ColorCategory.BLACK_AND_WHITE);
+                    break;
+                case RewardChest.RewardType.POWERUP_FILLEMPTY:
+                    powerupsToSpawn             += prizes[i].amount;
+                    powerupTypesToSpawn.Add(PowerupType.FILL_EMPTY);
+                    break;
+                case RewardChest.RewardType.POWERUP_HINT:
+                    powerupsToSpawn             += prizes[i].amount;
+                    powerupTypesToSpawn.Add(PowerupType.FILL_EMPTY);
+                    break;
+                case RewardChest.RewardType.POWERUP_REMOVESPECIALTILE:
+                    powerupsToSpawn             += prizes[i].amount;
+                    powerupTypesToSpawn.Add(PowerupType.REMOVE_SPECIAL_TILE);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        coinsToSpawn                            = Mathf.Min(30, coinsToSpawn);
+        powerupsToSpawn                         = Mathf.Min(15, powerupsToSpawn);
+
+        for (int i = 0; i < coinsToSpawn; i++)
+        {
+            Vector2 origin                      = new Vector2(
+                                                    Random.Range(xLimits.x, xLimits.y)
+                                                    , Random.Range(yLimits.x, yLimits.y)
+                                                );
+
+            CurrencyManager.instance.SpawnCoin(
+                colorsCoinsToSpawn[Random.Range(0, colorsCoinsToSpawn.Count)]
+                , origin
+                , new Vector2(Screen.width / 2f, -30f)
+            ); ;
+        }
+
+        for (int i = 0; i < powerupsToSpawn; i++)
+        {
+            Vector2 origin                      = new Vector2(
+                                                    Random.Range(xLimits.x, xLimits.y)
+                                                    , Random.Range(yLimits.x, yLimits.y)
+                                                );
+
+            CurrencyManager.instance.SpawnPowerups(
+                powerupTypesToSpawn[Random.Range(0, powerupTypesToSpawn.Count)]
+                , origin
+                , new Vector2(Screen.width / 2f, -30f)
+            ); ;
+        }
+
+        ModalInOut(false)
+            .OnComplete(() =>
+            {
+                PageManager.instance.StartCoroutine(PageManager.instance.CloseTopPage());
+            })
+            .SetDelay(.9f) //powerup/coin fly animation is between .75 and 1 if not specified
+            .Play();
     }
 
     #endregion

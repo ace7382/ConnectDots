@@ -9,24 +9,28 @@ public enum RewardChestType
     , SHOP_SMALL_EXP
     , SHOP_SINGLE_CATEGORY
     , SHOP_SMALL_RANDOM
+    , POWERUP
 }
 
 public class RewardChest
 {
     #region Classes
-
+    
     public enum RewardType
     {
         BW_SEGMENTS
         , BW_EXP
+        , POWERUP_FILLEMPTY
+        , POWERUP_HINT
+        , POWERUP_REMOVESPECIALTILE
         , CATEGORY_YELLOWSTAR
     }
 
     public class Reward
     {
         private RewardType  type;
-        private int         minReward;
-        private int         maxReward;
+        private int         minReward;  //-1 signifies that it's a non-range reward like unlocking a category
+        private int         maxReward;  //-1 signifies that it's a non-range reward like unlocking a category
         private float       minRoll;
         private float       maxRoll;
 
@@ -43,17 +47,18 @@ public class RewardChest
             this.maxRoll    = maxRoll;
         }
 
-        public string GetRewardLineText()
+        public string GetPotentialRewardLineText()
         {
             switch (type)
             {
                 case RewardType.BW_SEGMENTS:
                     return  string.Format(
-                                "{0} {1} Segments and a bunch more text to make this pretty long"
+                                "{0} {1} Segments"
                                 , minReward == maxReward ?
                                     minReward.ToString()
                                     : minReward.ToString() + " - " + maxReward.ToString()
-                                , UIManager.instance.GetColorName(ColorCategory.BLACK_AND_WHITE)
+                                //, UIManager.instance.GetColorName(ColorCategory.BLACK_AND_WHITE)
+                                , ColorCategory.BLACK_AND_WHITE.Name()
                             );
                 case RewardType.BW_EXP:
                     return  string.Format(
@@ -61,7 +66,66 @@ public class RewardChest
                                 , minReward == maxReward ?
                                     minReward.ToString()
                                     : minReward.ToString() + " - " + maxReward.ToString()
-                                , UIManager.instance.GetColorName(ColorCategory.BLACK_AND_WHITE)
+                                //, UIManager.instance.GetColorName(ColorCategory.BLACK_AND_WHITE)
+                                , ColorCategory.BLACK_AND_WHITE.Name()
+                            );
+                case RewardType.POWERUP_HINT:
+                    return  string.Format(
+                                "{0} {1} Powerups"
+                                , minReward == maxReward ?
+                                    minReward.ToString()
+                                    : minReward.ToString() + " - " + maxReward.ToString()
+                                , PowerupType.HINT.Name()
+                            );
+                case RewardType.POWERUP_FILLEMPTY:
+                    return  string.Format(
+                                "{0} {1} Powerups"
+                                , minReward == maxReward ?
+                                    minReward.ToString()
+                                    : minReward.ToString() + " - " + maxReward.ToString()
+                                , PowerupType.FILL_EMPTY.Name()
+                            );
+                case RewardType.POWERUP_REMOVESPECIALTILE:
+                    return  string.Format(
+                                "{0} {1} Powerups"
+                                , minReward == maxReward ?
+                                    minReward.ToString()
+                                    : minReward.ToString() + " - " + maxReward.ToString()
+                                , PowerupType.REMOVE_SPECIAL_TILE.Name()
+                            );
+            }
+
+            return "";
+        }
+
+        public string GetPrizeLineText()
+        {
+            switch (type)
+            {
+                case RewardType.BW_SEGMENTS:
+                    return  string.Format(
+                                "{0} Segments"
+                                , ColorCategory.BLACK_AND_WHITE.Name()
+                            );
+                case RewardType.BW_EXP:
+                    return  string.Format(
+                                "{0} EXP"
+                                , ColorCategory.BLACK_AND_WHITE.Name()
+                            );
+                case RewardType.POWERUP_HINT:
+                    return  string.Format(
+                                "{0} Powerups"
+                                , PowerupType.HINT.Name()
+                            );
+                case RewardType.POWERUP_FILLEMPTY:
+                    return  string.Format(
+                                "{0} Powerups"
+                                , PowerupType.FILL_EMPTY.Name()
+                            );
+                case RewardType.POWERUP_REMOVESPECIALTILE:
+                    return  string.Format(
+                                "{0} Powerups"
+                                , PowerupType.REMOVE_SPECIAL_TILE.Name()
                             );
             }
 
@@ -104,6 +168,7 @@ public class RewardChest
         switch(chestType)
         {
             case RewardChestType.LEVELUP: return new RewardChest(RewardChestType.LEVELUP);
+            case RewardChestType.POWERUP: return new RewardChest(RewardChestType.POWERUP);
         }
 
         return null;
@@ -117,7 +182,8 @@ public class RewardChest
     {
         switch(chestType)
         {
-            case (RewardChestType.LEVELUP):     return 3;
+            case    RewardChestType.LEVELUP:    return 3;
+            case    RewardChestType.POWERUP:    return 3;
         }
 
         return -1;
@@ -127,7 +193,7 @@ public class RewardChest
     {
         switch(chestType)
         {
-            case (RewardChestType.LEVELUP):
+            case RewardChestType.LEVELUP:
             {
                 return new List<Reward>()
                 {
@@ -138,15 +204,28 @@ public class RewardChest
                     , new Reward(RewardType.BW_EXP      , 5     , 25    , 90f   , 100f)
                 };
             }
+            case RewardChestType.POWERUP:
+            {
+                return new List<Reward>()
+                {
+                      new Reward(RewardType.POWERUP_HINT                , 1     , 1     , 0f    , 25f)
+                    , new Reward(RewardType.POWERUP_FILLEMPTY           , 1     , 1     , 25f   , 50f)
+                    , new Reward(RewardType.POWERUP_REMOVESPECIALTILE   , 1     , 1     , 50f   , 75f)
+                    , new Reward(RewardType.POWERUP_HINT                , 2     , 2     , 75f   , 83f)
+                    , new Reward(RewardType.POWERUP_FILLEMPTY           , 2     , 2     , 83f   , 91f)
+                    , new Reward(RewardType.POWERUP_REMOVESPECIALTILE   , 2     , 2     , 91f   , 99f)
+                    , new Reward(RewardType.POWERUP_HINT                , 3     , 5     , 99f   , 100f)
+                };
+            }
         }
 
         return null;
     }
 
-    public List<(RewardType, int)> GetPrizes()
+    public List<Reward> GetPrizes()
     {
         List<Reward> potentialRewards   = GetChestRewards();
-        List<(RewardType, int)> ret     = new List<(RewardType, int)>();
+        List<Reward> ret                = new List<Reward>();
 
         for (int i = 0; i < GetNumberOfRewards(); i++)
         {
@@ -156,7 +235,7 @@ public class RewardChest
 
             Reward reward               = potentialRewards.Find(x => x.IsRollInRange(roll));
 
-            ret.Add((reward.Type, reward.RewardRoll));
+            ret.Add(reward);
         }
 
         return ret;

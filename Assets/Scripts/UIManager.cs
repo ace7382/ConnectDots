@@ -197,27 +197,27 @@ public class UIManager : MonoBehaviour
         return gameColors[index].name;
     }
 
-    public string GetColorName(ColorCategory colorCategory)
-    {
-        switch (colorCategory)
-        {
-            case ColorCategory.BLACK_AND_WHITE:
-                return "Black and White";
-                //return gameColors[BW_INDEX].name;
-            case ColorCategory.RED:
-                return gameColors[RED_INDEX].name;
-            case ColorCategory.PURPLE:
-                return gameColors[PURPLE_INDEX].name;
-            case ColorCategory.BLUE:
-                return gameColors[BLUE_INDEX].name;
-            case ColorCategory.GREEN:
-                return gameColors[GREEN_INDEX].name;
-            case ColorCategory.YELLOW:
-                return gameColors[YELLOW_INDEX].name;
-            default: //Orange
-                return gameColors[ORANGE_INDEX].name;
-        }
-    }
+    //public string GetColorName(ColorCategory colorCategory)
+    //{
+    //    switch (colorCategory)
+    //    {
+    //        case ColorCategory.BLACK_AND_WHITE:
+    //            return "Black and White";
+    //            //return gameColors[BW_INDEX].name;
+    //        case ColorCategory.RED:
+    //            return gameColors[RED_INDEX].name;
+    //        case ColorCategory.PURPLE:
+    //            return gameColors[PURPLE_INDEX].name;
+    //        case ColorCategory.BLUE:
+    //            return gameColors[BLUE_INDEX].name;
+    //        case ColorCategory.GREEN:
+    //            return gameColors[GREEN_INDEX].name;
+    //        case ColorCategory.YELLOW:
+    //            return gameColors[YELLOW_INDEX].name;
+    //        default: //Orange
+    //            return gameColors[ORANGE_INDEX].name;
+    //    }
+    //}
 
     public void UpdateColor(int index, string newName, Color newColor)
     {
@@ -253,6 +253,7 @@ public class UIManager : MonoBehaviour
         switch (type)
         {
             case RewardChestType.LEVELUP: return rewardChestSprites[0];
+            case RewardChestType.POWERUP: return rewardChestSprites[1];
         }
 
         return null;

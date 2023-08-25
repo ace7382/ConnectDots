@@ -625,7 +625,7 @@ MonoBehaviour:
   rewardChestDetails_RewardLine: {fileID: 9197481963319205126, guid: 47c0d124fbdc91d4fb211068b94814f7, type: 3}
   rewardChestSprites:
   - {fileID: 2800000, guid: bb03df383d5d9446ca1a2928afec136c, type: 3}
-  - {fileID: 2800000, guid: 7f8be2feeff444b6ba88c5eb8c3bb323, type: 3}
+  - {fileID: 2800000, guid: 9e76f7c00481148b2916e752684fdbea, type: 3}
 --- !u!4 &685428500
 Transform:
   m_ObjectHideFlags: 0

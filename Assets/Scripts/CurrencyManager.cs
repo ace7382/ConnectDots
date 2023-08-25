@@ -63,6 +63,9 @@ public class CurrencyManager : MonoBehaviour
         CurrencyManager.instance.AddRewardChest(RewardChest.GetChest(RewardChestType.LEVELUP));
         CurrencyManager.instance.AddRewardChest(RewardChest.GetChest(RewardChestType.LEVELUP));
         CurrencyManager.instance.AddRewardChest(RewardChest.GetChest(RewardChestType.LEVELUP));
+        CurrencyManager.instance.AddRewardChest(RewardChest.GetChest(RewardChestType.POWERUP));
+        CurrencyManager.instance.AddRewardChest(RewardChest.GetChest(RewardChestType.POWERUP));
+        CurrencyManager.instance.AddRewardChest(RewardChest.GetChest(RewardChestType.POWERUP));
         //////////////////////
     }
 

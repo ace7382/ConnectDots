@@ -154,6 +154,72 @@ public class RewardChestDetails : Page
         PageManager.instance.StartCoroutine(OpenChestAnimation());
     }
 
+    //private IEnumerator OpenChestAnimation()
+    //{
+    //    yield return ModalInOut(false).WaitForCompletion();
+
+    //    ScrollView contentScroll        = modal.Q<ScrollView>();
+
+    //    List<VisualElement> rewardLines = contentScroll.contentContainer
+    //                                      .Query<VisualElement>("RewardLine").ToList();
+
+    //    for (int i = 0; i < rewardLines.Count; i++)
+    //        rewardLines[i].RemoveFromHierarchy();
+
+    //    List<RewardChest.Reward> prizes = chest.GetPrizes();
+    //    List<(RewardChest.Reward, int)> 
+    //        prizesWithAmounts           = new List<(RewardChest.Reward, int)>();
+
+    //    for (int i = 0; i < prizes.Count; i++)
+    //    {
+    //        int prizeAmount             = prizes[i].RewardRoll;
+
+    //        Debug.Log(string.Format("{0} - {1}", prizes[i].Type, prizeAmount.ToString()));
+
+    //        VisualElement rewardLine    = UIManager.instance.RewardLine.Instantiate();
+
+    //        rewardLine.name             = "RewardLine";
+    //        Label details               = rewardLine.Q<Label>("Details");
+    //        Label chance                = rewardLine.Q<Label>("Chance");
+
+    //        details.text                = prizes[i].GetPrizeLineText();
+
+    //        if (prizeAmount == -1)
+    //        {
+    //            chance.RemoveFromHierarchy();
+    //        }
+    //        else
+    //        {
+    //            chance.text             = "x" + prizeAmount.ToString();
+    //        }
+
+    //        rewardLine.SetMargins(10f, 0f, 10f, 0f);
+
+    //        contentScroll.Add(rewardLine);
+
+    //        (RewardChest.Reward, int)
+    //            prizeWithAmount         = (prizes[i], prizeAmount);
+
+    //        prizesWithAmounts.Add(prizeWithAmount);
+    //    }
+
+    //    GiveRewards(prizesWithAmounts);
+    //    this.PostNotification(Notifications.REWARD_CHEST_OPENED, chest);
+
+    //    modal.Q<VisualElement>("BackButton").RemoveFromHierarchy();
+
+    //    modal.Q<Label>("Header").text   = "Chest Contents";
+    //    VisualElement claimButton       = modal.Q<VisualElement>("OpenButton");
+    //    claimButton.Q<Label>().text     = "Claim";
+
+    //    claimButton.UnregisterCallback<ClickEvent>(OpenChest);
+    //    claimButton.RegisterCallback<ClickEvent>((evt) => SpawnRewards(evt, prizesWithAmounts));
+
+    //    yield return ModalInOut(true).WaitForCompletion();
+
+    //    canClick = true;
+    //}
+
     private IEnumerator OpenChestAnimation()
     {
         yield return ModalInOut(false).WaitForCompletion();
@@ -166,44 +232,32 @@ public class RewardChestDetails : Page
         for (int i = 0; i < rewardLines.Count; i++)
             rewardLines[i].RemoveFromHierarchy();
 
-        List<RewardChest.Reward> prizes = chest.GetPrizes();
-        List<(RewardChest.Reward, int)> 
-            prizesWithAmounts           = new List<(RewardChest.Reward, int)>();
+        List<(RewardChest.Reward reward, int amount)> 
+            prizesWithAmounts           = CurrencyManager.instance.OpenRewardChest(chest);
 
-        for (int i = 0; i < prizes.Count; i++)
+        for (int i = 0; i < prizesWithAmounts.Count; i++)
         {
-            int prizeAmount             = prizes[i].RewardRoll;
-
-            Debug.Log(string.Format("{0} - {1}", prizes[i].Type, prizeAmount.ToString()));
-
             VisualElement rewardLine    = UIManager.instance.RewardLine.Instantiate();
 
             rewardLine.name             = "RewardLine";
             Label details               = rewardLine.Q<Label>("Details");
             Label chance                = rewardLine.Q<Label>("Chance");
 
-            details.text                = prizes[i].GetPrizeLineText();
+            details.text                = prizesWithAmounts[i].reward.GetPrizeLineText();
 
-            if (prizeAmount == -1)
+            if (prizesWithAmounts[i].amount == -1)
             {
                 chance.RemoveFromHierarchy();
             }
             else
             {
-                chance.text             = "x" + prizeAmount.ToString();
+                chance.text             = "x" + prizesWithAmounts[i].amount.ToString();
             }
 
             rewardLine.SetMargins(10f, 0f, 10f, 0f);
 
             contentScroll.Add(rewardLine);
-
-            (RewardChest.Reward, int)
-                prizeWithAmount         = (prizes[i], prizeAmount);
-
-            prizesWithAmounts.Add(prizeWithAmount);
         }
-
-        GiveRewards(prizesWithAmounts);
 
         modal.Q<VisualElement>("BackButton").RemoveFromHierarchy();
 
@@ -218,6 +272,7 @@ public class RewardChestDetails : Page
 
         canClick = true;
     }
+
 
     private Tween ModalInOut(bool flyIn)
     {
@@ -240,31 +295,6 @@ public class RewardChestDetails : Page
                     , .65f
                 )
                 .SetEase(Ease.OutQuart);
-        }
-    }
-
-    private void GiveRewards(List<(RewardChest.Reward reward, int amount)> prizes)
-    {
-        for (int i = 0; i < prizes.Count; i++)
-        {
-            switch(prizes[i].reward.Type)
-            {
-                case RewardChest.RewardType.BW_SEGMENTS:
-                    CurrencyManager.instance.AddCurrency(ColorCategory.BLACK_AND_WHITE, prizes[i].amount);
-                    break;
-                case RewardChest.RewardType.BW_EXP:
-                    ProfileManager.instance.AddEXP(ColorCategory.BLACK_AND_WHITE, prizes[i].amount);
-                    break;
-                case RewardChest.RewardType.POWERUP_HINT:
-                    CurrencyManager.instance.AddCurrency(PowerupType.HINT, prizes[i].amount);
-                    break;
-                case RewardChest.RewardType.POWERUP_FILLEMPTY:
-                    CurrencyManager.instance.AddCurrency(PowerupType.FILL_EMPTY, prizes[i].amount);
-                    break;
-                case RewardChest.RewardType.POWERUP_REMOVESPECIALTILE:
-                    CurrencyManager.instance.AddCurrency(PowerupType.REMOVE_SPECIAL_TILE, prizes[i].amount);
-                    break;
-            }
         }
     }
 

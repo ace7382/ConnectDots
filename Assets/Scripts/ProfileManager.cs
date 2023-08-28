@@ -87,6 +87,14 @@ public class ProfileManager : MonoBehaviour
             nextLevel                   = GetNeededEXP(GetEXPLevel(color));
         }
 
+        object[] data = new object[2]
+        {
+            color
+            , amount
+        };
+
+        this.PostNotification(Notifications.EXP_RECEIVED, data);
+
         return leveledUp;
     }
 

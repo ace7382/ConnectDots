@@ -208,21 +208,9 @@ public class EndOfLevelPopup : Page
 
     public override IEnumerator AnimateIn()
     {
-        //TODO: these can be coinscroll.Q<toparrow> etc i think. Save a few tree traversal steps
-        //VisualElement topIndicator      = uiDoc.rootVisualElement.Q<VisualElement>("TopArrow");
-        //VisualElement bottomIndicator   = uiDoc.rootVisualElement.Q<VisualElement>("BottomArrow");
-
-        //coinScroll.SetBoundIndicators(topIndicator, bottomIndicator);
-        //coinScroll.verticalScroller.valueChanged += (evt) =>
-        //{
-        //    coinScroll.ShowHideVerticalBoundIndicators(topIndicator, bottomIndicator);
-        //};
-
         yield return null; //The coinscroll's bounds need to be set
 
         ShowEXPBars();
-
-        //coinScroll.ShowHideVerticalBoundIndicators(topIndicator, bottomIndicator);
 
         yield return PanelIn();
 

@@ -12,7 +12,16 @@ public class UIToolkitLine : VisualElement
     private LineCap         cap;
 
     public List<Vector2>    Points      { get { return points; } }
-    public Vector2          LastPoint   { get { return Points[Points.Count - 1]; } }
+    public Vector2          LastPoint   { 
+                                            get 
+                                            { 
+                                                return Points[Points.Count - 1]; 
+                                            }
+                                            private set 
+                                            { 
+                                                Points[Points.Count - 1] = value; 
+                                            } 
+                                        }
 
     public UIToolkitLine(List<Vector2> points, float width, Color color, LineCap cap)
     {
@@ -55,6 +64,12 @@ public class UIToolkitLine : VisualElement
     public void AddNewPoint(Vector2 newPoint)
     {
         points.Add(newPoint);
+    }
+
+    public void UpdateLastPoint(Vector2 newPoint)
+    {
+        LastPoint = newPoint;
+        this.MarkDirtyRepaint();
     }
 
     public IEnumerator DrawTowardNewPoint(Vector2 newPoint, float duration)

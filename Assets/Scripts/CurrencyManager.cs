@@ -81,6 +81,14 @@ public class CurrencyManager : MonoBehaviour
     public void AddCurrency(ColorCategory colorCategory, int amount)
     {
         ownedSegments[(int)colorCategory] += amount;
+
+        object[] data = new object[2]
+        {
+            colorCategory
+            , amount
+        };
+
+        this.PostNotification(Notifications.SEGMENTS_RECEIVED, data);
     }
 
     public void SpendCurrency(ColorCategory colorCategory, int amount)
@@ -258,16 +266,75 @@ public class CurrencyManager : MonoBehaviour
         ownedRewardChests.Add(chestToAdd);
     }
     
-    public void OpenRewardChest(RewardChest chest)
+    public List<(RewardChest.Reward reward, int amount)> OpenRewardChest(RewardChest chest)
     {
+        List<RewardChest.Reward> prizes = chest.GetPrizes();
+        List<(RewardChest.Reward reward, int amount)> prizesWithAmounts = new List<(RewardChest.Reward reward, int amount)>();
+        
+        for (int i = 0; i < prizes.Count; i++)
+        {
+            int prizeAmount = prizes[i].RewardRoll;
 
+            (RewardChest.Reward, int)
+                prizeWithAmount = (prizes[i], prizeAmount);
 
+            prizesWithAmounts.Add(prizeWithAmount);
+        }
 
+        GiveChestRewards(prizesWithAmounts);
+
+        ownedRewardChests.Remove(chest);
+
+        this.PostNotification(Notifications.REWARD_CHEST_OPENED, chest);
+
+        return prizesWithAmounts;
     }
 
     #endregion
 
     #region Private Functions
+
+    private void GiveChestRewards(List<(RewardChest.Reward reward, int amount)> prizes)
+    {
+        Dictionary<ColorCategory, int> segmentsToAdd    = new Dictionary<ColorCategory, int>();
+        Dictionary<ColorCategory, int> expToAdd         = new Dictionary<ColorCategory, int>();
+
+        for (int i = 0; i < prizes.Count; i++)
+        {
+            switch(prizes[i].reward.Type)
+            {
+                case RewardChest.RewardType.BW_SEGMENTS:
+                    if (segmentsToAdd.ContainsKey(ColorCategory.BLACK_AND_WHITE)) 
+                        segmentsToAdd[ColorCategory.BLACK_AND_WHITE] += prizes[i].amount;
+                    else segmentsToAdd.Add(ColorCategory.BLACK_AND_WHITE, prizes[i].amount);
+                    break;
+                case RewardChest.RewardType.BW_EXP:
+                    if (expToAdd.ContainsKey(ColorCategory.BLACK_AND_WHITE))
+                        expToAdd[ColorCategory.BLACK_AND_WHITE] += prizes[i].amount;
+                    else expToAdd.Add(ColorCategory.BLACK_AND_WHITE, prizes[i].amount);
+                    break;
+                case RewardChest.RewardType.POWERUP_HINT:
+                    CurrencyManager.instance.AddCurrency(PowerupType.HINT, prizes[i].amount);
+                    break;
+                case RewardChest.RewardType.POWERUP_FILLEMPTY:
+                    CurrencyManager.instance.AddCurrency(PowerupType.FILL_EMPTY, prizes[i].amount);
+                    break;
+                case RewardChest.RewardType.POWERUP_REMOVESPECIALTILE:
+                    CurrencyManager.instance.AddCurrency(PowerupType.REMOVE_SPECIAL_TILE, prizes[i].amount);
+                    break;
+            }
+        }
+
+        foreach (KeyValuePair<ColorCategory, int> seg in segmentsToAdd)
+        {
+            AddCurrency(seg.Key, seg.Value);
+        }
+
+        foreach (KeyValuePair<ColorCategory, int> exp in expToAdd)
+        {
+            ProfileManager.instance.AddEXP(exp.Key, exp.Value);
+        }
+    }
 
     #endregion
 

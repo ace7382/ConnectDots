@@ -246,14 +246,14 @@ public class ProfilePage : Page
                                         , leftOrigin.y);
 
         UIToolkitLine currentLine   = parentVE.Q<UIToolkitLine>();
-        Debug.Log("CurrentLine points: " + currentLine.Points.Count);
+
         Tween moveBarEnd            = DOTween.To(
                                         () => currentLine.LastPoint
                                         , x => currentLine.UpdateLastPoint(x)
                                         , progressStop
                                         , 1f
                                     )
-                                    .OnUpdate(() => Debug.Log("Current last point: " + currentLine.LastPoint + " || Goal: " + progressStop))
+                                    //.OnUpdate(() => Debug.Log("Current last point: " + currentLine.LastPoint + " || Goal: " + progressStop))
                                     .SetEase(Ease.OutQuad)
                                     .Play();
     }
@@ -265,6 +265,7 @@ public class ProfilePage : Page
         VisualElement rewardChestContainer      = uiDoc.rootVisualElement
                                                 .Q<VisualElement>("RewardChestsContainer")
                                                 .Q<VisualElement>("BG");
+        VisualElement chestParent               = rewardChestContainer.Q<VisualElement>("ChestContainer");
 
         for (int i = 0; i < CurrencyManager.instance.TotalRewardChests; i++)
         {
@@ -281,7 +282,8 @@ public class ProfilePage : Page
 
             rewardChestButton.SetMargins(15f);
 
-            rewardChestContainer.Add(rewardChestButton);
+            //rewardChestContainer.Add(rewardChestButton);
+            chestParent.Add(rewardChestButton);
 
             rewardChestButton.RegisterCallback<ClickEvent>((evt) =>
             {
@@ -291,7 +293,7 @@ public class ProfilePage : Page
                 canClick                        = false;
 
                 object[] data                   = new object[1];
-                data[0]                         = currentChest;
+                data[0]                         = new List<RewardChest>() { currentChest };
 
                 PageManager.instance.StartCoroutine(PageManager.instance.AddPageToStack<RewardChestDetails>(data));
             });
@@ -305,7 +307,13 @@ public class ProfilePage : Page
             rewardChestButtons.Add(rewardChestButton);
         }
 
-        rewardChestContainer.Q<Label>().Show(rewardChestButtons.Count <= 0);
+        rewardChestContainer.Q<Label>("NoChestsNotice").Show(rewardChestButtons.Count <= 0);
+        
+        VisualElement openAllContainer          = rewardChestContainer.Q<VisualElement>("OpenAllButtonContainer");
+        VisualElement openAllButton             = openAllContainer.Q<VisualElement>("OpenButton");
+
+        openAllContainer.Show(rewardChestButtons.Count > 1);
+        openAllButton.RegisterCallback<ClickEvent>(OpenAllChests);
 
         this.AddObserver(RemoveOpenedChest, Notifications.REWARD_CHEST_OPENED);
     }
@@ -321,7 +329,28 @@ public class ProfilePage : Page
         chestButton.RemoveFromHierarchy();
 
         uiDoc.rootVisualElement.Q<VisualElement>("RewardChestsContainer")
-            .Q<VisualElement>("BG").Q<Label>().Show(rewardChestButtons.Count <= 0);
+            .Q<VisualElement>("BG").Q<Label>("NoChestsNotice").Show(rewardChestButtons.Count <= 0);
+
+        uiDoc.rootVisualElement.Q<VisualElement>("RewardChestsContainer")
+            .Q<VisualElement>("OpenAllButtonContainer").Show(rewardChestButtons.Count > 1);
+    }
+
+    private void OpenAllChests(ClickEvent evt)
+    {
+        if (!canClick)
+            return;
+
+        canClick        = false;
+
+        object[] data   = new object[1];
+        List<RewardChest> chests = new List<RewardChest>();
+
+        for (int i = 0; i < rewardChestButtons.Count; i++)
+            chests.Add((RewardChest)rewardChestButtons[i].userData);
+
+        data[0]         = chests;
+
+        PageManager.instance.StartCoroutine(PageManager.instance.AddPageToStack<RewardChestDetails>(data));
     }
 
     #endregion

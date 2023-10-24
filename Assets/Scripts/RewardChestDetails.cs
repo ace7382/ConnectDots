@@ -8,9 +8,9 @@ public class RewardChestDetails : Page
 {
     #region Private Variables
 
-    private bool            canClick;
-    private RewardChest     chest;
-    private VisualElement   modal;
+    private bool                canClick;
+    private List<RewardChest>   chests;
+    private VisualElement       modal;
 
     #endregion
 
@@ -19,8 +19,9 @@ public class RewardChestDetails : Page
     public override void ShowPage(object[] args)
     {
         //args[0]   -   RewardChest     -   The RewardChest to be loaded on the details page
+        //args[0]   -   List<RewardChest>   -   The RewardChest(s) to be loaded on the details page
 
-        chest                           = (RewardChest)args[0];
+        chests                          = (List<RewardChest>)args[0];
         modal                           = uiDoc.rootVisualElement.Q<VisualElement>("Container");
 
         VisualElement page              = uiDoc.rootVisualElement.Q<VisualElement>("Page");
@@ -30,30 +31,42 @@ public class RewardChestDetails : Page
         Label headerLabel               = uiDoc.rootVisualElement.Q<Label>("Header");
         ScrollView chestContentsScroll  = uiDoc.rootVisualElement.Q<ScrollView>();
 
-        chestIcon.style.backgroundImage = UIManager.instance.GetRewardChestIcon(chest.ChestType);
-        headerLabel.text                = string.Format("Receive {0} of the following:"
-                                          , chest.GetNumberOfRewards().ToString());
-
         chestContentsScroll
             .style.maxHeight            = Screen.height * .55f;
 
-        List<RewardChest.Reward>
-            potentialRewards            = chest.GetChestRewards();
-
-        for (int i = 0; i < potentialRewards.Count; i++)
+        if (chests.Count == 1)
         {
-            VisualElement rewardLine    = UIManager.instance.RewardLine.Instantiate();
+            chestIcon.style
+                .backgroundImage        = UIManager.instance.GetRewardChestIcon(chests[0].ChestType);
+            headerLabel.text            = string.Format("Receive {0} of the following:"
+                                          , chests[0].GetNumberOfRewards().ToString());
 
-            rewardLine.name             = "RewardLine";
-            Label details               = rewardLine.Q<Label>("Details");
-            Label chance                = rewardLine.Q<Label>("Chance");
+            List<RewardChest.Reward>
+                potentialRewards        = chests[0].GetChestRewards();
 
-            details.text                = potentialRewards[i].GetPotentialRewardLineText();
-            chance.text                 = potentialRewards[i].Chance.ToString("0.00") + "%";
+            for (int i = 0; i < potentialRewards.Count; i++)
+            {
+                VisualElement rewardLine= UIManager.instance.RewardLine.Instantiate();
 
-            rewardLine.SetMargins(10f, 0f, 10f, 0f);
+                rewardLine.name         = "RewardLine";
+                Label details           = rewardLine.Q<Label>("Details");
+                Label chance            = rewardLine.Q<Label>("Chance");
 
-            chestContentsScroll.Add(rewardLine);
+                details.text            = potentialRewards[i].GetPotentialRewardLineText();
+                chance.text             = potentialRewards[i].Chance.ToString("0.00") + "%";
+
+                rewardLine.SetMargins(10f, 0f, 10f, 0f);
+
+                chestContentsScroll.Add(rewardLine);
+            }
+        }
+        else //If opening more than 1 chest
+        {
+            //TODO: Set top icon
+
+            headerLabel.text            = string.Format("Open {0}", chests.Count);
+
+            //TODO: Show counts of each chests
         }
 
         openButton.RegisterCallback<ClickEvent>(OpenChest);
@@ -96,6 +109,8 @@ public class RewardChestDetails : Page
     public override IEnumerator AnimateIn()
     {
         canClick            = false;
+
+        uiDoc.rootVisualElement.SetPadding(0f);
 
         //This is needed because there is a bug with wrapping text with a % max width
         //https://forum.unity.com/threads/label-with-textwrap-not-adjusting-auto-height-appropriately-when-maxwidth-uses-a-percent.1482831/
@@ -154,72 +169,6 @@ public class RewardChestDetails : Page
         PageManager.instance.StartCoroutine(OpenChestAnimation());
     }
 
-    //private IEnumerator OpenChestAnimation()
-    //{
-    //    yield return ModalInOut(false).WaitForCompletion();
-
-    //    ScrollView contentScroll        = modal.Q<ScrollView>();
-
-    //    List<VisualElement> rewardLines = contentScroll.contentContainer
-    //                                      .Query<VisualElement>("RewardLine").ToList();
-
-    //    for (int i = 0; i < rewardLines.Count; i++)
-    //        rewardLines[i].RemoveFromHierarchy();
-
-    //    List<RewardChest.Reward> prizes = chest.GetPrizes();
-    //    List<(RewardChest.Reward, int)> 
-    //        prizesWithAmounts           = new List<(RewardChest.Reward, int)>();
-
-    //    for (int i = 0; i < prizes.Count; i++)
-    //    {
-    //        int prizeAmount             = prizes[i].RewardRoll;
-
-    //        Debug.Log(string.Format("{0} - {1}", prizes[i].Type, prizeAmount.ToString()));
-
-    //        VisualElement rewardLine    = UIManager.instance.RewardLine.Instantiate();
-
-    //        rewardLine.name             = "RewardLine";
-    //        Label details               = rewardLine.Q<Label>("Details");
-    //        Label chance                = rewardLine.Q<Label>("Chance");
-
-    //        details.text                = prizes[i].GetPrizeLineText();
-
-    //        if (prizeAmount == -1)
-    //        {
-    //            chance.RemoveFromHierarchy();
-    //        }
-    //        else
-    //        {
-    //            chance.text             = "x" + prizeAmount.ToString();
-    //        }
-
-    //        rewardLine.SetMargins(10f, 0f, 10f, 0f);
-
-    //        contentScroll.Add(rewardLine);
-
-    //        (RewardChest.Reward, int)
-    //            prizeWithAmount         = (prizes[i], prizeAmount);
-
-    //        prizesWithAmounts.Add(prizeWithAmount);
-    //    }
-
-    //    GiveRewards(prizesWithAmounts);
-    //    this.PostNotification(Notifications.REWARD_CHEST_OPENED, chest);
-
-    //    modal.Q<VisualElement>("BackButton").RemoveFromHierarchy();
-
-    //    modal.Q<Label>("Header").text   = "Chest Contents";
-    //    VisualElement claimButton       = modal.Q<VisualElement>("OpenButton");
-    //    claimButton.Q<Label>().text     = "Claim";
-
-    //    claimButton.UnregisterCallback<ClickEvent>(OpenChest);
-    //    claimButton.RegisterCallback<ClickEvent>((evt) => SpawnRewards(evt, prizesWithAmounts));
-
-    //    yield return ModalInOut(true).WaitForCompletion();
-
-    //    canClick = true;
-    //}
-
     private IEnumerator OpenChestAnimation()
     {
         yield return ModalInOut(false).WaitForCompletion();
@@ -232,8 +181,43 @@ public class RewardChestDetails : Page
         for (int i = 0; i < rewardLines.Count; i++)
             rewardLines[i].RemoveFromHierarchy();
 
-        List<(RewardChest.Reward reward, int amount)> 
-            prizesWithAmounts           = CurrencyManager.instance.OpenRewardChest(chest);
+        List<(RewardChest.Reward reward, int amount)>
+            prizesWithAmounts = new List<(RewardChest.Reward reward, int amount)>();
+
+        if (chests.Count == 1)
+        {
+            prizesWithAmounts           = CurrencyManager.instance.OpenRewardChest(chests[0]);
+        }
+        else
+        {
+            for (int i = 0; i < chests.Count; i++)
+            {
+                List<(RewardChest.Reward reward, int amount)> tempForChest
+                    = CurrencyManager.instance.OpenRewardChest(chests[i]);
+
+                for (int j = 0; j < tempForChest.Count; j++)
+                {
+                    //If the reward from this chest exists in the final rewards, add the totals
+                    //  else add the reward to the final list
+                    int index = prizesWithAmounts.FindIndex(x => x.reward.Type == tempForChest[j].reward.Type);
+
+                    if (index != -1)
+                    {
+                        (RewardChest.Reward r, int a) 
+                            temp                    = prizesWithAmounts[index];
+                        temp.a                      += tempForChest[j].amount;
+                        prizesWithAmounts[index]    = temp;
+                    }
+                    else
+                    {
+                        (RewardChest.Reward r, int a) 
+                            temp                    = (tempForChest[j].reward, tempForChest[j].amount);
+
+                        prizesWithAmounts.Add(temp);
+                    }
+                }
+            }
+        }    
 
         for (int i = 0; i < prizesWithAmounts.Count; i++)
         {
